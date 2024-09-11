@@ -1,0 +1,32 @@
+server:
+  port: 9091
+spring:
+  application:
+    name: community-service
+  cloud:
+    nacos:
+      discovery:
+      server-addr: 47.94.97.3:8848 #注册中心地址
+    # sentinel:
+    #   transport:
+    #   port: 8719
+    #   dashboard: 192.168.31.134:8080
+  datasource:
+    url: jdbc:mysql://47.94.97.3:3306/db_todo?useUnicode=true&characterEncoding=utf8
+    username: one
+    password: '#Alisa96312'
+# seata:
+#   application-id: ${spring.application.name}
+#   tx-service-group: smallokr
+#   service:
+#     vgroup-mapping:
+#       smallokr: default
+#   registry:
+#     type: nacos
+#     nacos:
+#       application: seata-server
+#       server-addr: 47.94.97.3:8848
+#       username: nacos
+#       password: nacos
+mybatis:
+  mapper-locations: classpath:alisa/mapper/xml/*.xml
