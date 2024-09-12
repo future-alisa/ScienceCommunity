@@ -3,6 +3,7 @@ import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { ProTable, TableDropdown } from "@ant-design/pro-components";
 import { Button, Dropdown, Space, Tag } from "antd";
 import { Card } from "antd";
+import styles from "./commnity.module.css";
 
 export default function Page() {
   type GithubIssueItem = {
@@ -142,53 +143,41 @@ export default function Page() {
   const { Meta } = Card;
   const data = [1, 2, 3, 4, 5, 6, 7];
   return (
-    <div>
-      <p>Community</p>
-      <div style={styles.div}>
-        <div>category</div>
-        <div style={styles.grid}>
-          {data.map((item, index) => (
-            <Card
-              style={styles.gridItem}
-              key={index}
-              hoverable
-              cover={
-                <img
-                  alt="example"
-                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-                />
-              }
-            >
-              <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
+    <div className={styles.page}>
+      <aside className={styles.sidebar}>
+        <h2>社区</h2>
+        <ul>
+          <li>
+            <a href="#">基础知识</a>
+          </li>
+          <li>
+            <a href="#">案例</a>
+          </li>
+          <li>
+            <a href="#">推文</a>
+          </li>
+          <li>
+            <a href="#">频道</a>
+          </li>
+        </ul>
+      </aside>
+      <div className={styles.grid}>
+        {data.map((item, index) => (
+          <Card
+            className={styles.card}
+            key={index}
+            hoverable
+            cover={
+              <img
+                alt="example"
+                src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
               />
-            </Card>
-          ))}
-        </div>
+            }
+          >
+            <Meta title="Europe Street beat" description="www.instagram.com" />
+          </Card>
+        ))}
       </div>
     </div>
   );
 }
-
-const styles = {
-  div: {
-    border: 1,
-    display: "flex",
-    justifyContent: "center", // Center items horizontally
-    alignItems: "center", // Center items vertically
-    flexDirection: "column",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)", 
-    gap: "10px", // 网格项之间的间距
-    padding: "10px",
-  },
-  gridItem: {
-    backgroundColor: "#f0f0f0",
-    border: "1px solid #ddd",
-    padding: "20px",
-    textAlign: "center",
-  },
-};
