@@ -1,27 +1,32 @@
-export default function Page() {
-  return (
-    <div style={styles.container}>
-      <div style={styles.topContainer}>
+import { ChatRoom } from "@/components/chat-room";
 
-      </div>
-      <div style={styles.bottomContainer}>
-        <button>发送</button>
-      </div>
+export default function Page() {
+  const data = [
+    {
+      id: "121",
+      from: "string",
+      to: "string",
+      content: "nihao",
+      comments: [],
+    },
+    {
+      id: "12221",
+      from: "string",
+      to: "string",
+      content: "nihao",
+      comments: [],
+    },
+    {
+      id: "132121",
+      from: "string",
+      to: "string",
+      content: "nihao",
+      comments: [],
+    },
+  ];
+  return (
+    <div>
+      <ChatRoom data={data} />
     </div>
   );
 }
-
-const styles = {
-  container: {
-    dispaly: "flex",
-    flexDirection: "column",
-  },
-  topContainer: {
-    dispaly: "flex",
-    flexDirection: "column",
-  },
-  bottomContainer: {
-    dispaly: "flex",
-    flexDirection: "row",
-  },
-};

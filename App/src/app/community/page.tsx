@@ -148,16 +148,16 @@ export default function Page() {
         <h2>社区</h2>
         <ul>
           <li>
-            <a href="#">基础知识</a>
+            <a href="/community/base">基础知识</a>
           </li>
           <li>
-            <a href="#">案例</a>
+            <a href="/community/case">案例</a>
           </li>
           <li>
-            <a href="#">推文</a>
+            <a href="/community/post">推文</a>
           </li>
           <li>
-            <a href="#">频道</a>
+            <a href="/community/channel">频道</a>
           </li>
         </ul>
       </aside>
