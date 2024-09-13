@@ -1,3 +1,5 @@
+"use client";
+import styles from "@/app/community/channel/channel.module.css";
 import { ChatRoom } from "@/components/chat-room";
 
 export default function Page() {
@@ -7,7 +9,15 @@ export default function Page() {
       from: "string",
       to: "string",
       content: "nihao",
-      comments: [],
+      comments: [
+        {
+          id: "13321",
+          from: "string",
+          to: "string",
+          content: "nihao",
+          comments: [],
+        },
+      ],
     },
     {
       id: "12221",
@@ -25,7 +35,7 @@ export default function Page() {
     },
   ];
   return (
-    <div>
+    <div className={styles.container}>
       <ChatRoom data={data} />
     </div>
   );

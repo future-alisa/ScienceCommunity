@@ -1,27 +1,27 @@
 "use client";
-import React, { useState } from "react";
-import { createEditor, Descendant } from "slate";
-import { Slate, Editable, withReact } from "slate-react";
+import styles from "@/app/community/post/post.module.css";
+import { Card } from "antd";
 
 export default function Page() {
-  const initialValue: Descendant[] = [
-    {
-      type: "paragraph",
-      children: [{ text: "A line of text in a paragraph." }],
-    },
-  ];
-  const [editor] = useState(() => withReact(createEditor()));
+  const { Meta } = Card;
+  const data = [1, 2, 3, 4, 5, 6, 7];
   return (
-    <div style={styles.container}>
-      <Slate editor={editor} initialValue={initialValue}>
-        <Editable />
-      </Slate>
+    <div className={styles.grid}>
+      {data.map((item, index) => (
+        <Card
+          className={styles.card}
+          key={index}
+          hoverable
+          cover={
+            <img
+              alt="example"
+              src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+            />
+          }
+        >
+          <Meta title="Europe Street beat" description="www.instagram.com" />
+        </Card>
+      ))}
     </div>
   );
 }
-
-const styles = {
-  container: {
-    margin: 100,
-  },
-};
