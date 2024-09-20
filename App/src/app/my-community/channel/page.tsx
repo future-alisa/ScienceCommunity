@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/app/community/channel/channel.module.css";
+import styles from "@/app/my-community/channel/channel.module.css";
 import { ChatRoom } from "@/components/chat-room";
 
 export default function Page() {

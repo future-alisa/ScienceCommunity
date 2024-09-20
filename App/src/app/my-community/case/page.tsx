@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/app/community/case/case.module.css";
+import styles from "@/app/my-community/case/case.module.css";
 import { Card } from "antd";
 
 export default function Page() {

@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/app/community/post/post.module.css";
+import styles from "@/app/my-community/post/post.module.css";
 import { Card } from "antd";
 
 export default function Page() {

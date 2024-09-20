@@ -1,5 +1,5 @@
 "use client";
-import styles from "@/app/community/base/base.module.css";
+import styles from "@/app/my-community/base/base.module.css";
 import { Card } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -18,7 +18,7 @@ const Base = ({ data }: BaseProps) => {
   const { Meta } = Card;
   const router = useRouter();
   const handleClick = (documentId: string) => {
-    router.push("/community/detail");
+    router.push("/my-community/detail");
   };
 
   useEffect(() => {

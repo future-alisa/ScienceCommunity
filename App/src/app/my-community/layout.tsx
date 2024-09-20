@@ -1,4 +1,4 @@
-import styles from "./commnity.module.css";
+import styles from "./my-commnity.module.css";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -10,16 +10,16 @@ export default function RootLayout({
         <h2>社区</h2>
         <ul>
           <li>
-            <a href="/community/base">基础知识</a>
+            <a href="/my-community/base">基础知识</a>
           </li>
           <li>
-            <a href="/community/case">案例</a>
+            <a href="/my-community/case">案例</a>
           </li>
           <li>
-            <a href="/community/post">推文</a>
+            <a href="/my-community/post">推文</a>
           </li>
           <li>
-            <a href="/community/channel">频道</a>
+            <a href="/my-community/channel">频道</a>
           </li>
         </ul>
       </aside>

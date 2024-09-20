@@ -1,20 +1,15 @@
 .page {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 
 .leftNav {
   margin: 20px;
 }
 
-.toolbar {
-  display: flex;
-  flex-direction: row;
-}
 
 .grid {
   display: grid;
-  padding: 10px;
   grid-template-columns: repeat(4, 1fr);
   max-width: 100%;
   width: var(--max-width);

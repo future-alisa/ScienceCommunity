@@ -8,7 +8,7 @@ export default function Navigator() {
           <Link className={styles.nav_link} href="/">Home</Link>
           <Link className={styles.nav_link} href="/community">Community</Link>
           <Link className={styles.nav_link} href="/about">About</Link>
-          <Link className={styles.nav_link} href="/login">Sign In</Link>
+          <Link className={styles.nav_link} href="/signin">Sign In</Link>
         </nav>
       );
 }
