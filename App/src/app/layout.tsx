@@ -19,7 +19,15 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={inter.className}
-        style={{ backgroundImage: "url(/background.png)" }}
+        style={{
+          width:'100v',
+          height:'100vh',
+          display:'flex',
+          flexDirection:'column',
+          backgroundImage: "url(/background.png)",
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
       >
         <Navigator />
         {children}

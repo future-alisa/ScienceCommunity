@@ -25,7 +25,7 @@ export default function Page() {
   };
 
   return (
-    <div className={styles.page}>
+    <main className={styles.page}>
       <div className={styles.toolbar}>
         <select>
           <option>最近更新</option>
@@ -56,6 +56,6 @@ export default function Page() {
           </Card>
         ))}
       </div>
-    </div>
+    </main>
   );
 }
