@@ -1,14 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
-import styles from "./signin.module.css";
+import styles from "./signup.module.css";
 import { useState } from "react";
 export default function Page() {
   const route = useRouter();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const login = async () => {
+  const logup = async () => {
     try {
-      const res = await fetch("http://"+process.env.NEXT_PUBLIC_SERVER_HOST+":8080/api/v1/user/signin", {
+      const res = await fetch("http://47.94.97.3:8080/api/v1/user/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -17,6 +17,7 @@ export default function Page() {
         credentials: "include",
       });
       if (res.status === 200) {
+        alert('注册成功')
         route.push("/community");
       } else {
         alert("用户名或者密码错误");
@@ -43,11 +44,11 @@ export default function Page() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className={styles.btn} onClick={() => login()}>
-          登录
+        <button className={styles.btn} onClick={() => logup()}>
+          注册
         </button>
         <div>
-          <a href="/signup">注册</a>
+          <a href="/signin">登录</a>
         </div>
       </div>
     </div>

@@ -1,12 +1,11 @@
 .page {
   display: flex;
-  flex: 1;
-  height: 80vh;
 }
 .left_container {
   flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .right_container {
   flex: 1;

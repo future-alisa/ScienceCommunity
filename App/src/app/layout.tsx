@@ -19,7 +19,9 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={inter.className}
-        style={{ backgroundImage: "url(/background.png)" }}
+        style={{
+          backgroundImage: "url(/background.png)",
+        }}
       >
         <Navigator />
         {children}
