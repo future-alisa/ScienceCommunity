@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "antd";
 import { useState } from "react";
 import { createEditor, Descendant } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
@@ -17,7 +18,7 @@ const renderElement = (props: any) => {
     case "list":
       return <ul {...props.attributes}>{props.children}</ul>;
     case "list-item":
-      return <li {...props.attributes}>{props.children}</li>;
+      return <li {...props .attributes}>{props.children}</li>;
     default:
       return <p {...props.attributes}>{props.children}</p>;
   }
@@ -74,12 +75,27 @@ const MyEditor = () => {
       ],
     },
   ]);
-
+  const handleChange = (e) => {
+    console.log(e);
+  };
   return (
     <div>
-      <Slate editor={editor} initialValue={initialValue}>
+      <Slate
+        editor={editor}
+        initialValue={initialValue}
+        onValueChange={(e) => {
+          handleChange(e);
+          console.log(editor.children);
+        }}
+      >
+        <div>
+          <Button
+            icon="format_bold"
+            onClick={() => console.log(editor.children)}
+          />
+        </div>
         <Editable
-          readOnly
+          readOnly={false}
           renderElement={renderElement}
           onKeyDown={(event) => {
             if (!event.ctrlKey) {
