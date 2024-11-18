@@ -20,11 +20,11 @@ export default function RootLayout({
       <body
         className={inter.className}
         style={{
-          width:'100v',
+          width:'100vw',
           height:'100vh',
           display:'flex',
           flexDirection:'column',
-          backgroundImage: "url(/background.png)",
+          //backgroundImage: "url(/background.png)",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
         }}

@@ -5,7 +5,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={styles.page}>
+    <main className={styles.page}>
       <aside className={styles.sidebar}>
         <h2>社区</h2>
         <ul>
@@ -24,6 +24,6 @@ export default function RootLayout({
         </ul>
       </aside>
       {children}
-    </div>
+    </main>
   );
 }
