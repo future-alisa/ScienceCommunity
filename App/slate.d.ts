@@ -12,9 +12,14 @@ export type HeadingElement = {
   children: CustomText[];
 };
 
-export type ListElement = {
-  type: "list";
+export type BulletedListElement = {
+  type: "bulleted-list";
   children: ListItemElement[];
+};
+
+export type NumberdListElement = {
+  type: "numbered-list";
+  children: CustomText[];
 };
 
 export type ListItemElement = {
@@ -22,11 +27,17 @@ export type ListItemElement = {
   children: CustomText[];
 };
 
+export type BlockQuoteElement = {
+  type: "block-quote";
+  children: CustomText[];
+};
+
 export type CustomElement =
   | ParagraphElement
   | HeadingElement
   | ListElement
-  | ListItemElement;
+  | ListItemElement
+  | BlockQuoteElement;
 
 export type FormattedText = { text: string; bold?: true };
 export type CustomText = FormattedText;
