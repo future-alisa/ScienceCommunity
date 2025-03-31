@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alisa.mapper.DocumentMapper">
+  <resultMap id="BaseResultMap" type="com.alisa.model.Document">
+    <id column="document_id" jdbcType="CHAR" property="documentId" />
+    <result column="document_category_id" jdbcType="VARCHAR" property="documentCategoryId" />
+    <result column="document_author" jdbcType="VARCHAR" property="documentAuthor" />
+    <result column="document_create_date" jdbcType="TIMESTAMP" property="documentCreateDate" />
+    <result column="document_update_date" jdbcType="TIMESTAMP" property="documentUpdateDate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.alisa.model.Document">
+    <result column="document_content" jdbcType="LONGVARCHAR" property="documentContent" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    document_id, document_category_id, document_author, document_create_date, document_update_date
+  </sql>
+  <sql id="Blob_Column_List">
+    document_content
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.alisa.model.DocumentFilter" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_document
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.alisa.model.DocumentFilter" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_document
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tb_document
+    where document_id = #{documentId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_document
+    where document_id = #{documentId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.alisa.model.DocumentFilter">
+    delete from tb_document
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.alisa.model.Document">
+    insert into tb_document (document_id, document_category_id, document_author, 
+      document_create_date, document_update_date, 
+      document_content)
+    values (#{documentId,jdbcType=CHAR}, #{documentCategoryId,jdbcType=VARCHAR}, #{documentAuthor,jdbcType=VARCHAR}, 
+      #{documentCreateDate,jdbcType=TIMESTAMP}, #{documentUpdateDate,jdbcType=TIMESTAMP}, 
+      #{documentContent,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.alisa.model.Document">
+    insert into tb_document
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="documentId != null">
+        document_id,
+      </if>
+      <if test="documentCategoryId != null">
+        document_category_id,
+      </if>
+      <if test="documentAuthor != null">
+        document_author,
+      </if>
+      <if test="documentCreateDate != null">
+        document_create_date,
+      </if>
+      <if test="documentUpdateDate != null">
+        document_update_date,
+      </if>
+      <if test="documentContent != null">
+        document_content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="documentId != null">
+        #{documentId,jdbcType=CHAR},
+      </if>
+      <if test="documentCategoryId != null">
+        #{documentCategoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="documentAuthor != null">
+        #{documentAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="documentCreateDate != null">
+        #{documentCreateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="documentUpdateDate != null">
+        #{documentUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="documentContent != null">
+        #{documentContent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.alisa.model.DocumentFilter" resultType="java.lang.Long">
+    select count(*) from tb_document
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_document
+    <set>
+      <if test="record.documentId != null">
+        document_id = #{record.documentId,jdbcType=CHAR},
+      </if>
+      <if test="record.documentCategoryId != null">
+        document_category_id = #{record.documentCategoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.documentAuthor != null">
+        document_author = #{record.documentAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="record.documentCreateDate != null">
+        document_create_date = #{record.documentCreateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.documentUpdateDate != null">
+        document_update_date = #{record.documentUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.documentContent != null">
+        document_content = #{record.documentContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update tb_document
+    set document_id = #{record.documentId,jdbcType=CHAR},
+      document_category_id = #{record.documentCategoryId,jdbcType=VARCHAR},
+      document_author = #{record.documentAuthor,jdbcType=VARCHAR},
+      document_create_date = #{record.documentCreateDate,jdbcType=TIMESTAMP},
+      document_update_date = #{record.documentUpdateDate,jdbcType=TIMESTAMP},
+      document_content = #{record.documentContent,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_document
+    set document_id = #{record.documentId,jdbcType=CHAR},
+      document_category_id = #{record.documentCategoryId,jdbcType=VARCHAR},
+      document_author = #{record.documentAuthor,jdbcType=VARCHAR},
+      document_create_date = #{record.documentCreateDate,jdbcType=TIMESTAMP},
+      document_update_date = #{record.documentUpdateDate,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.alisa.model.Document">
+    update tb_document
+    <set>
+      <if test="documentCategoryId != null">
+        document_category_id = #{documentCategoryId,jdbcType=VARCHAR},
+      </if>
+      <if test="documentAuthor != null">
+        document_author = #{documentAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="documentCreateDate != null">
+        document_create_date = #{documentCreateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="documentUpdateDate != null">
+        document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="documentContent != null">
+        document_content = #{documentContent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where document_id = #{documentId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.alisa.model.Document">
+    update tb_document
+    set document_category_id = #{documentCategoryId,jdbcType=VARCHAR},
+      document_author = #{documentAuthor,jdbcType=VARCHAR},
+      document_create_date = #{documentCreateDate,jdbcType=TIMESTAMP},
+      document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP},
+      document_content = #{documentContent,jdbcType=LONGVARCHAR}
+    where document_id = #{documentId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.alisa.model.Document">
+    update tb_document
+    set document_category_id = #{documentCategoryId,jdbcType=VARCHAR},
+      document_author = #{documentAuthor,jdbcType=VARCHAR},
+      document_create_date = #{documentCreateDate,jdbcType=TIMESTAMP},
+      document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP}
+    where document_id = #{documentId,jdbcType=CHAR}
+  </update>
+</mapper>

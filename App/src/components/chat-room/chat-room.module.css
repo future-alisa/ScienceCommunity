@@ -1,0 +1,76 @@
+/* 消息框样式 */
+.message_container {
+  margin: 20px;
+  padding: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 0.125rem;
+  border-color: rgb(154, 223, 223);
+  background-color: white;
+  filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 2px)
+    drop-shadow(rgba(0, 0, 0, 0.06) 0px 1px 1px);
+}
+/* 通过消息框伪元素 ::before 和 ::after 实现三角样式定义 */
+.message_container::before,
+.message_container::after {
+  content: "";
+  position: absolute;
+  top: 50%; /* 设置三角在垂直方向上居中 */
+  border-width: 7px;
+  border-style: solid;
+  transform: translateY(-50%);
+}
+
+/* 消息框伪元素 ::before 设置底部三角颜色为绿色 */
+.message_container::before {
+  left: -14px;
+  border-color: transparent #9adfdf transparent transparent;
+}
+
+/* 消息框伪元素 ::after 设置上层三角颜色为白色 */
+.message_container::after {
+  left: -13px; /* 与上面的left值相差1px，实现绿色边框效果 */
+  border-color: transparent white transparent transparent;
+}
+
+.chat_input_container {
+  height: 150px;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 0.125rem;
+}
+
+.chat_input {
+  flex: 1;
+  padding: 5px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  overflow-y: auto;
+  overflow-x: hidden;
+  outline: none;
+  resize: none;
+}
+
+.send_container {
+  display: flex;
+  height: 40px;
+  margin-right: 10px;
+  line-height: 40px;
+  padding: 5px;
+  justify-content: flex-end;
+}
+.send_btn {
+  padding: 5px 10px;
+  border: none;
+  outline: none;
+  border-radius: 0 5px 5px 0;
+  background-color: #5cb85c;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  float: right;
+}
