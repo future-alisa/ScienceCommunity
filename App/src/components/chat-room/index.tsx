@@ -1,15 +1,20 @@
+import { useEffect, useRef, useState } from "react";
 import styles from "./chat-room.module.css";
 type ChatRoomProps = {
   name?: string;
+  ownerId: string;
   data: Message[];
+  sendMessage: (message: string) => void;
 };
 
 type ChatListProps = {
   data: Message[];
+  ownerId: string;
 };
 
 type ChatMessageProps = {
   message: Message;
+  send: boolean;
 };
 
 type Message = {
@@ -20,19 +25,32 @@ type Message = {
   comments: Message[];
 };
 
-const ChatList = ({ data }: ChatListProps) => {
+const ChatList = ({ data, ownerId }: ChatListProps) => {
+  const chatListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (chatListRef.current) {
+      chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
+    }
+  }, [data]);
+
   return (
-    <div>
+    <div className={styles.chat_list} ref={chatListRef}>
       {data.map((message, index) => {
-        return <ChatMessage key={index} message={message} />;
+        const send = message.from === ownerId;
+        return <ChatMessage key={index} message={message} send={send} />;
       })}
     </div>
   );
 };
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, send }) => {
   return (
-    <div className={styles.message_container}>
+    <div
+      className={`${styles.message_container} ${
+        send ? styles.my_message : styles.other_message
+      }`}
+    >
       <p>{message.content}</p>
       {message.comments.map((comment, index) => {
         return <p key={index}>{comment.content}</p>;
@@ -41,20 +59,24 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   );
 };
 
-const ChatInput = ({ input, handleSubmit, handleInputChange }: any) => {
+const ChatInput = ({ handleSubmit }: any) => {
+  const [message, setMessage] = useState("");
   return (
     <div className={styles.chat_input_container}>
-      <textarea 
+      <textarea
         className={styles.chat_input}
-        value={input}
-        onChange={handleInputChange}
+        value={message}
+        onChange={(value) => setMessage(value.target.value)}
         placeholder="Type a message..."
       />
       <div className={styles.send_container}>
         <button
           className={styles.send_btn}
           type="submit"
-          onClick={() => handleSubmit()}
+          onClick={() => {
+            handleSubmit(message);
+            setMessage("");
+          }}
         >
           发送
         </button>
@@ -63,11 +85,11 @@ const ChatInput = ({ input, handleSubmit, handleInputChange }: any) => {
   );
 };
 
-const ChatRoom = ({ data }: ChatRoomProps) => {
+const ChatRoom = ({ data, ownerId, sendMessage }: ChatRoomProps) => {
   return (
-    <div>
-      <ChatList data={data} />
-      <ChatInput />
+    <div className={styles.chat_room}>
+      <ChatList data={data} ownerId={ownerId} />
+      <ChatInput handleSubmit={sendMessage} />
     </div>
   );
 };

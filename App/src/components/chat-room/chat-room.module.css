@@ -1,38 +1,23 @@
-/* 消息框样式 */
-.message_container {
-  margin: 20px;
+/* 聊天室容器 */
+.chat_room {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 聊天消息列表 */
+.chat_list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 10px;
-  border-style: solid;
-  border-width: 1px;
-  border-radius: 0.125rem;
-  border-color: rgb(154, 223, 223);
-  background-color: white;
-  filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 2px)
-    drop-shadow(rgba(0, 0, 0, 0.06) 0px 1px 1px);
-}
-/* 通过消息框伪元素 ::before 和 ::after 实现三角样式定义 */
-.message_container::before,
-.message_container::after {
-  content: "";
-  position: absolute;
-  top: 50%; /* 设置三角在垂直方向上居中 */
-  border-width: 7px;
-  border-style: solid;
-  transform: translateY(-50%);
+  overflow-y: auto;
 }
 
-/* 消息框伪元素 ::before 设置底部三角颜色为绿色 */
-.message_container::before {
-  left: -14px;
-  border-color: transparent #9adfdf transparent transparent;
-}
-
-/* 消息框伪元素 ::after 设置上层三角颜色为白色 */
-.message_container::after {
-  left: -13px; /* 与上面的left值相差1px，实现绿色边框效果 */
-  border-color: transparent white transparent transparent;
-}
-
+/* 输入框 */
 .chat_input_container {
   height: 150px;
   margin: 20px;
@@ -73,4 +58,62 @@
   font-size: 14px;
   cursor: pointer;
   float: right;
+}
+
+/* 消息框样式 */
+.message_container {
+  position: relative;
+  margin: 10px;
+  padding: 10px;
+  max-width: 60%;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 0.5rem;
+  border-color: rgb(154, 223, 223);
+  filter: drop-shadow(rgba(0, 0, 0, 0.1) 0px 1px 2px)
+    drop-shadow(rgba(0, 0, 0, 0.06) 0px 1px 1px);
+}
+
+/* 自己的消息：右对齐 */
+.my_message {
+  align-self: flex-end;
+  background-color: #daf8cb; /* 绿色背景 */
+  text-align: right;
+}
+
+/* 别人的消息：左对齐 */
+.other_message {
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* 伪元素实现聊天气泡的三角形 */
+.message_container::before,
+.message_container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  border-width: 7px;
+  border-style: solid;
+  transform: translateY(-50%);
+}
+
+/* 左侧消息（三角形在左侧） */
+.other_message::before {
+  left: -14px;
+  border-color: transparent #9adfdf transparent transparent;
+}
+.other_message::after {
+  left: -13px;
+  border-color: transparent white transparent transparent;
+}
+
+/* 右侧消息（三角形在右侧） */
+.my_message::before {
+  right: -14px;
+  border-color: transparent transparent transparent #daf8cb;
+}
+.my_message::after {
+  right: -13px;
+  border-color: transparent transparent transparent white;
 }
