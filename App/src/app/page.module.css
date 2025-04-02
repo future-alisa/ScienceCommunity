@@ -20,7 +20,30 @@
 .inputContainer {
   display: flex;
   flex-direction: row;
+  align-items: center; /* 垂直居中 */
+
 }
+
+.submitButton {
+  padding: 0 1.25rem;
+  height: 46px;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  margin-left: -1px; /* 消除双边框效果 */
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.submitButton:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+}
+
 @keyframes rotate {
   from {
     transform: rotate(360deg);

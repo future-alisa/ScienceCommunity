@@ -1,26 +1,35 @@
 "use client";
 import styles from "@/app/my-community/case/case.module.css";
-import { Card } from "antd";
+import Card from "@/components/card";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const { Meta } = Card;
-  const data = [1, 2, 3, 4, 5, 6, 7];
+  const data = [
+    {
+      title: "1",
+      id: "1",
+      description: "description1",
+    },
+    {
+      title: "2",
+      id: "2",
+      description: "description2",
+    },
+  ];
+  const router = useRouter();
+  const handleClick = (documentId: string) => {
+    router.push("/my-community/detail");
+  };
   return (
     <div className={styles.grid}>
       {data.map((item, index) => (
         <Card
-          className={styles.card}
           key={index}
-          hoverable
-          cover={
-            <img
-              alt="example"
-              src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-            />
-          }
-        >
-          <Meta title="Europe Street beat" description="www.instagram.com" />
-        </Card>
+          title={item.title}
+          description={item.description}
+          image={"https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"}
+          onClick={() => handleClick(item.id)}
+        ></Card>
       ))}
     </div>
   );

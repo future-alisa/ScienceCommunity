@@ -1,12 +1,18 @@
+"use client";
+import { useTheme } from "@/theme/ThemeContext";
 import styles from "./my-commnity.module.css";
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { theme } = useTheme();
   return (
     <main className={styles.page}>
-      <aside className={styles.sidebar}>
+      <aside
+        className={styles.sidebar}
+        style={{ backgroundColor: theme.backgroundColor }}
+      >
         <h2>社区</h2>
         <ul>
           <li>

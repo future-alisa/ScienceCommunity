@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-import Navigator from "@/components/navigator";
-
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from "@/theme/ThemeContext";
+import { ThemeBody } from "./components/ThemeBody";
+import StyledComponentsRegistry from "./registry";
 
 export const metadata: Metadata = {
   title: "Community",
@@ -17,21 +16,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={inter.className}
-        style={{
-          width:'100vw',
-          height:'100vh',
-          display:'flex',
-          flexDirection:'column',
-          //backgroundImage: "url(/background.png)",
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <Navigator />
-        {children}
-      </body>
+      <StyledComponentsRegistry>
+        <ThemeProvider>
+          <ThemeBody>{children}</ThemeBody>
+        </ThemeProvider>
+      </StyledComponentsRegistry>
     </html>
   );
 }
