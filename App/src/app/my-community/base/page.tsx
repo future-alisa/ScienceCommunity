@@ -1,5 +1,7 @@
 "use client";
-import { Base } from "./Base";
+
+import { Base } from "@/components/base";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const data = [
@@ -14,6 +16,12 @@ export default function Page() {
       description: "description2",
     },
   ];
+  const router = useRouter();
 
-  return <Base data={data} />;
+  return (
+    <Base
+      data={data}
+      handleCardClick={() => router.push("/my-community/detail")}
+    />
+  );
 }

@@ -1,0 +1,45 @@
+/* base.module.css */
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 20px; /* 增加页面内边距 */
+}
+
+.grid {
+  display: grid;
+  gap: 20px; /* 关键：设置网格项之间的间距 */
+  padding: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 自适应列宽 */
+  width: 100%;
+  max-width: var(--max-width);
+}
+
+.card {
+  padding: 1rem 1.2rem;
+  border-radius: var(--border-radius);
+  background: rgba(var(--card-rgb), 0);
+  border: 1px solid rgba(var(--card-border-rgb), 0);
+  transition: background 200ms, border 200ms;
+  width: 100%; /* 确保卡片宽度填满网格单元格 */
+  height: 100%; /* 统一卡片高度 */
+}
+
+.card span {
+  display: inline-block;
+  transition: transform 200ms;
+}
+
+.card h2 {
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.card p {
+  margin: 0;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 30ch;
+  text-wrap: balance;
+}

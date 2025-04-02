@@ -1,13 +1,13 @@
 "use client";
-import { Card, Input } from "antd";
+import { Input } from "antd";
 import styles from "./community.module.css";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/theme/ThemeContext";
 import { SearchOutlined } from "@ant-design/icons";
+import { Base } from "@/components/base";
 
 export default function Page() {
   const router = useRouter();
-  const { Meta } = Card;
   const data = [
     {
       title: "1",
@@ -22,10 +22,9 @@ export default function Page() {
   ];
   const { theme } = useTheme();
 
-  const handleClick = (documentId: string) => {
+  const handleCardClick = (documentId: string) => {
     router.push("/my-community");
   };
-
   return (
     <main
       className={styles.page}
@@ -73,24 +72,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className={styles.grid}>
-        {data.map((item, index) => (
-          <Card
-            className={styles.card}
-            key={index}
-            hoverable
-            cover={
-              <img
-                alt="example"
-                src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-              />
-            }
-            onClick={() => handleClick(item.id)}
-          >
-            <Meta title={item.title} description={item.description} />
-          </Card>
-        ))}
-      </div>
+      <Base data={data} handleCardClick={handleCardClick} />
     </main>
   );
 }

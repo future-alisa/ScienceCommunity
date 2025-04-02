@@ -1,12 +1,13 @@
 "use client";
-import styles from "@/app/my-community/base/base.module.css";
-import Card from "@/components/card";
+import styles from "./base.module.css";
 import { useTheme } from "@/theme/ThemeContext";
+import { Card } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 type BaseProps = {
   data: MyDocument[];
+  handleCardClick: (cardId: string) => void;
 };
 
 type MyDocument = {
@@ -15,16 +16,9 @@ type MyDocument = {
   description: string;
 };
 
-const Base = ({ data }: BaseProps) => {
+const Base = ({ data, handleCardClick }: BaseProps) => {
   const { theme } = useTheme();
-  const router = useRouter();
-  const handleClick = (documentId: string) => {
-    router.push("/my-community/detail");
-  };
-
-  useEffect(() => {
-    console.log(router);
-  }, [router]);
+  const { Meta } = Card;
 
   return (
     <div
@@ -34,12 +28,19 @@ const Base = ({ data }: BaseProps) => {
       <div className={styles.grid}>
         {data.map((item, index) => (
           <Card
+            className={styles.card}
             key={index}
-            title={item.title}
-            description={item.description}
-            image={"https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"}
-            onClick={() => handleClick(item.id)}
-          ></Card>
+            hoverable
+            cover={
+              <img
+                alt="example"
+                src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+              />
+            }
+            onClick={() => handleCardClick(item.id)}
+          >
+            <Meta title={item.title} description={item.description} />
+          </Card>
         ))}
       </div>
     </div>
