@@ -67,7 +67,7 @@
   <sql id="Base_Column_List">
     community_user_id, community_id, user_id
   </sql>
-  <select id="selectByExample" parameterType="com.alisa.model.CommunityUserFilter" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.alisa.dto.CommunityUserFilter" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -91,7 +91,7 @@
     delete from tb_community_user
     where community_user_id = #{communityUserId,jdbcType=CHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.alisa.model.CommunityUserFilter">
+  <delete id="deleteByExample" parameterType="com.alisa.dto.CommunityUserFilter">
     delete from tb_community_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -128,7 +128,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.alisa.model.CommunityUserFilter" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.alisa.dto.CommunityUserFilter" resultType="java.lang.Long">
     select count(*) from tb_community_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

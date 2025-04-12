@@ -67,7 +67,7 @@
   <sql id="Base_Column_List">
     channel_user_id, channel_id, user_id
   </sql>
-  <select id="selectByExample" parameterType="com.alisa.model.ChannelUserFilter" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.alisa.dto.ChannelUserFilter" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -81,7 +81,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <delete id="deleteByExample" parameterType="com.alisa.model.ChannelUserFilter">
+  <delete id="deleteByExample" parameterType="com.alisa.dto.ChannelUserFilter">
     delete from tb_channel_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -118,7 +118,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.alisa.model.ChannelUserFilter" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.alisa.dto.ChannelUserFilter" resultType="java.lang.Long">
     select count(*) from tb_channel_user
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

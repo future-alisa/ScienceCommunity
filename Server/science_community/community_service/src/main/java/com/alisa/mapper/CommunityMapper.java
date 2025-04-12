@@ -12,6 +12,8 @@ public interface CommunityMapper {
 
     int deleteByExample(CommunityFilter example);
 
+    int deleteByPrimaryKey(@Param("id") String id);
+
     int insert(Community record);
 
     int insertSelective(Community record);

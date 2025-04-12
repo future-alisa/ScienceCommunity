@@ -6,13 +6,14 @@ spring:
   cloud:
     nacos:
       discovery:
-      server-addr: 47.94.97.3:8848 #注册中心地址
+        enabled: false # 禁用服务注册发现
+        #server-addr: 47.94.97.3:8848 #注册中心地址
     # sentinel:
     #   transport:
     #   port: 8719
     #   dashboard: 192.168.31.134:8080
   datasource:
-    url: jdbc:mysql://47.94.97.3:3306/db_todo?useUnicode=true&characterEncoding=utf8
+    url: jdbc:mysql://47.94.97.3:3306/db_community?useUnicode=true&characterEncoding=utf8
     username: one
     password: '#Alisa96312'
 # seata:
@@ -29,4 +30,4 @@ spring:
 #       username: nacos
 #       password: nacos
 mybatis:
-  mapper-locations: classpath:alisa/mapper/xml/*.xml
+  mapper-locations: classpath:/com/alisa/mapper/xml/*.xml

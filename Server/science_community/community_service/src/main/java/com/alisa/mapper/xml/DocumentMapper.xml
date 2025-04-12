@@ -75,7 +75,7 @@
   <sql id="Blob_Column_List">
     document_content
   </sql>
-  <select id="selectByExampleWithBLOBs" parameterType="com.alisa.model.DocumentFilter" resultMap="ResultMapWithBLOBs">
+  <select id="selectByExampleWithBLOBs" parameterType="com.alisa.dto.DocumentFilter" resultMap="ResultMapWithBLOBs">
     select
     <if test="distinct">
       distinct
@@ -91,7 +91,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByExample" parameterType="com.alisa.model.DocumentFilter" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.alisa.dto.DocumentFilter" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -117,7 +117,7 @@
     delete from tb_document
     where document_id = #{documentId,jdbcType=CHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.alisa.model.DocumentFilter">
+  <delete id="deleteByExample" parameterType="com.alisa.dto.DocumentFilter">
     delete from tb_document
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -174,7 +174,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.alisa.model.DocumentFilter" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.alisa.dto.DocumentFilter" resultType="java.lang.Long">
     select count(*) from tb_document
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />

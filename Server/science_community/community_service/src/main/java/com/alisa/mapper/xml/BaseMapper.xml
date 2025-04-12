@@ -66,7 +66,7 @@
   <sql id="Base_Column_List">
     base_id, base_document_id
   </sql>
-  <select id="selectByExample" parameterType="com.alisa.model.BaseFilter" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.alisa.dto.BaseFilter" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -90,7 +90,7 @@
     delete from tb_base
     where base_id = #{baseId,jdbcType=CHAR}
   </delete>
-  <delete id="deleteByExample" parameterType="com.alisa.model.BaseFilter">
+  <delete id="deleteByExample" parameterType="com.alisa.dto.BaseFilter">
     delete from tb_base
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -119,7 +119,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.alisa.model.BaseFilter" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.alisa.dto.BaseFilter" resultType="java.lang.Long">
     select count(*) from tb_base
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
