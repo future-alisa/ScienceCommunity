@@ -1,11 +1,15 @@
 .page {
-  display: flex;
   flex: 1;
+  display: flex;
+}
+.title {
+  font-size: large;
 }
 .left_container {
   flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .right_container {
   flex: 1;
@@ -19,8 +23,27 @@
   height: 40px;
   width: 200px;
 }
+.singin_container {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  gap: 40px; /* 按钮和链接之间的间距 */
+  margin-top: 10px; /* 与上方输入框的间距 */
+}
+
+.singin_container > a {
+  text-decoration: underline;
+  color: inherit; /* 继承父元素颜色，保持主题一致性 */
+  transition: color 0.2s; /* 添加悬停动画 */
+}
+
+.singin_container > a:hover {
+  color: #1890ff; /* 悬停时变色（示例颜色，可根据主题调整） */
+}
+
 .btn {
   font-size: 22px;
-  width: 200px;
-  background-color: cornflowerblue;
+  padding: 8px 16px; /* 增加内边距，让按钮更易点击 */
+  border-radius: 4px; /* 圆角 */
+  cursor: pointer; /* 鼠标悬停时显示手型 */
+  transition: background-color 0.2s, color 0.2s; /* 平滑过渡 */
 }

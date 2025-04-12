@@ -1,5 +1,9 @@
 .page {
+  flex: 1;
   display: flex;
+}
+.title {
+  font-size: large;
 }
 .left_container {
   flex: 1;
@@ -21,6 +25,5 @@
 }
 .btn {
   font-size: 22px;
-  width: 200px;
   background-color: cornflowerblue;
 }

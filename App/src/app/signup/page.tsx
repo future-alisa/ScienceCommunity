@@ -29,7 +29,7 @@ export default function Page() {
   return (
     <div className={styles.page}>
       <div className={styles.left_container}>
-        <p>欢迎来到科学社区</p>
+        <p className={styles.title}>欢迎来到科学社区</p>
       </div>
       <div className={styles.right_container}>
         <input

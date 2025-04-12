@@ -1,5 +1,5 @@
 "use client";
-import { Button, Space } from "antd";
+import { Space } from "antd";
 import { useCallback, useState } from "react";
 import {
   Editor,
@@ -245,7 +245,7 @@ const MyEditor = () => {
   };
 
   return (
-    <div>
+    <div style={{ flex: 1 }}>
       <Slate
         editor={editor}
         initialValue={initialValue}
