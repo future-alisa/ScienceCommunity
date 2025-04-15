@@ -16,6 +16,7 @@ import {
   CloseOutlined,
 } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
+import { api, ApiService } from "@/app/api/ApiService";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -73,6 +74,15 @@ const CreateCommunityForm = () => {
     console.log("Form data:", Object.fromEntries(formData.entries()));
     message.success("社区创建请求已提交");
     // 这里可以添加API调用逻辑
+    // 在组件或页面中直接使用
+    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    console.log(apiUrl);
+    api.post("/api/community/save", {
+      communityId: "",
+      communityName: values.name,
+      communityDescription: values.description,
+      communityUrl: "",
+    });
   };
 
   return (

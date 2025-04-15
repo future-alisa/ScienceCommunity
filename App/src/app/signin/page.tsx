@@ -1,12 +1,15 @@
 "use client";
 import { useRouter } from "next/navigation";
 import styles from "./signin.module.css";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useTheme } from "@/theme/ThemeContext";
+import { UserDispatchContext } from "@/context/UserContext";
+import { Button, Input } from "antd";
 export default function Page() {
   const route = useRouter();
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useContext(UserDispatchContext);
+  const [userName, setUserName] = useState("test");
+  const [password, setPassword] = useState("test");
   const login = async () => {
     try {
       const res = await fetch(
@@ -23,6 +26,16 @@ export default function Page() {
         }
       );
       if (res.status === 200) {
+        const json = await res.json();
+        console.log(json);
+        dispatch!({
+          type: "Login",
+          user: {
+            name: userName,
+            token: json.data,
+            state: "online",
+          },
+        });
         route.push("/community");
       } else {
         alert("用户名或者密码错误");
@@ -38,32 +51,48 @@ export default function Page() {
         <p className={styles.title}>欢迎来到科学社区</p>
       </div>
       <div className={styles.right_container}>
-        <input
-          type="text"
-          className={styles.input}
-          style={{ backgroundColor: theme.backgroundColor }}
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-        <input
-          type="password"
-          className={styles.input}
-          style={{ backgroundColor: theme.backgroundColor }}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <div className={styles.singin_container}>
-          <button
-            className={styles.btn}
+        <div className={styles.form_container}>
+          <Input
+            placeholder="用户名"
+            className={styles.input_field}
             style={{
-              backgroundColor: theme.primaryColor,
+              backgroundColor: theme.backgroundColor,
               color: theme.color,
+              marginBottom: 16,
             }}
-            onClick={() => login()}
-          >
-            登录
-          </button>
-          <a href="/signup">注册</a>
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+          />
+          <Input.Password
+            placeholder="密码"
+            className={styles.input_field}
+            style={{
+              backgroundColor: theme.backgroundColor,
+              color: theme.color,
+              marginBottom: 24,
+            }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <div className={styles.button_container}>
+            <Button
+              type="primary"
+              className={styles.login_button}
+              style={{
+                backgroundColor: theme.primaryColor,
+                color: theme.color,
+                width: "100%",
+                height: 40,
+                marginBottom: 16,
+              }}
+              onClick={() => login()}
+            >
+              登录
+            </Button>
+            <a href="/signup" className={styles.signup_link}>
+              注册
+            </a>
+          </div>
         </div>
       </div>
     </div>

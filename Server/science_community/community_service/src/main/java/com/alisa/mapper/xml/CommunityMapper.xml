@@ -23,9 +23,8 @@
                 <when test="criterion.betweenValue">
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
-                  and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                <when test="criterion.listValue"> and ${criterion.condition} <foreach close=")"
+                    collection="criterion.value" item="listItem" open="(" separator=",">
                     #{listItem}
                   </foreach>
                 </when>
@@ -52,9 +51,8 @@
                 <when test="criterion.betweenValue">
                   and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
                 </when>
-                <when test="criterion.listValue">
-                  and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                <when test="criterion.listValue"> and ${criterion.condition} <foreach close=")"
+                    collection="criterion.value" item="listItem" open="(" separator=",">
                     #{listItem}
                   </foreach>
                 </when>
@@ -68,35 +66,32 @@
   <sql id="Base_Column_List">
     community_id, community_name, community_description, community_url
   </sql>
-  <select id="selectByExample" parameterType="com.alisa.dto.CommunityFilter" resultMap="BaseResultMap">
-    select
-    <if test="distinct">
+  <select id="selectByExample" parameterType="com.alisa.dto.CommunityFilter"
+    resultMap="BaseResultMap"> select <if test="distinct">
       distinct
     </if>
-    <include refid="Base_Column_List" />
-    from tb_community
-    <if test="_parameter != null">
+    <include refid="Base_Column_List" /> from tb_community <if
+      test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
     <if test="orderByClause != null">
       order by ${orderByClause}
     </if>
   </select>
-  <delete id="deleteByExample" parameterType="com.alisa.dto.CommunityFilter">
-    delete from tb_community
-    <if test="_parameter != null">
+  <delete id="deleteByExample" parameterType="com.alisa.dto.CommunityFilter"> delete from
+    tb_community <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
   <insert id="insert" parameterType="com.alisa.model.Community">
-    insert into tb_community (community_id, community_name, community_description, 
-      community_url)
-    values (#{communityId,jdbcType=CHAR}, #{communityName,jdbcType=VARCHAR}, #{communityDescription,jdbcType=VARCHAR}, 
-      #{communityUrl,jdbcType=VARCHAR})
+    insert into tb_community (community_id, community_name, community_description,
+    community_url)
+    values (#{communityId,jdbcType=CHAR}, #{communityName,jdbcType=VARCHAR},
+    #{communityDescription,jdbcType=VARCHAR},
+    #{communityUrl,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.alisa.model.Community">
-    insert into tb_community
-    <trim prefix="(" suffix=")" suffixOverrides=",">
+  <insert id="insertSelective" parameterType="com.alisa.model.Community"> insert into tb_community <trim
+      prefix="(" suffix=")" suffixOverrides=",">
       <if test="communityId != null">
         community_id,
       </if>
@@ -110,7 +105,8 @@
         community_url,
       </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
+    <trim prefix="values (" suffix=")"
+      suffixOverrides=",">
       <if test="communityId != null">
         #{communityId,jdbcType=CHAR},
       </if>
@@ -125,15 +121,12 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.alisa.dto.CommunityFilter" resultType="java.lang.Long">
-    select count(*) from tb_community
-    <if test="_parameter != null">
+  <select id="countByExample" parameterType="com.alisa.dto.CommunityFilter"
+    resultType="java.lang.Long"> select count(*) from tb_community <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </select>
-  <update id="updateByExampleSelective" parameterType="map">
-    update tb_community
-    <set>
+  <update id="updateByExampleSelective" parameterType="map"> update tb_community <set>
       <if test="record.communityId != null">
         community_id = #{record.communityId,jdbcType=CHAR},
       </if>
@@ -147,25 +140,32 @@
         community_url = #{record.communityUrl,jdbcType=VARCHAR},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if
+      test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByExample" parameterType="map">
-    update tb_community
-    set community_id = #{record.communityId,jdbcType=CHAR},
-      community_name = #{record.communityName,jdbcType=VARCHAR},
-      community_description = #{record.communityDescription,jdbcType=VARCHAR},
-      community_url = #{record.communityUrl,jdbcType=VARCHAR}
-    <if test="_parameter != null">
+  <update id="updateByExample" parameterType="map"> update tb_community set community_id =
+    #{record.communityId,jdbcType=CHAR}, community_name = #{record.communityName,jdbcType=VARCHAR},
+    community_description = #{record.communityDescription,jdbcType=VARCHAR}, community_url =
+    #{record.communityUrl,jdbcType=VARCHAR} <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
 
-  <!-- deleteByPrimaryKey --> 
+  <!-- deleteByPrimaryKey -->
 
   <delete id="deleteByPrimaryKey">
     delete from tb_community
     where community_id = #{id,jdbcType=CHAR}
   </delete>
-  </mapper>
+
+  <!-- selectByUserId -->
+
+  <select id="selectByUserId" resultMap="BaseResultMap"> 
+    select <if test="distinct">
+      distinct
+    </if>
+  <include refid="Base_Column_List" /> from tb_community as c left join
+    tb_community_user as cu on cu.community_id = c.community_id where cu.user_id=#{userId} </select>
+</mapper>

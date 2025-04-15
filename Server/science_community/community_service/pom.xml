@@ -40,5 +40,44 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+			<groupId>com.alisa</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/lib/common-1.0-SNAPSHOT.jar</systemPath>
+		</dependency>
+    
+      <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.5</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.11.5</version>
+        </dependency>
     </dependencies>   
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+                <includeSystemScope>true</includeSystemScope>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
 </project>

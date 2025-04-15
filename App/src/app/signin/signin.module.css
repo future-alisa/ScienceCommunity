@@ -18,32 +18,26 @@
   align-items: center;
   justify-content: center;
 }
-.input {
-  margin-bottom: 15px;
+
+.form_container {
+  width: 100%;
+  max-width: 400px;
+  padding: 0 24px;
+}
+
+.input_field {
+  width: 100%;
   height: 40px;
-  width: 200px;
+  border-radius: 4px;
 }
-.singin_container {
+
+.button_container {
   display: flex;
-  align-items: center; /* 垂直居中 */
-  gap: 40px; /* 按钮和链接之间的间距 */
-  margin-top: 10px; /* 与上方输入框的间距 */
+  flex-direction: column;
+  align-items: center;
 }
 
-.singin_container > a {
-  text-decoration: underline;
-  color: inherit; /* 继承父元素颜色，保持主题一致性 */
-  transition: color 0.2s; /* 添加悬停动画 */
-}
-
-.singin_container > a:hover {
-  color: #1890ff; /* 悬停时变色（示例颜色，可根据主题调整） */
-}
-
-.btn {
-  font-size: 22px;
-  padding: 8px 16px; /* 增加内边距，让按钮更易点击 */
-  border-radius: 4px; /* 圆角 */
-  cursor: pointer; /* 鼠标悬停时显示手型 */
-  transition: background-color 0.2s, color 0.2s; /* 平滑过渡 */
+.login_button {
+  border-radius: 4px;
+  font-weight: 500;
 }

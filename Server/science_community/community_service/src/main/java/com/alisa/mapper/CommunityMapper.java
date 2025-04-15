@@ -20,6 +20,8 @@ public interface CommunityMapper {
 
     List<Community> selectByExample(CommunityFilter example);
 
+    List<Community> selectByUserId(String userId);
+
     int updateByExampleSelective(@Param("record") Community record, @Param("example") CommunityFilter example);
 
     int updateByExample(@Param("record") Community record, @Param("example") CommunityFilter example);

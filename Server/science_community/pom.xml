@@ -84,6 +84,7 @@
 				<configuration>
 					<!-- 指定打包输出目录 -->
 					<outputDirectory>${project.basedir}/../package</outputDirectory>
+					<includeSystemScope>true</includeSystemScope>
 				</configuration>
 			</plugin>
 		</plugins>

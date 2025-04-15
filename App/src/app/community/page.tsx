@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/theme/ThemeContext";
 import { SearchOutlined } from "@ant-design/icons";
 import { Base } from "@/components/base";
+import { useEffect, useState } from "react";
+import { api } from "../api/ApiService";
 
 export default function Page() {
   const router = useRouter();
-  const data = [
+  const initData = [
     {
       title: "1",
       id: "1",
@@ -20,11 +22,33 @@ export default function Page() {
       description: "description2",
     },
   ];
+  const [data, setData] = useState(initData);
   const { theme } = useTheme();
 
   const handleCardClick = (documentId: string) => {
     router.push("/my-community");
   };
+
+  const fetchData = async () => {
+    try {
+      const data = (await api.get("/api/community/get")) as Array<any>;
+      const newData = data.map((value) => {
+        return {
+          title: value.communityName,
+          id: value.communityId,
+          description: value.communityDescription,
+        };
+      });
+      setData(newData);
+      console.log(newData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <main
       className={styles.page}

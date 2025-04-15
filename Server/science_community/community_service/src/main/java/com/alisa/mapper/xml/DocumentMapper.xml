@@ -4,6 +4,8 @@
   <resultMap id="BaseResultMap" type="com.alisa.model.Document">
     <id column="document_id" jdbcType="CHAR" property="documentId" />
     <result column="document_category_id" jdbcType="VARCHAR" property="documentCategoryId" />
+     <result column="document_name" jdbcType="VARCHAR" property="documentName" />
+     <result column="document_content" jdbcType="LONGVARCHAR" property="documentContent" />
     <result column="document_author" jdbcType="VARCHAR" property="documentAuthor" />
     <result column="document_create_date" jdbcType="TIMESTAMP" property="documentCreateDate" />
     <result column="document_update_date" jdbcType="TIMESTAMP" property="documentUpdateDate" />

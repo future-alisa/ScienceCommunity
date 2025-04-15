@@ -3,6 +3,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/theme/ThemeContext";
 import { ThemeBody } from "./components/ThemeBody";
 import StyledComponentsRegistry from "./registry";
+import { UserContextProvider } from "@/context/UserContext";
 
 export const metadata: Metadata = {
   title: "Community",
@@ -16,11 +17,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <StyledComponentsRegistry>
-        <ThemeProvider>
-          <ThemeBody>{children}</ThemeBody>
-        </ThemeProvider>
-      </StyledComponentsRegistry>
+      <UserContextProvider>
+        <StyledComponentsRegistry>
+          <ThemeProvider>
+            <ThemeBody>{children}</ThemeBody>
+          </ThemeProvider>
+        </StyledComponentsRegistry>
+      </UserContextProvider>
     </html>
   );
 }
