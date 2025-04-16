@@ -1,5 +1,5 @@
 "use client";
-import { Input } from "antd";
+import { Input, Select } from "antd";
 import styles from "./community.module.css";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/theme/ThemeContext";
@@ -49,6 +49,15 @@ export default function Page() {
   useEffect(() => {
     fetchData();
   }, []);
+  function handleChange(
+    value: string,
+    option:
+      | { value: string; label: string }
+      | { value: string; label: string }[]
+  ): void {
+    
+  }
+
   return (
     <main
       className={styles.page}
@@ -57,28 +66,34 @@ export default function Page() {
       <div className={styles.toolbar}>
         {/* 筛选条件 - 左侧 */}
         <div className={styles.filterGroup}>
-          <select
+          <Select
+            defaultValue="1"
             className={styles.filterSelect}
             style={{
-              backgroundColor: theme.primaryColor,
+              backgroundColor: theme.backgroundColor,
               color: theme.color || "#fff",
             }}
-          >
-            <option>最近更新</option>
-            <option>访问次数</option>
-            <option>用户数量</option>
-          </select>
-          <select
+            onChange={handleChange}
+            options={[
+              { value: "1", label: "最近更新" },
+              { value: "2", label: "访问次数" },
+              { value: "3", label: "用户数量" },
+            ]}
+          />
+          <Select
+            defaultValue="1"
             className={styles.filterSelect}
             style={{
-              backgroundColor: theme.primaryColor,
+              backgroundColor: theme.backgroundColor,
               color: theme.color || "#fff",
             }}
-          >
-            <option>数学</option>
-            <option>英语</option>
-            <option>物理</option>
-          </select>
+            onChange={handleChange}
+            options={[
+              { value: "1", label: "数学" },
+              { value: "2", label: "英语" },
+              { value: "3", label: "物理" },
+            ]}
+          />
         </div>
 
         {/* 搜索框 - 右侧 */}
