@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/theme/ThemeContext";
-import { ThemeBody } from "./components/ThemeBody";
 import StyledComponentsRegistry from "./registry";
 import { UserContextProvider } from "@/context/UserContext";
+import { ThemeBody } from "@/components/theme-body";
 
 export const metadata: Metadata = {
   title: "Community",

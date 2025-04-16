@@ -1,0 +1,29 @@
+.settingsContainer {
+  flex: 1;
+  display: flex;
+  padding: 24px;
+  margin: 0 100px;
+}
+
+.card {
+  border-radius: 8px;
+  flex: 1;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  margin-bottom: 16px !important;
+}
+
+.settingItem {
+  margin-bottom: 20px;
+}
+
+.settingDescription {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+}

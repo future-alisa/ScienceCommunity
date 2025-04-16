@@ -2,33 +2,18 @@
 import { Inter } from "next/font/google";
 import Navigator from "@/components/navigator";
 import { useTheme } from "@/theme/ThemeContext";
-import RightSideNav from "@/components/user-nav";
-import { FileOutlined, HeartOutlined, HomeOutlined } from "@ant-design/icons";
+import { useLoginTriggerMenu } from "@/components/user-menu";
+import PopupNav from "@/components/user-menu";
 const inter = Inter({ subsets: ["latin"] });
 
 export const ThemeBody = ({ children }: { children: React.ReactNode }) => {
   const { theme } = useTheme();
-  // 或者自定义导航项
-  const customNavItems = [
-    {
-      id: "home",
-      label: "主页",
-      icon: <HomeOutlined />,
-      onClick: () => console.log("自定义主页点击"),
-    },
-    {
-      id: "docs",
-      label: "文档",
-      icon: <FileOutlined />,
-      onClick: () => console.log("文档点击"),
-    },
-    {
-      id: "likes",
-      label: "喜欢",
-      icon: <HeartOutlined />,
-      onClick: () => console.log("喜欢点击"),
-    },
-  ];
+  const { isMenuOpen, closeMenu, toggleMenu } = useLoginTriggerMenu();
+
+  const closeNav = () => {
+    closeMenu();
+  };
+
   return (
     <body
       className={inter.className}
@@ -43,9 +28,9 @@ export const ThemeBody = ({ children }: { children: React.ReactNode }) => {
         overflow: "hidden", // 防止滚动条问题
       }}
     >
-      <Navigator />
+      <Navigator toggleMenu={toggleMenu} />
       {children}
-      <RightSideNav items={customNavItems} initialActiveId="home" />
+      <PopupNav isOpen={isMenuOpen} onClose={closeNav} />
     </body>
   );
 };

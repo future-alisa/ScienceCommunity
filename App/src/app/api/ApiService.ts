@@ -31,7 +31,6 @@ export class ApiService {
   public setToken(token: string | null): void {
     this.token = token;
 
-    // 可选：持久化存储token（如localStorage）
     if (token) {
       localStorage.setItem("auth_token", token);
     } else {

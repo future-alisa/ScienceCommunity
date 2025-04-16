@@ -1,23 +1,35 @@
 "use client";
 import { api } from "@/app/api/ApiService";
-import { createContext, Dispatch, ReactNode, useReducer } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  useEffect,
+  useReducer,
+} from "react";
 
 interface UserContextType {
   name: string;
   token: string;
-  state: string;
+  state: UserState;
 }
 
 type UserActionType = "Login" | "Logout";
+type UserState = "Online" | "Offline";
 interface UserAction {
   type: UserActionType;
   user: UserContextType;
 }
-const initUserContext = {
-  name: "syb",
-  token: "",
-  state: "",
+const getDefaultUser = (): UserContextType => {
+  const token = localStorage.getItem("auth_token");
+  console.log("token:", token);
+  if (token) {
+    return { name: "", token: token, state: "Online" };
+  } else {
+    return { name: "", token: "", state: "Offline" };
+  }
 };
+const initUserContext: UserContextType = getDefaultUser();
 const UserContext = createContext<UserContextType>(initUserContext);
 const UserDispatchContext = createContext<Dispatch<UserAction> | null>(null);
 const reducer = (state: UserContextType, action: UserAction) => {
@@ -25,12 +37,13 @@ const reducer = (state: UserContextType, action: UserAction) => {
   switch (action.type) {
     case "Login":
       newState.name = action.user.name;
-      newState.state = "online";
+      newState.state = "Online";
       api.setToken(action.user.token);
+      localStorage.setItem("auth_token", action.user.token);
       break;
     case "Logout":
       newState.name = "ction.user.name";
-      newState.state = "offline";
+      newState.state = "Offline";
       break;
     default:
       break;
@@ -40,6 +53,9 @@ const reducer = (state: UserContextType, action: UserAction) => {
 
 const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [userContext, dispatch] = useReducer(reducer, initUserContext);
+
+  useEffect(() => {}, []);
+
   return (
     <UserContext.Provider value={userContext}>
       <UserDispatchContext.Provider value={dispatch}>

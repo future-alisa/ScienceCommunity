@@ -54,34 +54,25 @@
   width: 100%;
 }
 
-/* 登录按钮基础样式 */
-.signin_button {
-  background-color: transparent;
-  border-radius: 50%;
-  width: 60px; /* 设置宽度和高度相同 */
-  height: 60px; /* 设置宽度和高度相同 */
-  padding: 0; /* 移除内边距 */
-  min-width: 0; /* 覆盖Ant Design可能设置的min-width */
-  display: flex; /* 使内部内容居中 */
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* 登录按钮悬浮效果 */
-.signin_button:hover {
-  border-radius: 1.5em;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 /* 登录按钮激活状态 */
 .active_button {
   font-weight: 600;
 }
 
+/* 登录按钮基础样式 */
+.avatar {
+  margin: 16px;
+}
+
+/* 登录按钮悬浮效果 */
+.avatar:hover {
+  border-radius: 1.5em;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* 登录按钮点击效果 */
-.signin_button:active {
+.avatar:active {
   transform: translateY(0);
   box-shadow: none;
 }

@@ -33,7 +33,7 @@ export default function Page() {
           user: {
             name: userName,
             token: json.data,
-            state: "online",
+            state: "Online",
           },
         });
         route.push("/community");

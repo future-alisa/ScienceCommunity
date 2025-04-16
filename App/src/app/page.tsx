@@ -1,7 +1,7 @@
 "use client";
 import { useTheme } from "@/theme/ThemeContext";
 import styles from "./page.module.css";
-import Input from "./components/Input";
+import { Button, Input } from "antd";
 
 export default function Home() {
   const { theme } = useTheme();
@@ -12,12 +12,9 @@ export default function Home() {
       </p>
       <div className={styles.inputContainer}>
         <Input style={{ backgroundColor: theme.backgroundColor }}></Input>
-        <button
-          className={styles.submitButton}
-          style={{ backgroundColor: theme.primaryColor }}
-        >
+        <Button type="primary" style={{ backgroundColor: theme.primaryColor }}>
           进入
-        </button>
+        </Button>
       </div>
     </main>
   );

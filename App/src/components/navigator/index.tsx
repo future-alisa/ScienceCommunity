@@ -2,14 +2,18 @@
 
 import Link from "next/link";
 import { useTheme } from "@/theme/ThemeContext";
-import { usePathname } from "next/navigation"; // 用于判断当前选中路由
+import { usePathname, useRouter } from "next/navigation"; // 用于判断当前选中路由
 import styles from "./style.module.css";
 import { Avatar } from "antd";
+import { useContext } from "react";
+import { UserContext } from "@/context/UserContext";
+import { UserOutlined } from "@ant-design/icons";
 
-export default function Navigator() {
+export default function Navigator({ toggleMenu }: { toggleMenu: () => void }) {
   const { theme } = useTheme();
   const pathname = usePathname(); // 获取当前路由路径
-
+  const user = useContext(UserContext);
+  const router = useRouter();
   // 判断链接是否激活
   const isActive = (href: string) => pathname === href;
 
@@ -59,18 +63,35 @@ export default function Navigator() {
       </div>
 
       <div className={styles.nav_right}>
-        <Link href="/signin" className={styles.signin_button}>
+        {user.state === "Online" ? (
           <Avatar
+            className={styles.avatar}
+            size={50}
+            onClick={() => {
+              if (user.state === "Offline") {
+                router.push("/signin");
+              } else {
+                console.log("toggler menu:");
+                toggleMenu();
+              }
+            }}
             src={
               <img
-                src={
-                  "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
-                }
+                src={"https://avatars.githubusercontent.com/u/12345678?v=4"}
                 alt="avatar"
               />
             }
           />
-        </Link>
+        ) : (
+          <Avatar
+            size={50}
+            className={styles.avatar}
+            onClick={() => {
+              router.push("/signin");
+            }}
+            icon={<UserOutlined />}
+          />
+        )}
       </div>
     </nav>
   );
