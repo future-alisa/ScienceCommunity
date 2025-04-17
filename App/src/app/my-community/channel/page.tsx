@@ -18,7 +18,7 @@ export default function Page() {
   const [data, setData] = useState(initData);
 
   const sendMessage = (message: string) => {
-    chatClient.sendPublicMessage(message, groupId);
+    chatClient.sendChannelMessage(message);
     setData([
       ...data,
       {
@@ -39,12 +39,24 @@ export default function Page() {
   const sendPrivate = () => {
     chatClient.sendPrivateMessage("", receiver);
   };
+  const disconnect = async () => {
+    await chatClient.disconnect();
+  };
 
-  // 加入群组
-  const joinGroup = () => {
-    chatClient.joinGroup(groupId);
-
-    chatClient.onGroupMessage((message) => {
+  useEffect(() => {
+    const connect = () => {
+      if (user.name) {
+        chatClient.connect(user.name, {
+          onConnected: () => {
+            console.log("connected");
+            joinGroup();
+          },
+          onGroupMessage: handleReceiveGroupMessage,
+          onChannelMessage: handleReceiveChannelMessage,
+        });
+      }
+    };
+    const handleReceiveGroupMessage = (message) => {
       console.log("receive group message:", message);
       setData((prev) => [
         ...prev,
@@ -56,25 +68,33 @@ export default function Page() {
           comments: [],
         },
       ]);
-    });
-  };
-
-  // 组件卸载时断开连接
-  useEffect(() => {
-    if (user.name) {
-      // 连接服务器
-      chatClient.connect(user.name, {
-        onConnected: () => {
-          console.log("connected");
-          joinGroup();
-        },
-      });
-    }
-    return () => {
-      chatClient.disconnect();
     };
-  }, []);
 
+    const handleReceiveChannelMessage = (message) => {
+      console.log("receive group message:", message);
+      setData((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          from: message.sender,
+          to: groupId,
+          content: message.content,
+          comments: [],
+        },
+      ]);
+    };
+    const joinGroup = () => {
+      chatClient.joinGroup(groupId);
+    };
+
+    connect();
+
+    return () => {
+      (async () => {
+        await chatClient.disconnect();
+      })();
+    };
+  }, [groupId, user.name]);
   return (
     <div className={styles.container}>
       <ChatRoom data={data} ownerId={user.token} sendMessage={sendMessage} />

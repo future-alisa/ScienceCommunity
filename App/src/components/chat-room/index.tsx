@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./chat-room.module.css";
 import { useTheme } from "@/theme/ThemeContext";
-import { chatClient } from "../chat-client";
 type ChatRoomProps = {
   name?: string;
   ownerId: string;

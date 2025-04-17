@@ -12,10 +12,11 @@ public class UserService {
     // 存储在线用户 (实际项目中应该使用Redis等分布式缓存)
     private final Map<String, User> onlineUsers = new ConcurrentHashMap<>();
 
-    public void addUser(String username) {
+    public void addUser(String id, String name) {
         User user = new User();
-        user.setUsername(username);
-        onlineUsers.put(username, user);
+        user.setSessionId(id);
+        user.setUsername(name);
+        onlineUsers.put(id, user);
     }
 
     public void removeUser(String username) {
@@ -23,7 +24,8 @@ public class UserService {
     }
 
     public List<User> getOnlineUsers() {
-        return new ArrayList<>(onlineUsers.values());
+        var temp = onlineUsers.values();
+        return new ArrayList<>(temp);
     }
 
     public List<String> getUserGroups(String username) {
