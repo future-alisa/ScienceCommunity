@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./chat-room.module.css";
 import { useTheme } from "@/theme/ThemeContext";
+import { chatClient } from "../chat-client";
 type ChatRoomProps = {
   name?: string;
   ownerId: string;
@@ -67,7 +68,7 @@ const ChatInput = ({ handleSubmit }: any) => {
     <div className={styles.chat_input_container}>
       <textarea
         className={styles.chat_input}
-        style={{ backgroundColor: theme.backgroundColor }}
+        style={{ backgroundColor: theme.backgroundColor, color: theme.color }}
         value={message}
         onChange={(value) => setMessage(value.target.value)}
         placeholder="Type a message..."

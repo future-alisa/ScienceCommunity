@@ -22,9 +22,10 @@ interface UserAction {
 }
 const getDefaultUser = (): UserContextType => {
   const token = localStorage.getItem("auth_token");
-  console.log("token:", token);
+  const username = localStorage.getItem("username");
+  console.log("token:", token, username);
   if (token) {
-    return { name: "", token: token, state: "Online" };
+    return { name: username, token: token, state: "Online" };
   } else {
     return { name: "", token: "", state: "Offline" };
   }
@@ -40,6 +41,7 @@ const reducer = (state: UserContextType, action: UserAction) => {
       newState.state = "Online";
       api.setToken(action.user.token);
       localStorage.setItem("auth_token", action.user.token);
+      localStorage.setItem("username", action.user.name);
       break;
     case "Logout":
       newState.name = "ction.user.name";
