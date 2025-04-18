@@ -18,7 +18,7 @@ type ChatMessageProps = {
   send: boolean;
 };
 
-type Message = {
+export type Message = {
   id: string;
   from: string;
   to: string;
@@ -37,7 +37,7 @@ const ChatList = ({ data, ownerId }: ChatListProps) => {
 
   return (
     <div className={styles.chat_list} ref={chatListRef}>
-      {data.map((message, index) => {
+      {data?.map((message, index) => {
         const send = message.from === ownerId;
         return <ChatMessage key={index} message={message} send={send} />;
       })}
@@ -63,6 +63,16 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, send }) => {
 const ChatInput = ({ handleSubmit }: any) => {
   const [message, setMessage] = useState("");
   const { theme } = useTheme();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (message.trim()) {
+        handleSubmit(message);
+        setMessage("");
+      }
+    }
+  };
+
   return (
     <div className={styles.chat_input_container}>
       <textarea
@@ -70,6 +80,7 @@ const ChatInput = ({ handleSubmit }: any) => {
         style={{ backgroundColor: theme.backgroundColor, color: theme.color }}
         value={message}
         onChange={(value) => setMessage(value.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="Type a message..."
       />
       <div className={styles.send_container}>

@@ -1,34 +1,63 @@
-// src/services/ChatService.ts
-import { Client, Message, StompSubscription } from "@stomp/stompjs";
+import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
-// 定义消息类型
+type MessageType =
+  | "JOIN"
+  | "LEAVE"
+  | "CHANNEL"
+  | "PRIVATE"
+  | "PUBLIC"
+  | "CREATE";
+
 interface ChatMessage {
-  type: "CHAT" | "JOIN" | "LEAVE" | "PRIVATE";
+  type: MessageType;
+  from: string;
+  to: string;
   content: string;
-  sender: string;
-  receiver?: string; // 用于私聊
-  groupId?: string; // 用于群聊
 }
 
-// 定义连接选项接口
+function MessageFactory(
+  type: MessageType,
+  from: string,
+  to: string,
+  content: string
+): ChatMessage {
+  return {
+    type: type,
+    from: from,
+    to: to,
+    content: content,
+  };
+}
+
 interface ConnectOptions {
   onConnected?: () => void;
-  onGroupMessage?: (message: ChatMessage) => void;
+  onPublicMessage?: (message: ChatMessage) => void;
+  onPrivateMessage?: (message: ChatMessage) => void;
   onChannelMessage?: (message: ChatMessage) => void;
 }
 
 class ChatClient {
   private client: Client;
-  private subscriptions: StompSubscription[] = [];
   private username: string = "";
   private connected: boolean = false;
-  private groupMessageHandlers: ((message: ChatMessage) => void)[] = [];
-  private channelMessageHandlers: ((message: ChatMessage) => void)[] = [];
+
+  // 消息订阅
+  private subscriptions: StompSubscription[] = [];
+  private channelSubscriptions: Map<string, StompSubscription[]> = new Map();
+
+  // 消息处理
+  private channelMessageHandlers: Set<(message: ChatMessage) => void> =
+    new Set();
+  private publicMessageHandlers: Set<(message: ChatMessage) => void> =
+    new Set();
+  private privateMessageHandlers: Set<(message: ChatMessage) => void> =
+    new Set();
 
   constructor() {
+    console.log("聊天服务器地址：", process.env.NEXT_PUBLIC_CHAT_URL);
     this.client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:9092/ws"),
+      webSocketFactory: () => new SockJS(process.env.NEXT_PUBLIC_CHAT_URL!),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -38,111 +67,6 @@ class ChatClient {
       console.error("Broker reported error: " + frame.headers["message"]);
       console.error("Additional details: " + frame.body);
     };
-
-    this.client.onDisconnect = () => {
-      this.connected = false;
-      console.log("Disconnected");
-    };
-  }
-  // 加入频道
-  joinChannel(channelId = "11") {
-    const message: ChatMessage = {
-      type: "CHAT",
-      sender: this.username,
-      content: "Join channel",
-      groupId: "groupId",
-      receiver: "group",
-    };
-    this.client.publish({
-      destination: `/app/channel/${channelId}/join`,
-      body: JSON.stringify(message),
-    });
-
-    // 订阅频道消息（使用用户专属队列避免接收自己发送的消息）
-    this.client.subscribe(`/user/queue/channel/${channelId}`, (message) => {
-      const msg = JSON.parse(message.body);
-      console.log(msg);
-    });
-
-    // 订阅频道通知（可选）
-    this.client.subscribe(
-      `/topic/channel/${channelId}/notifications`,
-      (notification) => {
-        console.log(notification.body);
-      }
-    );
-
-    this.subscribeToChannel("11");
-  }
-  private channelSubscriptions: Map<string, StompSubscription> = new Map();
-
-  // 订阅特定频道
-  private subscribeToChannel(channelId: string) {
-    if (this.channelSubscriptions.has(channelId)) {
-      return; // 已订阅则不再重复订阅
-    }
-
-    const sub = this.client.subscribe(
-      `/topic/channel/${channelId}`,
-      (message) => {
-        const msg: ChatMessage = JSON.parse(message.body);
-        // this.handleGroupMessage(msg);
-        console.log("receive channel message:", msg);
-      }
-    );
-
-    // 或用户专属订阅方式（推荐）
-    const privateSub = this.client.subscribe(
-      `/user/queue/channel/${channelId}`,
-      (message) => {
-        const msg: ChatMessage = JSON.parse(message.body);
-        this.handleChannelMessage(msg);
-      }
-    );
-
-    this.channelSubscriptions.set(channelId, privateSub);
-    // this.subscriptions.push(sub);
-    this.subscriptions.push(privateSub);
-  }
-
-  // 取消订阅特定频道
-  private unsubscribeFromChannel(channelId: string) {
-    const sub = this.channelSubscriptions.get(channelId);
-    if (sub) {
-      sub.unsubscribe();
-      this.channelSubscriptions.delete(channelId);
-    }
-  }
-
-  // 离开频道
-  leaveChannel(channelId = "11") {
-    const message: ChatMessage = {
-      type: "CHAT",
-      sender: this.username,
-      content: "Join channel",
-      groupId: "groupId",
-      receiver: "group",
-    };
-    this.client.publish({
-      destination: `/app/channel/${channelId}/leave`,
-      body: JSON.stringify(message),
-    });
-    this.unsubscribeFromChannel(channelId);
-  }
-
-  // 发送消息到频道
-  public sendChannelMessage(content: string, channelId = "11") {
-    const message: ChatMessage = {
-      type: "CHAT",
-      sender: this.username,
-      content: content,
-      groupId: "groupId",
-      receiver: "group",
-    };
-    this.client.publish({
-      destination: `/app/channel/${channelId}/send`,
-      body: JSON.stringify(message),
-    });
   }
 
   // 连接服务器
@@ -155,17 +79,23 @@ class ChatClient {
     this.client.onConnect = (frame) => {
       this.connected = true;
       console.log("Connected: " + frame.headers["user-name"]);
-      this.sendJoinMessage();
-      this.joinChannel();
+      this.setupDefaultSubscriptions();
       options?.onConnected?.();
     };
 
-    if (options?.onGroupMessage) {
-      this.groupMessageHandlers.push(options.onGroupMessage);
-    }
+    this.client.onDisconnect = () => {
+      this.connected = false;
+      console.log("Disconnected");
+    };
 
     if (options?.onChannelMessage) {
-      this.channelMessageHandlers.push(options.onChannelMessage);
+      this.channelMessageHandlers.add(options.onChannelMessage);
+    }
+    if (options?.onPrivateMessage) {
+      this.privateMessageHandlers.add(options.onPrivateMessage);
+    }
+    if (options?.onPublicMessage) {
+      this.publicMessageHandlers.add(options.onPublicMessage);
     }
 
     this.client.activate();
@@ -173,159 +103,201 @@ class ChatClient {
 
   // 断开连接
   public async disconnect(): Promise<void> {
-    if (this.client.connected) {
-      this.sendLeaveMessage();
-    }
+    this.channelMessageHandlers.clear();
+    this.privateMessageHandlers.clear();
+    this.publicMessageHandlers.clear();
 
     this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.subscriptions = [];
-    this.groupMessageHandlers = [];
 
     await this.client.deactivate();
-    console.log("✅ 已调用 deactivate，等待断开完成");
-  }
-
-  // 订阅所有需要的频道
-  private subscribeToChannels(): void {
-    // 订阅公共频道
-    const publicSub = this.client.subscribe(
-      "/topic/public",
-      (message: Message) => {
-        const chatMessage: ChatMessage = JSON.parse(message.body);
-        this.handlePublicMessage(chatMessage);
-      }
-    );
-    this.subscriptions.push(publicSub);
-
-    // 订阅私聊频道
-    const privateSub = this.client.subscribe(
-      `/user/queue/private`,
-      (message: Message) => {
-        const chatMessage: ChatMessage = JSON.parse(message.body);
-        this.handlePrivateMessage(chatMessage);
-      }
-    );
-    this.subscriptions.push(privateSub);
-  }
-
-  // 添加群组消息处理器
-  public onGroupMessage(handler: (message: ChatMessage) => void): void {
-    this.groupMessageHandlers.push(handler);
+    console.log("已调用 deactivate，等待断开完成");
   }
 
   // 发送公共消息
-  public sendPublicMessage(content: string, groupId: string): void {
+  public sendPublicMessage(content: string): void {
     if (!this.connected) return;
 
-    const message: ChatMessage = {
-      type: "CHAT",
-      sender: this.username,
-      content: content,
-      groupId: groupId,
-      receiver: "group",
-    };
+    const message: ChatMessage = MessageFactory(
+      "PUBLIC",
+      this.username,
+      "",
+      content
+    );
 
-    this.client.publish({
-      destination: "/app/chat.sendMessage",
-      body: JSON.stringify(message),
-    });
+    this.sendMessage("/app/chat.sendMessage", message);
   }
 
   // 发送私聊消息
   public sendPrivateMessage(content: string, receiver: string): void {
     if (!this.connected) return;
 
-    const message: ChatMessage = {
-      type: "PRIVATE",
-      sender: this.username,
-      receiver: receiver,
-      content: content,
-    };
-
-    this.client.publish({
-      destination: "/app/chat.private",
-      body: JSON.stringify(message),
-    });
-  }
-
-  // 加入群组
-  public joinGroup(groupId: string): void {
-    if (!this.connected) return;
-
-    const message: ChatMessage = {
-      type: "JOIN",
-      sender: this.username,
-      groupId: groupId,
-      content: "",
-    };
-
-    this.client.publish({
-      destination: "/app/group.join",
-      body: JSON.stringify(message),
-    });
-
-    // 订阅群组频道
-    const groupSub = this.client.subscribe(
-      `/topic/group.${groupId}`,
-      (message: Message) => {
-        const chatMessage: ChatMessage = JSON.parse(message.body);
-        this.handleGroupMessage(chatMessage);
-      }
+    const message: ChatMessage = MessageFactory(
+      "PRIVATE",
+      this.username,
+      receiver,
+      content
     );
-    this.subscriptions.push(groupSub);
+
+    this.sendMessage("/app/chat.private", message);
   }
 
-  sendJoinMessage() {
-    const message: ChatMessage = {
-      type: "JOIN",
-      content: `${this.username} joined`,
-      sender: this.username,
-    };
+  // 发送消息到频道
+  public sendChannelMessage(content: string, channelId: string) {
+    const message: ChatMessage = MessageFactory(
+      "CHANNEL",
+      this.username,
+      channelId,
+      content
+    );
+    this.sendMessage(`/app/channel/${channelId}/send`, message);
+  }
+
+  // 加入频道
+  public joinChannel(channelId: string) {
+    const message: ChatMessage = MessageFactory(
+      "JOIN",
+      this.username,
+      channelId,
+      "Join channel"
+    );
+
+    this.subscribeToChannel(channelId);
+    // 发送加入频道消息
+    this.sendMessage(`/app/channel/${channelId}/join`, message);
+  }
+
+  // 设置默认订阅
+  private setupDefaultSubscriptions(): void {
+    // 订阅公共消息
+    this.subscribe("/topic/public");
+    // 订阅私聊队列
+    this.subscribe(`/user/queue/private`);
+
+    console.log("set default subs");
+  }
+
+  // 订阅特定频道
+  private subscribeToChannel(channelId: string) {
+    // 已订阅则不再重复订阅
+    if (this.channelSubscriptions.has(channelId)) {
+      return;
+    }
+
+    // 频道公共消息订阅
+    const pubsub = this.subscribe(`/topic/channel/${channelId}`);
+    // 用户专属订阅方式
+    const prisub = this.subscribe(`/user/queue/channel/${channelId}`);
+    // 订阅频道通知
+    const notisub = this.subscribe(`/topic/channel/${channelId}/notifications`);
+
+    this.channelSubscriptions.set(channelId, [pubsub, prisub, notisub]);
+  }
+
+  // 取消订阅特定频道
+  private unsubscribeFromChannel(channelId: string) {
+    const subs = this.channelSubscriptions.get(channelId);
+    if (subs) {
+      subs.forEach((val) => val.unsubscribe());
+      this.channelSubscriptions.delete(channelId);
+    }
+  }
+
+  // 封装订阅功能
+  private subscribe(destination: string) {
+    const sub = this.client.subscribe(
+      destination,
+      this.handleReceiveMessage.bind(this)
+    );
+    this.subscriptions.push(sub);
+    return sub;
+  }
+
+  private handleReceiveMessage(message: IMessage) {
+    const msg: ChatMessage = JSON.parse(message.body);
+    console.info(`receive [${msg.type}] ${msg.from}: ${msg.content}`);
+    switch (msg.type) {
+      case "CHANNEL":
+        this.handleChannelMessage(msg);
+        break;
+      case "JOIN":
+      case "LEAVE":
+      case "CREATE":
+        break;
+      case "PRIVATE":
+        this.handlePrivateMessage(msg);
+        break;
+      case "PUBLIC":
+        this.handlePublicMessage(msg);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private handleChannelMessage(msg: ChatMessage) {
+    this.channelMessageHandlers.forEach((handler) => handler(msg));
+  }
+
+  private handlePublicMessage(message: ChatMessage): void {
+    this.publicMessageHandlers.forEach((handler) => handler(message));
+  }
+
+  private handlePrivateMessage(message: ChatMessage): void {
+    this.privateMessageHandlers.forEach((handler) => handler(message));
+  }
+
+  // 封装发消息的功能
+  private sendMessage(destination: string, msg: ChatMessage) {
+    this.client.publish({
+      destination: destination,
+      body: JSON.stringify(msg),
+    });
+    console.info(` send [${msg.type}] ${msg.from} : ${msg.content}`);
+  }
+
+  // 离开频道
+  private leaveChannel(channelId: string) {
+    const message: ChatMessage = MessageFactory(
+      "LEAVE",
+      this.username,
+      "",
+      "Leave channel"
+    );
+
+    this.client.publish({
+      destination: `/app/channel/${channelId}/leave`,
+      body: JSON.stringify(message),
+    });
+
+    this.unsubscribeFromChannel(channelId);
+  }
+
+  private sendJoinMessage() {
+    const message: ChatMessage = MessageFactory(
+      "JOIN",
+      this.username,
+      "",
+      `${this.username} joined`
+    );
+
     this.client.publish({
       destination: "/app/chat.addUser",
       body: JSON.stringify(message),
     });
   }
 
-  sendLeaveMessage() {
-    const message: ChatMessage = {
-      type: "LEAVE",
-      content: `${this.username} leaved`,
-      sender: this.username,
-    };
+  private sendLeaveMessage() {
+    const message: ChatMessage = MessageFactory(
+      "LEAVE",
+      this.username,
+      "",
+      `${this.username} leaved`
+    );
     this.client.publish({
       destination: "/app/chat.removeUser",
       body: JSON.stringify(message),
     });
-  }
-  // 消息处理器
-  private handlePublicMessage(message: ChatMessage): void {
-    console.log("[Public]", message.sender, ":", message.content);
-    // 确保只处理真正的群组消息
-    if (message.groupId) {
-      this.handleGroupMessage(message);
-    }
-  }
-
-  private handlePrivateMessage(message: ChatMessage): void {
-    console.log("[Private]", message.sender, ":", message.content);
-  }
-
-  private handleGroupMessage(message: ChatMessage): void {
-    console.log(
-      `[Group ${message.groupId}]`,
-      message.sender,
-      ":",
-      message.content,
-      this.groupMessageHandlers.length
-    );
-    // 调用所有注册的群组消息处理器
-    this.groupMessageHandlers.forEach((handler) => handler(message));
-  }
-
-  handleChannelMessage(msg: ChatMessage) {
-    console.log("receive private channel message:", msg);
-    this.groupMessageHandlers.forEach((handler) => handler(msg));
   }
 }
 

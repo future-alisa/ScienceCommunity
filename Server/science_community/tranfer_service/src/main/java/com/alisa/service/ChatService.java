@@ -39,7 +39,7 @@ public class ChatService {
             throw new IllegalArgumentException("消息或用户信息不完整");
         }
 
-        String key = message.getGroupId() != null ? "group_" + message.getGroupId()
+        String key = message.getTo() != null ? "group_" + message.getTo()
                 : "private_" + getPrivateChatKey(message.getSender(), message.getReceiver());
 
         messageHistory.computeIfAbsent(key, k -> new ArrayList<>()).add(message);

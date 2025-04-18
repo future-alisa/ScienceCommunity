@@ -36,13 +36,20 @@ public class ChatController {
     @Autowired
     private UserService userService;
 
+    // 处理创建群组
+    @MessageMapping("/channel.create")
+    public void createChannel(@Payload ChatMessage chatMessage) {
+        String channelId = chatService.createGroup(chatMessage.getContent(), chatMessage.getFrom());
+        messagingTemplate.convertAndSend("/topic/channel." + channelId, chatMessage);
+    }
+
     // 加入频道
     @MessageMapping("/channel/{channelId}/join")
     public void joinChannel(@DestinationVariable String channelId, @Payload ChatMessage message, Principal principal) {
         channelMembers.computeIfAbsent(channelId, k -> ConcurrentHashMap.newKeySet())
                 .add(principal.getName());
 
-        // 通知频道有新成员加入（可选）
+        // 通知频道有新成员加入
         messagingTemplate.convertAndSend(
                 "/topic/channel/" + channelId + "/notifications", message);
     }
@@ -122,14 +129,13 @@ public class ChatController {
         return chatMessage;
     }
 
-    // 处理用户加入群聊
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public ChatMessage addUser(@Payload ChatMessage chatMessage,
             SimpMessageHeaderAccessor headerAccessor) {
         // 将用户名添加到WebSocket会话中
         var sessionId = headerAccessor.getSessionId();
-        userService.addUser(sessionId, chatMessage.getSender());
+        userService.addUser(sessionId, chatMessage.getFrom());
         log.info("当前用户数量：{}", userService.getOnlineUsers().size());
         return chatMessage;
     }
@@ -151,19 +157,5 @@ public class ChatController {
                 chatMessage.getReceiver(),
                 "/queue/private",
                 chatMessage);
-    }
-
-    // 处理创建群组
-    @MessageMapping("/group.create")
-    public void createGroup(@Payload ChatMessage chatMessage) {
-        String groupId = chatService.createGroup(chatMessage.getGroupId(), chatMessage.getSender());
-        messagingTemplate.convertAndSend("/topic/group." + groupId, chatMessage);
-    }
-
-    // 处理加入群组
-    @MessageMapping("/group.join")
-    public void joinGroup(@Payload ChatMessage chatMessage) {
-        chatService.joinGroup(chatMessage.getGroupId(), chatMessage.getSender());
-        messagingTemplate.convertAndSend("/topic/group." + chatMessage.getGroupId(), chatMessage);
     }
 }
