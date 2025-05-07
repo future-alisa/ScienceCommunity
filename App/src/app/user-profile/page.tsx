@@ -1,10 +1,6 @@
 "use client";
 import { Avatar, Card, Divider, Flex, Space, Tag, Typography } from "antd";
-import {
-  GithubOutlined,
-  LinkOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
+import { GithubOutlined, LinkOutlined, MailOutlined } from "@ant-design/icons";
 import styles from "./user-profile.module.css";
 
 const { Title, Paragraph, Text } = Typography;
@@ -47,6 +43,15 @@ const Page = () => {
                 </Text>
               )}
               <Text>{profile.location}</Text>
+
+              <Space
+                direction="vertical"
+                size="small"
+                className={styles.details}
+              >
+                <Text>切换社区</Text>
+                <Text>退出登录</Text>
+              </Space>
             </Space>
           </div>
         </div>

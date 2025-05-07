@@ -1,12 +1,17 @@
 "use client";
 import { useTheme } from "@/theme/ThemeContext";
 import styles from "./my-commnity.module.css";
+import { useEffect, useState } from "react";
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const { theme } = useTheme();
+  const [channels, setChannels] = useState<string[]>([]);
+  useEffect(() => {
+    setChannels(["频道1", "频道2"]);
+  }, []);
   return (
     <main className={styles.page}>
       <aside
@@ -26,6 +31,13 @@ export default function RootLayout({
           </li>
           <li>
             <a href="/my-community/channel">频道</a>
+            {channels.map((val, index) => {
+              return (
+                <li key={index} className={styles.secondMenu}>
+                  <a href="/my-community/channel/{id}">{val}</a>
+                </li>
+              );
+            })}
           </li>
         </ul>
       </aside>

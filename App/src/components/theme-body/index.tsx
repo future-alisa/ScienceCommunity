@@ -24,8 +24,8 @@ export const ThemeBody = ({ children }: { children: React.ReactNode }) => {
         flexDirection: "column",
         backgroundColor: theme.backgroundColor,
         color: theme.color,
-        margin: 0, // 确保没有默认边距
-        overflow: "hidden", // 防止滚动条问题
+        margin: 0,
+        // overflow: "hidden",
       }}
     >
       <Navigator toggleMenu={toggleMenu} />

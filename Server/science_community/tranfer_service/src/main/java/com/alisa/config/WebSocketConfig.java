@@ -41,8 +41,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             @Override
             public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    String username = accessor.getFirstNativeHeader("username"); // 👈 正确方式
+                if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+                    String username = accessor.getFirstNativeHeader("username");
                     if (username != null) {
                         accessor.setUser(new StompPrincipal(username));
                     }

@@ -27,7 +27,6 @@ interface PopupNavProps {
 const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
 
-  // Navigation items configuration
   const navItems: NavItem[] = [
     {
       id: "home",
@@ -54,16 +53,36 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
       path: "/community/create",
     },
     {
+      id: "community-settings",
+      label: "我的社区",
+      icon: <TeamOutlined />,
+      path: "/my-community/settings",
+    },
+    {
       id: "settings",
       label: "设置",
       icon: <SettingOutlined />,
       path: "/settings",
     },
+    {
+      id: "logout",
+      label: "退出登录",
+      icon: <SettingOutlined />,
+      path: "/",
+    },
   ];
 
   const activeId = navItems.find((item) => pathname === item.path)?.id || "";
 
-  const handleItemClick = () => {
+  const handleItemClick = (id: string) => {
+    switch (id) {
+      case "logout":
+        console.log("退出登录");
+        break;
+
+      default:
+        break;
+    }
     onClose();
   };
 
@@ -86,7 +105,7 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
                   className={`${styles.navItem} ${
                     activeId === item.id ? styles.active : ""
                   }`}
-                  onClick={handleItemClick}
+                  onClick={() => handleItemClick(item.id)}
                 >
                   <div className={styles.iconWrapper}>{item.icon}</div>
                   <span className={styles.label}>{item.label}</span>

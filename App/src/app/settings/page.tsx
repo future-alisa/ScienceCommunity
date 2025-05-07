@@ -49,7 +49,6 @@ const SettingsPage = () => {
 
         <Divider />
 
-        {/* 其他设置部分 - 可根据需要添加 */}
         <div className={styles.section}>
           <Title level={4} className={styles.sectionTitle}>
             其他设置

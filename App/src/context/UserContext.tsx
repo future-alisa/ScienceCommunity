@@ -9,8 +9,8 @@ import {
 } from "react";
 
 interface UserContextType {
-  name: string;
-  token: string;
+  name: string | null;
+  token: string | null;
   state: UserState;
 }
 
@@ -40,8 +40,9 @@ const reducer = (state: UserContextType, action: UserAction) => {
       newState.name = action.user.name;
       newState.state = "Online";
       api.setToken(action.user.token);
-      localStorage.setItem("auth_token", action.user.token);
-      localStorage.setItem("username", action.user.name);
+
+      localStorage.setItem("auth_token", action.user.token!);
+      localStorage.setItem("username", action.user.name!);
       break;
     case "Logout":
       newState.name = "ction.user.name";
