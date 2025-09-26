@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.nacos.api.model.v2.Result;
-import com.alisa.Util.JwtUtil;
+import com.alisa.util.JwtUtil;
 import com.alisa.model.Community;
 import com.alisa.model.CommunityUser;
 import com.alisa.service.CommunityService;
