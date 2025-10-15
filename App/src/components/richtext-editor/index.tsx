@@ -185,48 +185,36 @@ const MyEditor = ({ initialValue, onChange }: MyEditorProps) => {
   };
 
   return (
-    <div style={{ flex: 1 }}>
-      <Slate
-        onChange={(e) => {
-          if (onChange !== undefined) {
-            onChange(e);
-          }
-        }}
-        editor={editor}
-        initialValue={initialValue}
-        onValueChange={(e) => {
-          handleChange(e);
-          console.log(editor.children);
-        }}
-      >
-        <Space>
-          <BoldOutlined onClick={() => toggleMark(editor, "bold")} />
-          <ItalicOutlined onClick={() => toggleMark(editor, "italic")} />
-          <UnderlineOutlined onClick={() => toggleMark(editor, "underline")} />
-          <OrderedListOutlined
-            onClick={() => toggleBlock(editor, "numbered-list")}
-          />
-          <UnorderedListOutlined
-            onClick={() => toggleBlock(editor, "bulleted-list")}
-          />
-          <AlignLeftOutlined onClick={() => toggleBlock(editor, "left")} />
-          <AlignCenterOutlined onClick={() => toggleBlock(editor, "center")} />
-          <AlignRightOutlined onClick={() => toggleBlock(editor, "right")} />
-        </Space>
+    <Slate
+      onChange={(e) => onChange && onChange(e)}
+      editor={editor}
+      initialValue={initialValue}
+    >
+      <Space style={{ marginBottom: 8 }}>
+        <BoldOutlined onClick={() => toggleMark(editor, "bold")} />
+        <ItalicOutlined onClick={() => toggleMark(editor, "italic")} />
+        <UnderlineOutlined onClick={() => toggleMark(editor, "underline")} />
+        <OrderedListOutlined
+          onClick={() => toggleBlock(editor, "numbered-list")}
+        />
+        <UnorderedListOutlined
+          onClick={() => toggleBlock(editor, "bulleted-list")}
+        />
+        <AlignLeftOutlined onClick={() => toggleBlock(editor, "left")} />
+        <AlignCenterOutlined onClick={() => toggleBlock(editor, "center")} />
+        <AlignRightOutlined onClick={() => toggleBlock(editor, "right")} />
+      </Space>
+      <div style={{ flex: 1, overflowY: "auto" }}>
         <Editable
           readOnly={false}
           renderElement={renderElement}
           renderLeaf={renderLeaf}
           spellCheck
           autoFocus
-          onKeyDown={(event) => {
-            if (!event.ctrlKey) {
-              return;
-            }
-          }}
+          style={{ padding: "8px", minHeight: "100%" }}
         />
-      </Slate>
-    </div>
+      </div>
+    </Slate>
   );
 };
 
