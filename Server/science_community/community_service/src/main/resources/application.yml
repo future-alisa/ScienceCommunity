@@ -3,19 +3,20 @@ server:
 spring:
   application:
     name: community-service
-  cloud:
-    nacos:
-      discovery:
-        enabled: false # 禁用服务注册发现
-        #server-addr: 47.94.97.3:8848 #注册中心地址
+  config:
+    import:
+      - optional:file:./Server/science_community/community_service/.env[.properties]
+  profiles:
+    active: dev
+
     # sentinel:
     #   transport:
     #   port: 8719
     #   dashboard: 192.168.31.134:8080
   datasource:
-    url: jdbc:mysql://47.94.97.3:3306/db_community?useUnicode=true&characterEncoding=utf8
-    username: one
-    password: '#Alisa96312'
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USERNAME}
+    password: ${MYSQL_PASSWORD}
 # seata:
 #   application-id: ${spring.application.name}
 #   tx-service-group: smallokr
