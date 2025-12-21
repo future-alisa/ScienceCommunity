@@ -39,6 +39,7 @@
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2022.0.0</spring-cloud.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -82,7 +83,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<!-- 指定打包输出目录 -->
 					<outputDirectory>${project.basedir}/../package</outputDirectory>
 					<includeSystemScope>true</includeSystemScope>
 				</configuration>
@@ -102,5 +102,4 @@
             </resource>
         </resources>
 	</build>
-
 </project>

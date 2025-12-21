@@ -1,0 +1,29 @@
+.container {
+  height: 90vh;
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  padding: 0 100px; /* 左右间距 */
+  box-sizing: border-box;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.editorWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden; /* 避免外层滚动 */
+}
+
+.bottomBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid #e8e8e8;
+}

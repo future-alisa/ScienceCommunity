@@ -1,41 +1,27 @@
 "use client";
 import { MyEditor } from "@/components/richtext-editor";
-import { Button, Flex, Radio } from "antd";
+import { Button, Radio } from "antd";
 import { api } from "../api/ApiService";
 import { useContext, useState } from "react";
 import { Descendant } from "slate";
 import { UserContext } from "@/context/UserContext";
 
+import styles from "./publish.module.css"; // 引入 CSS Module
+
 export default function Page() {
   const userContext = useContext(UserContext);
-  const publish = async (value: String) => {
-    console.log("first", value,userContext.name);
-    await api.post("/api/document/save", {
-      documentId: "",
-      documentCategoryId: typeId,
-      documentAuthor: "",
-      documentCreateDate: "2025-01-03 13:00:00",
-      documentUpdateDate: "2025-01-03 13:00:00",
-      documentContent: value,
-    });
-  };
-  const handleBtnP = async () => {
-    await publish(JSON.stringify(value));
-  };
+
   const baseId = "3284c1f1a8104b8796b4d70277b4947a";
   const caseId = "1a5b4c52169d4228a5b1da149511e717";
   const postId = "129f2c1efc9d4e8a821d202bec89f288";
+
   const [typeId, setTypeId] = useState(baseId);
   const [value, setValue] = useState<Descendant[]>([
     {
       type: "paragraph",
       children: [{ text: "欢迎来到 SlateJS 世界！这是一个简单的示例文章。" }],
     },
-    {
-      type: "heading",
-      level: 1,
-      children: [{ text: "第一部分：介绍" }],
-    },
+    { type: "heading", level: 1, children: [{ text: "第一部分：介绍" }] },
     {
       type: "paragraph",
       children: [
@@ -56,26 +42,13 @@ export default function Page() {
         },
       ],
     },
-    {
-      type: "heading",
-      level: 2,
-      children: [{ text: "主要特点" }],
-    },
+    { type: "heading", level: 2, children: [{ text: "主要特点" }] },
     {
       type: "list",
       children: [
-        {
-          type: "list-item",
-          children: [{ text: "灵活的文档模型" }],
-        },
-        {
-          type: "list-item",
-          children: [{ text: "丰富的插件系统" }],
-        },
-        {
-          type: "list-item",
-          children: [{ text: "强大的扩展性" }],
-        },
+        { type: "list-item", children: [{ text: "灵活的文档模型" }] },
+        { type: "list-item", children: [{ text: "丰富的插件系统" }] },
+        { type: "list-item", children: [{ text: "强大的扩展性" }] },
       ],
     },
     {
@@ -86,37 +59,50 @@ export default function Page() {
         },
       ],
     },
-    {
-      type: "block-quote",
-      children: [{ text: "A wise quote." }],
-    },
+    { type: "block-quote", children: [{ text: "A wise quote." }] },
   ]);
-  const onChange = (value: Descendant[]) => {
-    setValue(value);
+
+  const onChange = (value: Descendant[]) => setValue(value);
+
+  const publish = async (content: string) => {
+    await api.post("/api/document/save", {
+      documentId: "",
+      documentCategoryId: typeId,
+      documentAuthor: "",
+      documentCreateDate: "2025-01-03 13:00:00",
+      documentUpdateDate: "2025-01-03 13:00:00",
+      documentContent: content,
+    });
   };
+
+  const handleBtnP = async () => {
+    await publish(JSON.stringify(value));
+  };
+
   return (
-    <Flex
-      vertical
-      style={{
-        overflow: "auto",
-        padding: "8px",
-      }}
-    >
-      <MyEditor initialValue={value} onChange={onChange} />
-      <Flex justify="center">
-        <Radio.Group
-          value={typeId}
-          onChange={(e) => setTypeId(e.target.value)}
-          options={[
-            { value: baseId, label: "基础知识" },
-            { value: caseId, label: "案例" },
-            { value: postId, label: "推文" },
-          ]}
-        />
-        <Button type="primary" onClick={handleBtnP}>
-          发布
-        </Button>
-      </Flex>
-    </Flex>
+    <div className={styles.container}>
+      <div className={styles.inner}>
+        {/* 编辑器区域 */}
+        <div className={styles.editorWrapper}>
+          <MyEditor initialValue={value} onChange={onChange} />
+        </div>
+
+        {/* 底部操作区域 */}
+        <div className={styles.bottomBar}>
+          <Radio.Group
+            value={typeId}
+            onChange={(e) => setTypeId(e.target.value)}
+            options={[
+              { value: baseId, label: "基础知识" },
+              { value: caseId, label: "案例" },
+              { value: postId, label: "推文" },
+            ]}
+          />
+          <Button type="primary" onClick={handleBtnP}>
+            发布
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
