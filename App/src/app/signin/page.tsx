@@ -27,7 +27,6 @@ export default function Page() {
       );
       if (res.status === 200) {
         const json = await res.json();
-        console.log(json);
         dispatch!({
           type: "Login",
           user: {

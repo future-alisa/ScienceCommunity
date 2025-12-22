@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import {
   HomeOutlined,
@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 import { usePathname } from "next/navigation";
 import styles from "./user-nav.module.css";
+import { UserDispatchContext } from "@/context/UserContext";
 
 interface NavItem {
   id: string;
@@ -26,7 +27,7 @@ interface PopupNavProps {
 
 const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
-
+  const dispatch = useContext(UserDispatchContext);
   const navItems: NavItem[] = [
     {
       id: "home",
@@ -78,6 +79,11 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
     switch (id) {
       case "logout":
         console.log("退出登录");
+        if (!dispatch) return;
+        dispatch({
+          type: "Logout",
+          user: { name: "", token: "", state: "Offline" },
+        });
         break;
 
       default:

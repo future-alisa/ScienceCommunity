@@ -31,7 +31,7 @@ export default function Page() {
 
   const fetchData = async () => {
     try {
-      const data = (await api.get("/api/community/get")) as Array<any>;
+      const data = (await api.get("/community/getAll")) as Array<any>;
       const newData = data.map((value) => {
         return {
           title: value.communityName,
@@ -54,9 +54,7 @@ export default function Page() {
     option:
       | { value: string; label: string }
       | { value: string; label: string }[]
-  ): void {
-    
-  }
+  ): void {}
 
   return (
     <main
