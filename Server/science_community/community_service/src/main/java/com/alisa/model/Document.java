@@ -2,8 +2,6 @@ package com.alisa.model;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 public class Document {
     private String documentId;
 
@@ -11,9 +9,8 @@ public class Document {
 
     private String documentAuthor;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date documentCreateDate;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     private Date documentUpdateDate;
 
     private String documentContent;

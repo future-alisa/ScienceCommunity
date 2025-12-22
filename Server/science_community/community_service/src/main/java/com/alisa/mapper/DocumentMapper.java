@@ -1,7 +1,7 @@
 package com.alisa.mapper;
 
-import com.alisa.model.Document;
 import com.alisa.dto.DocumentFilter;
+import com.alisa.model.Document;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,9 +14,9 @@ public interface DocumentMapper {
 
     int deleteByPrimaryKey(String documentId);
 
-    int insert(Document record);
+    int insert(Document row);
 
-    int insertSelective(Document record);
+    int insertSelective(Document row);
 
     List<Document> selectByExampleWithBLOBs(DocumentFilter example);
 
@@ -24,15 +24,21 @@ public interface DocumentMapper {
 
     Document selectByPrimaryKey(String documentId);
 
-    int updateByExampleSelective(@Param("record") Document record, @Param("example") DocumentFilter example);
+    int updateByExampleSelective(@Param("row") Document row, @Param("example") DocumentFilter example);
 
-    int updateByExampleWithBLOBs(@Param("record") Document record, @Param("example") DocumentFilter example);
+    int updateByExampleWithBLOBs(@Param("row") Document row, @Param("example") DocumentFilter example);
 
-    int updateByExample(@Param("record") Document record, @Param("example") DocumentFilter example);
+    int updateByExample(@Param("row") Document row, @Param("example") DocumentFilter example);
 
-    int updateByPrimaryKeySelective(Document record);
+    int updateByPrimaryKeySelective(Document row);
 
-    int updateByPrimaryKeyWithBLOBs(Document record);
+    int updateByPrimaryKeyWithBLOBs(Document row);
 
-    int updateByPrimaryKey(Document record);
+    int updateByPrimaryKey(Document row);
+
+    int upsert(Document record);
+
+    int batchUpsert(@Param("list") List<Document> list);
+
+    int batchDelete(@Param("list") List<String> list);
 }

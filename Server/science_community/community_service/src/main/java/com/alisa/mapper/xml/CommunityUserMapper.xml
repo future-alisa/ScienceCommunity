@@ -137,26 +137,26 @@
   <update id="updateByExampleSelective" parameterType="map">
     update tb_community_user
     <set>
-      <if test="record.communityUserId != null">
-        community_user_id = #{record.communityUserId,jdbcType=CHAR},
+      <if test="row.communityUserId != null">
+        community_user_id = #{row.communityUserId,jdbcType=CHAR},
       </if>
-      <if test="record.communityId != null">
-        community_id = #{record.communityId,jdbcType=CHAR},
+      <if test="row.communityId != null">
+        community_id = #{row.communityId,jdbcType=CHAR},
       </if>
-      <if test="record.userId != null">
-        user_id = #{record.userId,jdbcType=CHAR},
+      <if test="row.userId != null">
+        user_id = #{row.userId,jdbcType=CHAR},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update tb_community_user
-    set community_user_id = #{record.communityUserId,jdbcType=CHAR},
-      community_id = #{record.communityId,jdbcType=CHAR},
-      user_id = #{record.userId,jdbcType=CHAR}
-    <if test="_parameter != null">
+    set community_user_id = #{row.communityUserId,jdbcType=CHAR},
+      community_id = #{row.communityId,jdbcType=CHAR},
+      user_id = #{row.userId,jdbcType=CHAR}
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
@@ -178,4 +178,22 @@
       user_id = #{userId,jdbcType=CHAR}
     where community_user_id = #{communityUserId,jdbcType=CHAR}
   </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_community_user (community_user_id, community_id, user_id) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.communityUserId,jdbcType=CHAR}, #{item.communityId,jdbcType=CHAR}, #{item.userId,jdbcType=CHAR})
+    </foreach>
+    on duplicate key update community_id = values(community_id), user_id = values(user_id)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.CommunityUser">
+    insert into tb_community_user (community_user_id, community_id, user_id) values 
+    (#{communityUserId,jdbcType=CHAR}, #{communityId,jdbcType=CHAR}, #{userId,jdbcType=CHAR})
+    on duplicate key update community_id = values(community_id), user_id = values(user_id)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_community_user where community_user_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

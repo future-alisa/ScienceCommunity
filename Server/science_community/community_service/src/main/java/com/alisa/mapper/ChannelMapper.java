@@ -1,7 +1,7 @@
 package com.alisa.mapper;
 
-import com.alisa.model.Channel;
 import com.alisa.dto.ChannelFilter;
+import com.alisa.model.Channel;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,19 +14,25 @@ public interface ChannelMapper {
 
     int deleteByPrimaryKey(String channelId);
 
-    int insert(Channel record);
+    int insert(Channel row);
 
-    int insertSelective(Channel record);
+    int insertSelective(Channel row);
 
     List<Channel> selectByExample(ChannelFilter example);
 
     Channel selectByPrimaryKey(String channelId);
 
-    int updateByExampleSelective(@Param("record") Channel record, @Param("example") ChannelFilter example);
+    int updateByExampleSelective(@Param("row") Channel row, @Param("example") ChannelFilter example);
 
-    int updateByExample(@Param("record") Channel record, @Param("example") ChannelFilter example);
+    int updateByExample(@Param("row") Channel row, @Param("example") ChannelFilter example);
 
-    int updateByPrimaryKeySelective(Channel record);
+    int updateByPrimaryKeySelective(Channel row);
 
-    int updateByPrimaryKey(Channel record);
+    int updateByPrimaryKey(Channel row);
+
+    int upsert(Channel record);
+
+    int batchUpsert(@Param("list") List<Channel> list);
+
+    int batchDelete(@Param("list") List<String> list);
 }

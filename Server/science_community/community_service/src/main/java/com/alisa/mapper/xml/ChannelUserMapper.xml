@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.alisa.mapper.ChannelUserMapper">
   <resultMap id="BaseResultMap" type="com.alisa.model.ChannelUser">
-    <result column="channel_user_id" jdbcType="CHAR" property="channelUserId" />
+    <id column="channel_user_id" jdbcType="CHAR" property="channelUserId" />
     <result column="channel_id" jdbcType="CHAR" property="channelId" />
     <result column="user_id" jdbcType="CHAR" property="userId" />
   </resultMap>
@@ -81,6 +81,16 @@
       order by ${orderByClause}
     </if>
   </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_channel_user
+    where channel_user_id = #{channelUserId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_channel_user
+    where channel_user_id = #{channelUserId,jdbcType=CHAR}
+  </delete>
   <delete id="deleteByExample" parameterType="com.alisa.dto.ChannelUserFilter">
     delete from tb_channel_user
     <if test="_parameter != null">
@@ -127,27 +137,63 @@
   <update id="updateByExampleSelective" parameterType="map">
     update tb_channel_user
     <set>
-      <if test="record.channelUserId != null">
-        channel_user_id = #{record.channelUserId,jdbcType=CHAR},
+      <if test="row.channelUserId != null">
+        channel_user_id = #{row.channelUserId,jdbcType=CHAR},
       </if>
-      <if test="record.channelId != null">
-        channel_id = #{record.channelId,jdbcType=CHAR},
+      <if test="row.channelId != null">
+        channel_id = #{row.channelId,jdbcType=CHAR},
       </if>
-      <if test="record.userId != null">
-        user_id = #{record.userId,jdbcType=CHAR},
+      <if test="row.userId != null">
+        user_id = #{row.userId,jdbcType=CHAR},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update tb_channel_user
-    set channel_user_id = #{record.channelUserId,jdbcType=CHAR},
-      channel_id = #{record.channelId,jdbcType=CHAR},
-      user_id = #{record.userId,jdbcType=CHAR}
-    <if test="_parameter != null">
+    set channel_user_id = #{row.channelUserId,jdbcType=CHAR},
+      channel_id = #{row.channelId,jdbcType=CHAR},
+      user_id = #{row.userId,jdbcType=CHAR}
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.alisa.model.ChannelUser">
+    update tb_channel_user
+    <set>
+      <if test="channelId != null">
+        channel_id = #{channelId,jdbcType=CHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=CHAR},
+      </if>
+    </set>
+    where channel_user_id = #{channelUserId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.alisa.model.ChannelUser">
+    update tb_channel_user
+    set channel_id = #{channelId,jdbcType=CHAR},
+      user_id = #{userId,jdbcType=CHAR}
+    where channel_user_id = #{channelUserId,jdbcType=CHAR}
+  </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_channel_user (channel_user_id, channel_id, user_id) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.channelUserId,jdbcType=CHAR}, #{item.channelId,jdbcType=CHAR}, #{item.userId,jdbcType=CHAR})
+    </foreach>
+    on duplicate key update channel_id = values(channel_id), user_id = values(user_id)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.ChannelUser">
+    insert into tb_channel_user (channel_user_id, channel_id, user_id) values 
+    (#{channelUserId,jdbcType=CHAR}, #{channelId,jdbcType=CHAR}, #{userId,jdbcType=CHAR})
+    on duplicate key update channel_id = values(channel_id), user_id = values(user_id)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_channel_user where channel_user_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

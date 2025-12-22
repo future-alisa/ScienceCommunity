@@ -1,15 +1,15 @@
 package com.alisa.service;
 
+import com.alisa.model.Document;
 import java.util.List;
 
-import com.alisa.model.Document;
-
 public interface DocumentService {
-    boolean Save(Document document);
-
-    boolean Delete(String id);
-
-    List<Document> Get(String type);
-
-    Document GetById(String id);
+    List<Document> getAll();
+    Document getById(String id);
+    void create(Document model);
+    void update(Document model);
+    void delete(String id);
+    void upsert(Document model);
+    void batchUpsert(List<Document> list);
+    void batchDelete(List<String> ids);
 }

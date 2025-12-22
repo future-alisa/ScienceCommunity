@@ -1,47 +1,57 @@
 package com.alisa.controller;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.function.Function;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.nacos.api.model.v2.Result;
-import com.alisa.util.JwtUtil;
 import com.alisa.model.Community;
-import com.alisa.model.CommunityUser;
 import com.alisa.service.CommunityService;
+import com.alisa.util.JwtUtil;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
+
 @RestController
-@RequestMapping("api/community/")
+@RequestMapping("/community")
 public class CommunityController {
+
     @Autowired
     private CommunityService communityService;
 
-    @PostMapping("save")
-    public Result<String> create(@RequestBody Community community, HttpServletRequest request) {
-        var userId = getUserId(request);
-        if (community.getCommunityId() == "") {
-            String uuid = UUID.randomUUID().toString().replace("-", "");
-            community.setCommunityId(uuid);
-            CommunityUser cu = new CommunityUser();
-            cu.setCommunityId(community.getCommunityId());
-            cu.setUserId(userId);
-            communityService.Create(cu);
-        }
-        boolean res = communityService.Create(community);
+    @GetMapping("/getAll")
+    public List<Community> getAll() {
+        return communityService.getAll();
+    }
 
-        return Result.success(String.valueOf(res));
+    @GetMapping("/{id}")
+    public Community getById(@PathVariable String id) {
+        return communityService.getById(id);
+    }
+
+    @PostMapping("/upsert")
+    public void upsert(@RequestBody Community community) {
+        communityService.upsert(community);
+    }
+
+    @PostMapping("/batch-upsert")
+    public void batchUpsert(@RequestBody List<Community> list) {
+        communityService.batchUpsert(list);
+    }
+
+    @DeleteMapping("/batch-delete")
+    public void batchDelete(@RequestBody List<String> ids) {
+        communityService.batchDelete(ids);
+    }
+
+    @GetMapping("getByUser")
+    public ResponseEntity<List<Community>> getByUser(HttpServletRequest request) {
+        var userId = getUserId(request);
+        List<Community> communities = communityService.getAll();
+        return ResponseEntity.ok(communities);
     }
 
     private String getUserId(HttpServletRequest request) {
@@ -53,24 +63,5 @@ public class CommunityController {
             }
         });
         return userId;
-    }
-
-    @DeleteMapping("delete")
-    public Result<String> delete(String id) {
-        boolean res = communityService.Delete(id);
-        return Result.success(String.valueOf(res));
-    }
-
-    @GetMapping("get")
-    public ResponseEntity<List<Community>> get(HttpServletRequest request) {
-        List<Community> communities = communityService.Get();
-        return ResponseEntity.ok(communities);
-    }
-
-    @GetMapping("getByUser")
-    public ResponseEntity<List<Community>> getByUser(HttpServletRequest request) {
-        var userId = getUserId(request);
-        List<Community> communities = communityService.Get(userId);
-        return ResponseEntity.ok(communities);
     }
 }

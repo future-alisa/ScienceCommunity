@@ -1,7 +1,7 @@
 package com.alisa.mapper;
 
-import com.alisa.model.CommunityUser;
 import com.alisa.dto.CommunityUserFilter;
+import com.alisa.model.CommunityUser;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -14,19 +14,25 @@ public interface CommunityUserMapper {
 
     int deleteByPrimaryKey(String communityUserId);
 
-    int insert(CommunityUser record);
+    int insert(CommunityUser row);
 
-    int insertSelective(CommunityUser record);
+    int insertSelective(CommunityUser row);
 
     List<CommunityUser> selectByExample(CommunityUserFilter example);
 
     CommunityUser selectByPrimaryKey(String communityUserId);
 
-    int updateByExampleSelective(@Param("record") CommunityUser record, @Param("example") CommunityUserFilter example);
+    int updateByExampleSelective(@Param("row") CommunityUser row, @Param("example") CommunityUserFilter example);
 
-    int updateByExample(@Param("record") CommunityUser record, @Param("example") CommunityUserFilter example);
+    int updateByExample(@Param("row") CommunityUser row, @Param("example") CommunityUserFilter example);
 
-    int updateByPrimaryKeySelective(CommunityUser record);
+    int updateByPrimaryKeySelective(CommunityUser row);
 
-    int updateByPrimaryKey(CommunityUser record);
+    int updateByPrimaryKey(CommunityUser row);
+
+    int upsert(CommunityUser record);
+
+    int batchUpsert(@Param("list") List<CommunityUser> list);
+
+    int batchDelete(@Param("list") List<String> list);
 }

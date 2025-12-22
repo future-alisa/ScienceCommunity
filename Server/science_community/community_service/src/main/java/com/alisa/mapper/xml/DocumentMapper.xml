@@ -4,8 +4,6 @@
   <resultMap id="BaseResultMap" type="com.alisa.model.Document">
     <id column="document_id" jdbcType="CHAR" property="documentId" />
     <result column="document_category_id" jdbcType="VARCHAR" property="documentCategoryId" />
-     <result column="document_name" jdbcType="VARCHAR" property="documentName" />
-     <result column="document_content" jdbcType="LONGVARCHAR" property="documentContent" />
     <result column="document_author" jdbcType="VARCHAR" property="documentAuthor" />
     <result column="document_create_date" jdbcType="TIMESTAMP" property="documentCreateDate" />
     <result column="document_update_date" jdbcType="TIMESTAMP" property="documentUpdateDate" />
@@ -185,49 +183,49 @@
   <update id="updateByExampleSelective" parameterType="map">
     update tb_document
     <set>
-      <if test="record.documentId != null">
-        document_id = #{record.documentId,jdbcType=CHAR},
+      <if test="row.documentId != null">
+        document_id = #{row.documentId,jdbcType=CHAR},
       </if>
-      <if test="record.documentCategoryId != null">
-        document_category_id = #{record.documentCategoryId,jdbcType=VARCHAR},
+      <if test="row.documentCategoryId != null">
+        document_category_id = #{row.documentCategoryId,jdbcType=VARCHAR},
       </if>
-      <if test="record.documentAuthor != null">
-        document_author = #{record.documentAuthor,jdbcType=VARCHAR},
+      <if test="row.documentAuthor != null">
+        document_author = #{row.documentAuthor,jdbcType=VARCHAR},
       </if>
-      <if test="record.documentCreateDate != null">
-        document_create_date = #{record.documentCreateDate,jdbcType=TIMESTAMP},
+      <if test="row.documentCreateDate != null">
+        document_create_date = #{row.documentCreateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.documentUpdateDate != null">
-        document_update_date = #{record.documentUpdateDate,jdbcType=TIMESTAMP},
+      <if test="row.documentUpdateDate != null">
+        document_update_date = #{row.documentUpdateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="record.documentContent != null">
-        document_content = #{record.documentContent,jdbcType=LONGVARCHAR},
+      <if test="row.documentContent != null">
+        document_content = #{row.documentContent,jdbcType=LONGVARCHAR},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExampleWithBLOBs" parameterType="map">
     update tb_document
-    set document_id = #{record.documentId,jdbcType=CHAR},
-      document_category_id = #{record.documentCategoryId,jdbcType=VARCHAR},
-      document_author = #{record.documentAuthor,jdbcType=VARCHAR},
-      document_create_date = #{record.documentCreateDate,jdbcType=TIMESTAMP},
-      document_update_date = #{record.documentUpdateDate,jdbcType=TIMESTAMP},
-      document_content = #{record.documentContent,jdbcType=LONGVARCHAR}
-    <if test="_parameter != null">
+    set document_id = #{row.documentId,jdbcType=CHAR},
+      document_category_id = #{row.documentCategoryId,jdbcType=VARCHAR},
+      document_author = #{row.documentAuthor,jdbcType=VARCHAR},
+      document_create_date = #{row.documentCreateDate,jdbcType=TIMESTAMP},
+      document_update_date = #{row.documentUpdateDate,jdbcType=TIMESTAMP},
+      document_content = #{row.documentContent,jdbcType=LONGVARCHAR}
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update tb_document
-    set document_id = #{record.documentId,jdbcType=CHAR},
-      document_category_id = #{record.documentCategoryId,jdbcType=VARCHAR},
-      document_author = #{record.documentAuthor,jdbcType=VARCHAR},
-      document_create_date = #{record.documentCreateDate,jdbcType=TIMESTAMP},
-      document_update_date = #{record.documentUpdateDate,jdbcType=TIMESTAMP}
-    <if test="_parameter != null">
+    set document_id = #{row.documentId,jdbcType=CHAR},
+      document_category_id = #{row.documentCategoryId,jdbcType=VARCHAR},
+      document_author = #{row.documentAuthor,jdbcType=VARCHAR},
+      document_create_date = #{row.documentCreateDate,jdbcType=TIMESTAMP},
+      document_update_date = #{row.documentUpdateDate,jdbcType=TIMESTAMP}
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
@@ -269,4 +267,22 @@
       document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP}
     where document_id = #{documentId,jdbcType=CHAR}
   </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_document (document_id, document_category_id, document_author, document_create_date, document_update_date, document_content) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.documentId,jdbcType=CHAR}, #{item.documentCategoryId,jdbcType=VARCHAR}, #{item.documentAuthor,jdbcType=VARCHAR}, #{item.documentCreateDate,jdbcType=TIMESTAMP}, #{item.documentUpdateDate,jdbcType=TIMESTAMP}, #{item.documentContent,jdbcType=LONGVARCHAR})
+    </foreach>
+    on duplicate key update document_category_id = values(document_category_id), document_author = values(document_author), document_create_date = values(document_create_date), document_update_date = values(document_update_date), document_content = values(document_content)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.Document">
+    insert into tb_document (document_id, document_category_id, document_author, document_create_date, document_update_date, document_content) values 
+    (#{documentId,jdbcType=CHAR}, #{documentCategoryId,jdbcType=VARCHAR}, #{documentAuthor,jdbcType=VARCHAR}, #{documentCreateDate,jdbcType=TIMESTAMP}, #{documentUpdateDate,jdbcType=TIMESTAMP}, #{documentContent,jdbcType=LONGVARCHAR})
+    on duplicate key update document_category_id = values(document_category_id), document_author = values(document_author), document_create_date = values(document_create_date), document_update_date = values(document_update_date), document_content = values(document_content)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_document where document_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>

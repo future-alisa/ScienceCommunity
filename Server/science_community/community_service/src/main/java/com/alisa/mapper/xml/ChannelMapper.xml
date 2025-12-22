@@ -128,22 +128,22 @@
   <update id="updateByExampleSelective" parameterType="map">
     update tb_channel
     <set>
-      <if test="record.channelId != null">
-        channel_id = #{record.channelId,jdbcType=CHAR},
+      <if test="row.channelId != null">
+        channel_id = #{row.channelId,jdbcType=CHAR},
       </if>
-      <if test="record.channelName != null">
-        channel_name = #{record.channelName,jdbcType=VARCHAR},
+      <if test="row.channelName != null">
+        channel_name = #{row.channelName,jdbcType=VARCHAR},
       </if>
     </set>
-    <if test="_parameter != null">
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
   <update id="updateByExample" parameterType="map">
     update tb_channel
-    set channel_id = #{record.channelId,jdbcType=CHAR},
-      channel_name = #{record.channelName,jdbcType=VARCHAR}
-    <if test="_parameter != null">
+    set channel_id = #{row.channelId,jdbcType=CHAR},
+      channel_name = #{row.channelName,jdbcType=VARCHAR}
+    <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
@@ -161,4 +161,22 @@
     set channel_name = #{channelName,jdbcType=VARCHAR}
     where channel_id = #{channelId,jdbcType=CHAR}
   </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_channel (channel_id, channel_name) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.channelId,jdbcType=CHAR}, #{item.channelName,jdbcType=VARCHAR})
+    </foreach>
+    on duplicate key update channel_name = values(channel_name)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.Channel">
+    insert into tb_channel (channel_id, channel_name) values 
+    (#{channelId,jdbcType=CHAR}, #{channelName,jdbcType=VARCHAR})
+    on duplicate key update channel_name = values(channel_name)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_channel where channel_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
 </mapper>
