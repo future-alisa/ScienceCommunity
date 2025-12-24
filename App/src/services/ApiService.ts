@@ -1,3 +1,5 @@
+import { ApiResponse } from "@/types/Api";
+
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 interface ApiConfig {
@@ -87,7 +89,21 @@ export class ApiService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return (await response.json()) as R;
+      const result = await response.json();
+
+      if (result && typeof result === "object" && "code" in result) {
+        const { code, message, data } = result as ApiResponse<R>;
+
+        if (code === 200) {
+          return data;
+        } else {
+          // 在这里可以调用全局 UI 组件弹出错误消息
+          // Toast.error(message);
+          throw new Error(message || "Business Error");
+        }
+      }
+
+      return result as R;
     } catch (error) {
       console.error("API request failed:", error);
       throw error;
