@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Upload, Button, Form, Input, message, Avatar, Tag } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
-import { api } from "@/app/api/ApiService";
+import { api } from "@/services/ApiService";
 import styles from "./create-community.module.css";
 
 const { TextArea } = Input;

@@ -1,7 +1,7 @@
 "use client";
 import { MyEditor } from "@/components/richtext-editor";
 import { Button, Radio } from "antd";
-import { api } from "../api/ApiService";
+import { api } from "../../services/ApiService";
 import { useContext, useState } from "react";
 import { Descendant } from "slate";
 import { UserContext } from "@/context/UserContext";

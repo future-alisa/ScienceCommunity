@@ -82,10 +82,7 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const loadUserInfo = async () => {
-      console.log("加载本地存储的用户信息");
-
       const auth = await StorageService.getDefaultUser();
-      console.log("加载本地存储的用户信息1", auth);
       if (auth.token && auth.name) {
         dispatch({
           type: "Login",

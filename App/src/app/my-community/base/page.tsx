@@ -1,6 +1,6 @@
 "use client";
 
-import { api } from "@/app/api/ApiService";
+import { api } from "@/services/ApiService";
 import { Base } from "@/components/base";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

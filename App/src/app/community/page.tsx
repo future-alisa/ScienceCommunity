@@ -6,7 +6,7 @@ import { useTheme } from "@/theme/ThemeContext";
 import { SearchOutlined } from "@ant-design/icons";
 import { Base } from "@/components/base";
 import { useEffect, useState } from "react";
-import { api } from "../api/ApiService";
+import { api } from "../../services/ApiService";
 
 export default function Page() {
   const router = useRouter();

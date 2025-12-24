@@ -1,5 +1,5 @@
 "use client";
-import { api } from "@/app/api/ApiService";
+import { api } from "@/services/ApiService";
 import { MyEditor } from "@/components/richtext-editor";
 import { useEffect, useState } from "react";
 import { Descendant } from "slate";
