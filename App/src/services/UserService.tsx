@@ -8,10 +8,12 @@ const UserService = {
     return result;
   },
   login: async (username: string, password: string) => {
-    const result = await api.post<
-      { username: string; password: string },
-      string
-    >(constants.API_USER_LOGIN, { username, password }, {}, true);
+    const result = await api.post<string>(
+      constants.API_USER_LOGIN,
+      { username, password },
+      {},
+      true
+    );
     return result;
   },
   logout: async () => {
