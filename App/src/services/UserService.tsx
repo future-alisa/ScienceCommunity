@@ -1,6 +1,5 @@
 import { api } from "@/services/ApiService";
 import constants from "@/config/Constants";
-import { log } from "console";
 
 const UserService = {
   getUserProfile: async (username: string) => {
@@ -14,6 +13,7 @@ const UserService = {
       {},
       true
     );
+    console.log("Login result:", result);
     return result;
   },
   logout: async () => {

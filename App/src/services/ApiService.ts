@@ -87,10 +87,9 @@ export class ApiService {
       }
 
       const result = await response.json();
-
+      console.log("Response Body:", result);
       if (result && typeof result === "object" && "code" in result) {
         const { code, message, data } = result as ApiResponse<R>;
-
         if (code === 200) {
           return data;
         } else {

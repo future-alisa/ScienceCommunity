@@ -1,5 +1,5 @@
 export default {
-  API_USER_LOGIN: "/user/signin",
+  API_USER_LOGIN: "/api/v1/user/signin",
   API_USER_LOGOUT: "/user/logout",
   API_DOCUMENT_GET_ALL: "/document/getAll",
   API_DOCUMENT_GET_ID: "/document/{id}",

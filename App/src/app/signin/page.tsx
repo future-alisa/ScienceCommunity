@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { useTheme } from "@/theme/ThemeContext";
 import { UserDispatchContext } from "@/context/UserContext";
 import { Button, Input } from "antd";
+import UserService from "@/services/UserService";
 export default function Page() {
   const route = useRouter();
   const dispatch = useContext(UserDispatchContext);
@@ -12,26 +13,14 @@ export default function Page() {
   const [password, setPassword] = useState("test");
   const login = async () => {
     try {
-      const res = await fetch(
-        "http://" +
-          process.env.NEXT_PUBLIC_SERVER_HOST +
-          ":8080/api/v1/user/signin",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username: userName, password: password }),
-          credentials: "include",
-        }
-      );
-      if (res.status === 200) {
-        const json = await res.json();
+      const data = await UserService.login(userName, password);
+
+      if (data) {
         dispatch!({
           type: "Login",
           user: {
             name: userName,
-            token: json.data,
+            token: data,
             state: "Online",
           },
         });
