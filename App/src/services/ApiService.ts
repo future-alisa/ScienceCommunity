@@ -1,4 +1,4 @@
-import { ApiResponse } from "@/types/Api";
+import { ApiResponse } from "@/model/ApiResponse";
 
 type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 

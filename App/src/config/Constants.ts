@@ -6,4 +6,11 @@ export default {
   API_DOCUMENT_UPSERT: "/document/upsert",
   API_DOCUMENT_BATCH_UPSERT: "/document/batch-upsert",
   API_DOCUMENT_BATCH_DELETE: "/document/batch-delete",
+
+  API_COMMUNITY_GET_ALL: "",
+  API_COMMUNITY_GET_BY_ID: "",
+  API_COMMUNITY_UPSERT: "",
+  API_COMMUNITY_BATCH_UPSERT: "",
+  API_COMMUNITY_BATCH_DELETE: "",
+  API_COMMUNITY_GET_BY_USER: "",
 };
