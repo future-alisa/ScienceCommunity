@@ -13,7 +13,11 @@ export default function Page() {
   const [password, setPassword] = useState("test");
   const login = async () => {
     try {
-      const data = await UserService.login(userName, password);
+      const data = await UserService.login({
+        username: userName,
+        password: password,
+        email: "",
+      });
 
       if (data) {
         dispatch!({

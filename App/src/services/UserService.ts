@@ -1,12 +1,14 @@
 import { api } from "@/services/ApiService";
 import constants from "@/config/Constants";
+import { User } from "@/model/User";
 
 const UserService = {
   getUserProfile: async (username: string) => {
     const result = await api.get(`/users/${username}/profile`);
+    console.log("Fetched user profile:", result);
     return result;
   },
-  login: async (username: string, password: string) => {
+  login: async ({ username, password }: User) => {
     const result = await api.post<string>(
       constants.API_USER_LOGIN,
       { username, password },
@@ -18,6 +20,17 @@ const UserService = {
   },
   logout: async () => {
     const result = await api.post(constants.API_USER_LOGOUT);
+    console.log("Logout result:", result);
+    return result;
+  },
+  signup: async ({ username, password }: User) => {
+    const result = await api.post<boolean>(
+      constants.API_USER_SIGNUP,
+      { username, password },
+      {},
+      true
+    );
+    console.log("Signup result:", result);
     return result;
   },
 };

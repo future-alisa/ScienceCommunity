@@ -1,6 +1,8 @@
 export default {
   API_USER_LOGIN: "/api/v1/user/signin",
   API_USER_LOGOUT: "/user/logout",
+  API_USER_SIGNUP: "/api/v1/user/signup",
+
   API_DOCUMENT_GET_ALL: "/document/getAll",
   API_DOCUMENT_GET_ID: "/document/{id}",
   API_DOCUMENT_UPSERT: "/document/upsert",

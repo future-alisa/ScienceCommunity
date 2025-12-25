@@ -4,27 +4,24 @@ import styles from "./signup.module.css";
 import { useState } from "react";
 import { Button, Input } from "antd";
 import { useTheme } from "@/theme/ThemeContext";
+import UserService from "@/services/UserService";
 export default function Page() {
   const route = useRouter();
   const { theme } = useTheme();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
-  const logup = async () => {
+  const signup = async () => {
     try {
-      const res = await fetch("http://47.94.97.3:8080/api/v1/user/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username: userName, password: password }),
-        credentials: "include",
+      const res = await UserService.signup({
+        username: userName,
+        password: password,
+        email: "",
       });
-      if (res.status === 200) {
-        alert("注册成功");
-        route.push("/community");
-      } else {
-        alert("用户名或者密码错误");
+      if (res !== true) {
+        throw new Error("注册失败");
       }
+      alert("注册成功");
+      route.push("/community");
     } catch (error) {
       console.log(error);
     }
@@ -69,7 +66,7 @@ export default function Page() {
                 height: 40,
                 marginBottom: 16,
               }}
-              onClick={() => logup()}
+              onClick={() => signup()}
             >
               注册
             </Button>
