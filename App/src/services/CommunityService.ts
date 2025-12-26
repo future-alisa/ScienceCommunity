@@ -10,7 +10,7 @@ const CommunityService = {
   },
   createCommunity(data: any) {
     console.log("Creating a new community with data:", data);
-    return api.post("/communities", data);
+    return api.post<boolean>("/communities", data);
   },
   updateCommunity(id: string, data: any) {
     console.log(`Updating community with ID: ${id} with data:`, data);

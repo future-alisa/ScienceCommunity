@@ -5,6 +5,7 @@ import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import { api } from "@/services/ApiService";
 import styles from "./create-community.module.css";
+import CommunityService from "@/services/CommunityService";
 
 const { TextArea } = Input;
 
@@ -46,7 +47,7 @@ const CreateCommunityForm = () => {
     setMembers(members.filter((member) => member.id !== id));
   };
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     const formData = new FormData();
     formData.append("name", values.name);
     formData.append("description", values.description);
@@ -56,10 +57,8 @@ const CreateCommunityForm = () => {
     formData.append("members", JSON.stringify(members));
 
     console.log("Form data:", Object.fromEntries(formData.entries()));
-    message.success("社区创建请求已提交");
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    api.post("/api/community/save", {
+    const res = await CommunityService.createCommunity({
       communityId: "",
       communityName: values.name,
       communityDescription: values.description,
