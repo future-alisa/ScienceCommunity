@@ -1,7 +1,9 @@
 "use client";
 import styles from "@/app/my-community/post/post.module.css";
 import { Base } from "@/components/base";
+import DocumentService from "@/services/DocumentService";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page() {
   const data = [
@@ -17,7 +19,12 @@ export default function Page() {
     },
   ];
   const router = useRouter();
-
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await DocumentService.getDocumentByPostType("");
+    };
+    fetchData();
+  }, []);
   return (
     <Base
       data={data}

@@ -25,7 +25,7 @@ export default function Page() {
   const caseId = "1a5b4c52169d4228a5b1da149511e717";
   const postId = "129f2c1efc9d4e8a821d202bec89f288";
   const fethData = async () => {
-    const data = await DocumentService.getDocumentByBaseId(baseId);
+    const data = await DocumentService.getDocumentByBaseType(baseId);
     const newData = data.map((value) => {
       return {
         title: value.documentAuthor,

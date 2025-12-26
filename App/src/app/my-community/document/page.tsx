@@ -1,6 +1,7 @@
 "use client";
 import styles from "@/app/my-community/document/post.module.css";
 import { MyEditor } from "@/components/richtext-editor";
+import DocumentService from "@/services/DocumentService";
 import { Button } from "antd";
 import { useState } from "react";
 import { Descendant } from "slate";
@@ -74,9 +75,15 @@ export default function Page() {
   const onChange = (value: Descendant[]) => {
     setValue(value);
   };
+
+  const publish = async () => {
+    const res = await DocumentService.createDocument("");
+  };
   return (
     <div>
-      <Button type="primary">发布</Button>
+      <Button type="primary" onClick={publish}>
+        发布
+      </Button>
       <MyEditor initialValue={value} onChange={onChange} />;
     </div>
   );

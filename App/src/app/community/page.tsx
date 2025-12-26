@@ -6,7 +6,7 @@ import { useTheme } from "@/theme/ThemeContext";
 import { SearchOutlined } from "@ant-design/icons";
 import { Base } from "@/components/base";
 import { useEffect, useState } from "react";
-import { api } from "../../services/ApiService";
+import CommunityService from "@/services/CommunityService";
 
 export default function Page() {
   const router = useRouter();
@@ -31,7 +31,7 @@ export default function Page() {
 
   const fetchData = async () => {
     try {
-      const data = (await api.get("/community/getAll")) as Array<any>;
+      const data = await CommunityService.getCommunities();
       const newData = data.map((value) => {
         return {
           title: value.communityName,

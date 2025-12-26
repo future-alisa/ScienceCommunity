@@ -1,8 +1,10 @@
+import Constants from "@/config/Constants";
+import { Community } from "@/model/Community";
 import { api } from "@/services/ApiService";
 const CommunityService = {
   getCommunities() {
     console.log("Fetching all communities");
-    return api.get("/communities");
+    return api.get<Array<Community>>(Constants.API_DOCUMENT_GET_ALL);
   },
   getCommunityById(id: string) {
     console.log(`Fetching community with ID: ${id}`);
