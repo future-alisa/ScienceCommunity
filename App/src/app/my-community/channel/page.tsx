@@ -20,7 +20,7 @@ export default function Page() {
       ...data,
       {
         id: Date.now().toString(),
-        from: user.token,
+        from: user.token || "",
         to: "string",
         content: message,
         comments: [],
@@ -67,7 +67,11 @@ export default function Page() {
 
   return (
     <div className={styles.container}>
-      <ChatRoom data={data} ownerId={user.token} sendMessage={sendMessage} />
+      <ChatRoom
+        data={data}
+        ownerId={user.token || ""}
+        sendMessage={sendMessage}
+      />
     </div>
   );
 }

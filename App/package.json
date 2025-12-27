@@ -12,6 +12,9 @@
     "@ant-design/cssinjs": "^1.23.0",
     "@ant-design/icons": "^5.5.1",
     "@ant-design/pro-components": "^2.7.15",
+    "@aws-sdk/client-s3": "^3.958.0",
+    "@aws-sdk/lib-storage": "^3.958.0",
+    "@aws-sdk/s3-request-presigner": "^3.958.0",
     "@emotion/css": "^11.13.4",
     "@emotion/react": "^11.13.3",
     "@stomp/stompjs": "^7.1.1",
@@ -21,7 +24,8 @@
     "react-dom": "^18",
     "slate": "^0.103.0",
     "slate-react": "^0.108.0",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/node": "^20",

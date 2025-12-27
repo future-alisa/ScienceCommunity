@@ -15,4 +15,8 @@ export interface Community {
    * []
    */
   communityUrl: string;
+  /**
+   * []
+   */
+  communityImageUrl: string;
 }

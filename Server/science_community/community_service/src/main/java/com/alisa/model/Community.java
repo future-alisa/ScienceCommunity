@@ -9,6 +9,8 @@ public class Community {
 
     private String communityUrl;
 
+    private String communityImageUrl;
+
     public String getCommunityId() {
         return communityId;
     }
@@ -39,5 +41,13 @@ public class Community {
 
     public void setCommunityUrl(String communityUrl) {
         this.communityUrl = communityUrl;
+    }
+
+    public String getCommunityImageUrl() {
+        return communityImageUrl;
+    }
+
+    public void setCommunityImageUrl(String communityImageUrl) {
+        this.communityImageUrl = communityImageUrl;
     }
 }

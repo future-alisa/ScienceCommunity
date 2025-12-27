@@ -19,6 +19,21 @@ public class DocumentController {
         return documentService.getAll();
     }
 
+    @GetMapping("/getBaseDocuments")
+    public List<Document> getBaseDocuments(String communityId) {
+        return documentService.getAll();
+    }
+
+    @GetMapping("/getCaseDocuments")
+    public List<Document> getCaseDocuments(String communityId) {
+        return documentService.getAll();
+    }
+
+    @GetMapping("/getPostDocuments")
+    public List<Document> getPostDocuments(String communityId) {
+        return documentService.getAll();
+    }
+
     @GetMapping("/{id}")
     public Document getById(@PathVariable String id) {
         return documentService.getById(id);

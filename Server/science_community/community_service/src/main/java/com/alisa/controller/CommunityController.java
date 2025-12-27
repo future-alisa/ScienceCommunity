@@ -3,6 +3,7 @@ package com.alisa.controller;
 import com.alisa.model.Community;
 import com.alisa.service.CommunityService;
 import com.alisa.util.JwtUtil;
+import com.alisa.util.Result;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +33,9 @@ public class CommunityController {
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody Community community) {
-        communityService.upsert(community);
+    public Result<Integer> upsert(@RequestBody Community community) {
+        int result = communityService.upsert(community);
+        return new Result<>(result);
     }
 
     @PostMapping("/batch-upsert")

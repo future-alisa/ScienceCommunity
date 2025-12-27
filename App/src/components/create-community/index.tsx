@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { Upload, Button, Form, Input, message, Avatar, Tag } from "antd";
 import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
-import { api } from "@/services/ApiService";
 import styles from "./create-community.module.css";
 import CommunityService from "@/services/CommunityService";
+import { s3 } from "@/services/S3Service";
+import { Community } from "@/model/Community";
+import { IdUtils } from "@/util/IdUtil";
 
 const { TextArea } = Input;
 
@@ -48,22 +50,29 @@ const CreateCommunityForm = () => {
   };
 
   const onFinish = async (values: any) => {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("description", values.description);
-    if (fileList.length > 0) {
-      formData.append("image", fileList[0].originFileObj as File);
+    try {
+      let communityUrl = "";
+
+      if (fileList.length > 0 && fileList[0].originFileObj) {
+        const file = fileList[0].originFileObj as File;
+
+        communityUrl = await s3.upload(file);
+
+        message.success("图片上传成功");
+        console.log("Uploaded image URL:", communityUrl);
+      }
+      const community: Community = {
+        communityId: IdUtils.uuid32(),
+        communityName: values.name,
+        communityDescription: values.description,
+        communityUrl: communityUrl,
+        communityImageUrl: communityUrl,
+      };
+      // 顺手传给 Java 后端
+      await CommunityService.upsertCommunity(community);
+    } catch (error) {
+      message.error("操作失败");
     }
-    formData.append("members", JSON.stringify(members));
-
-    console.log("Form data:", Object.fromEntries(formData.entries()));
-
-    const res = await CommunityService.createCommunity({
-      communityId: "",
-      communityName: values.name,
-      communityDescription: values.description,
-      communityUrl: "",
-    });
   };
 
   return (

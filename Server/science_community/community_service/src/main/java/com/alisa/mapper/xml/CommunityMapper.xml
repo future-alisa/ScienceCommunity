@@ -6,6 +6,7 @@
     <result column="community_name" jdbcType="VARCHAR" property="communityName" />
     <result column="community_description" jdbcType="VARCHAR" property="communityDescription" />
     <result column="community_url" jdbcType="VARCHAR" property="communityUrl" />
+    <result column="community_image_url" jdbcType="VARCHAR" property="communityImageUrl" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -66,7 +67,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    community_id, community_name, community_description, community_url
+    community_id, community_name, community_description, community_url, community_image_url
   </sql>
   <select id="selectByExample" parameterType="com.alisa.dto.CommunityFilter" resultMap="BaseResultMap">
     select
@@ -100,9 +101,9 @@
   </delete>
   <insert id="insert" parameterType="com.alisa.model.Community">
     insert into tb_community (community_id, community_name, community_description, 
-      community_url)
+      community_url, community_image_url)
     values (#{communityId,jdbcType=CHAR}, #{communityName,jdbcType=VARCHAR}, #{communityDescription,jdbcType=VARCHAR}, 
-      #{communityUrl,jdbcType=VARCHAR})
+      #{communityUrl,jdbcType=VARCHAR}, #{communityImageUrl,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.alisa.model.Community">
     insert into tb_community
@@ -119,6 +120,9 @@
       <if test="communityUrl != null">
         community_url,
       </if>
+      <if test="communityImageUrl != null">
+        community_image_url,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="communityId != null">
@@ -132,6 +136,9 @@
       </if>
       <if test="communityUrl != null">
         #{communityUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="communityImageUrl != null">
+        #{communityImageUrl,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -156,6 +163,9 @@
       <if test="row.communityUrl != null">
         community_url = #{row.communityUrl,jdbcType=VARCHAR},
       </if>
+      <if test="row.communityImageUrl != null">
+        community_image_url = #{row.communityImageUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -166,7 +176,8 @@
     set community_id = #{row.communityId,jdbcType=CHAR},
       community_name = #{row.communityName,jdbcType=VARCHAR},
       community_description = #{row.communityDescription,jdbcType=VARCHAR},
-      community_url = #{row.communityUrl,jdbcType=VARCHAR}
+      community_url = #{row.communityUrl,jdbcType=VARCHAR},
+      community_image_url = #{row.communityImageUrl,jdbcType=VARCHAR}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -183,6 +194,9 @@
       <if test="communityUrl != null">
         community_url = #{communityUrl,jdbcType=VARCHAR},
       </if>
+      <if test="communityImageUrl != null">
+        community_image_url = #{communityImageUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     where community_id = #{communityId,jdbcType=CHAR}
   </update>
@@ -190,20 +204,21 @@
     update tb_community
     set community_name = #{communityName,jdbcType=VARCHAR},
       community_description = #{communityDescription,jdbcType=VARCHAR},
-      community_url = #{communityUrl,jdbcType=VARCHAR}
+      community_url = #{communityUrl,jdbcType=VARCHAR},
+      community_image_url = #{communityImageUrl,jdbcType=VARCHAR}
     where community_id = #{communityId,jdbcType=CHAR}
   </update>
   <insert id="batchUpsert" parameterType="java.util.List">
-    insert into tb_community (community_id, community_name, community_description, community_url) values 
+    insert into tb_community (community_id, community_name, community_description, community_url, community_image_url) values 
     <foreach collection="list" item="item" separator=",">
-      (#{item.communityId,jdbcType=CHAR}, #{item.communityName,jdbcType=VARCHAR}, #{item.communityDescription,jdbcType=VARCHAR}, #{item.communityUrl,jdbcType=VARCHAR})
+      (#{item.communityId,jdbcType=CHAR}, #{item.communityName,jdbcType=VARCHAR}, #{item.communityDescription,jdbcType=VARCHAR}, #{item.communityUrl,jdbcType=VARCHAR}, #{item.communityImageUrl,jdbcType=VARCHAR})
     </foreach>
-    on duplicate key update community_name = values(community_name), community_description = values(community_description), community_url = values(community_url)
+    on duplicate key update community_name = values(community_name), community_description = values(community_description), community_url = values(community_url), community_image_url = values(community_image_url)
   </insert>
   <insert id="upsert" parameterType="com.alisa.model.Community">
-    insert into tb_community (community_id, community_name, community_description, community_url) values 
-    (#{communityId,jdbcType=CHAR}, #{communityName,jdbcType=VARCHAR}, #{communityDescription,jdbcType=VARCHAR}, #{communityUrl,jdbcType=VARCHAR})
-    on duplicate key update community_name = values(community_name), community_description = values(community_description), community_url = values(community_url)
+    insert into tb_community (community_id, community_name, community_description, community_url, community_image_url) values 
+    (#{communityId,jdbcType=CHAR}, #{communityName,jdbcType=VARCHAR}, #{communityDescription,jdbcType=VARCHAR}, #{communityUrl,jdbcType=VARCHAR}, #{communityImageUrl,jdbcType=VARCHAR})
+    on duplicate key update community_name = values(community_name), community_description = values(community_description), community_url = values(community_url), community_image_url = values(community_image_url)
   </insert>
   <delete id="batchDelete" parameterType="java.util.List">
     delete from tb_community where community_id in 

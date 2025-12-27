@@ -10,8 +10,8 @@ import {
 } from "react";
 
 export interface UserContextType {
-  name: string | null;
-  token: string | null;
+  name: string;
+  token: string;
   state: UserState;
 }
 
@@ -62,10 +62,7 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const saveUserInfo = async () => {
-      await StorageService.saveAuth(
-        userContext.token || "",
-        userContext.name || ""
-      );
+      await StorageService.saveAuth(userContext.token, userContext.name);
     };
 
     switch (userContext.state) {

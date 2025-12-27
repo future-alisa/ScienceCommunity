@@ -18,10 +18,11 @@ export default function Page() {
       description: "description2",
     },
   ];
+  const caseId = "1a5b4c52169d4228a5b1da149511e717";
   const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
-      const res = await DocumentService.getDocumentByCaseType("");
+      const res = await DocumentService.getDocumentByCaseType(caseId);
     };
     fetchData();
   }, []);

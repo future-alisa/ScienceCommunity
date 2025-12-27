@@ -27,8 +27,8 @@ export const StorageService = {
       return { name: "", token: "", state: "Offline" };
     }
 
-    const token = localStorage.getItem("auth_token");
-    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("auth_token") || "";
+    const username = localStorage.getItem("username") || "";
     console.log("读取本地存储的用户信息", { token, username });
 
     if (token) {

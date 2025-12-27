@@ -37,6 +37,7 @@ export default function Page() {
           title: value.communityName,
           id: value.communityId,
           description: value.communityDescription,
+          imageUrl: value.communityImageUrl,
         };
       });
       setData(newData);
@@ -51,7 +52,7 @@ export default function Page() {
   }, []);
   function handleChange(
     value: string,
-    option:
+    optio?:
       | { value: string; label: string }
       | { value: string; label: string }[]
   ): void {}

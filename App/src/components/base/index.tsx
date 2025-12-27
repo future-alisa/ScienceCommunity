@@ -2,8 +2,6 @@
 import styles from "./base.module.css";
 import { useTheme } from "@/theme/ThemeContext";
 import { Card } from "antd";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 type BaseProps = {
   data: MyDocument[];
@@ -14,6 +12,7 @@ type MyDocument = {
   title: string;
   id: string;
   description: string;
+  imageUrl?: string;
 };
 
 const Base = ({ data, handleCardClick }: BaseProps) => {
@@ -34,7 +33,10 @@ const Base = ({ data, handleCardClick }: BaseProps) => {
             cover={
               <img
                 alt="example"
-                src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                src={
+                  item.imageUrl ||
+                  "https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                }
               />
             }
             onClick={() => handleCardClick(item.id)}

@@ -67,7 +67,7 @@ export class ApiService {
       ...this.defaultHeaders,
       ...headers,
     };
-
+    console.log("Request Headers:", this.getToken());
     if (!noAuth && this.getToken()) {
       requestHeaders["Authorization"] = `Bearer ${this.getToken()}`;
     }

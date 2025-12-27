@@ -18,10 +18,12 @@ export default function Page() {
       description: "description2",
     },
   ];
+  const postId = "129f2c1efc9d4e8a821d202bec89f288";
+
   const router = useRouter();
   useEffect(() => {
     const fetchData = async () => {
-      const res = await DocumentService.getDocumentByPostType("");
+      const res = await DocumentService.getDocumentByPostType(postId);
     };
     fetchData();
   }, []);
