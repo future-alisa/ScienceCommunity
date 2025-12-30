@@ -3,19 +3,19 @@ import styles from "./base.module.css";
 import { useTheme } from "@/theme/ThemeContext";
 import { Card } from "antd";
 
-type BaseProps = {
-  data: MyDocument[];
+type CardGridProps = {
+  data: MyCard[];
   handleCardClick: (cardId: string) => void;
 };
 
-type MyDocument = {
-  title: string;
+type MyCard = {
   id: string;
+  title: string;
   description: string;
   imageUrl?: string;
 };
 
-const Base = ({ data, handleCardClick }: BaseProps) => {
+const CardGrid = ({ data, handleCardClick }: CardGridProps) => {
   const { theme } = useTheme();
   const { Meta } = Card;
 
@@ -32,11 +32,8 @@ const Base = ({ data, handleCardClick }: BaseProps) => {
             hoverable
             cover={
               <img
-                alt="example"
-                src={
-                  item.imageUrl ||
-                  "https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
-                }
+                alt="没有找到图片资源"
+                src={item.imageUrl || "community-thumbnail.png"}
               />
             }
             onClick={() => handleCardClick(item.id)}
@@ -49,4 +46,4 @@ const Base = ({ data, handleCardClick }: BaseProps) => {
   );
 };
 
-export { Base };
+export { CardGrid as Base };

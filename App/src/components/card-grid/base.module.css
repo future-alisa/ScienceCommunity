@@ -4,6 +4,7 @@
   flex: 1;
   flex-direction: column;
   padding: 20px; /* 增加页面内边距 */
+  align-items: center;
 }
 
 .grid {
