@@ -12,12 +12,12 @@ export default function Page() {
   const router = useRouter();
   const initData = [
     {
-      title: "1",
+      title: "数学社区",
       id: "1",
       description: "description1",
     },
     {
-      title: "2",
+      title: "计算机社区",
       id: "2",
       description: "description2",
     },
@@ -25,8 +25,8 @@ export default function Page() {
   const [data, setData] = useState(initData);
   const { theme } = useTheme();
 
-  const handleCardClick = (documentId: string) => {
-    router.push("/my-community");
+  const handleCardClick = (cardId: string) => {
+    router.push(`/community/${cardId}`);
   };
 
   const fetchData = async () => {

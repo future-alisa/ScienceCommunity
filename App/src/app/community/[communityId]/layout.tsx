@@ -2,16 +2,22 @@
 import { useTheme } from "@/theme/ThemeContext";
 import styles from "./my-commnity.module.css";
 import { useEffect, useState } from "react";
-export default function RootLayout({
-  children,
-}: Readonly<{
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { CommunityRouteParams } from "@/model/MyRouteParams";
+interface RootLayoutProps {
   children: React.ReactNode;
-}>) {
+}
+
+export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   const { theme } = useTheme();
   const [channels, setChannels] = useState<string[]>([]);
+  const params = useParams<CommunityRouteParams>();
+  const communityId = params?.communityId;
   useEffect(() => {
     setChannels(["频道1", "频道2"]);
   }, []);
+
   return (
     <main className={styles.page}>
       <aside
@@ -21,20 +27,23 @@ export default function RootLayout({
         <h2>社区</h2>
         <ul>
           <li>
-            <a href="/my-community/basis">基础知识</a>
+            <Link href={`/community/${communityId}/basis`}>基础知识</Link>
           </li>
           <li>
-            <a href="/my-community/case">案例</a>
+            <Link href={`/community/${communityId}/case`}>案例</Link>
           </li>
           <li>
-            <a href="/my-community/post">推文</a>
+            <Link href={`/community/${communityId}/post`}>推文</Link>
           </li>
           <li>
-            <a href="/my-community/channel">频道</a>
+            <Link href={`/community/${communityId}/channel`}>频道</Link>
             {channels.map((val, index) => {
+              const channelId = index + 1;
               return (
                 <li key={index} className={styles.secondMenu}>
-                  <a href="/my-community/channel/{id}">{val}</a>
+                  <Link href={`/community/${communityId}/channel/${channelId}`}>
+                    {val}
+                  </Link>
                 </li>
               );
             })}
