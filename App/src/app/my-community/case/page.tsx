@@ -1,6 +1,6 @@
 "use client";
 import styles from "@/app/my-community/case/case.module.css";
-import { Base } from "@/components/base";
+import { CardGrid } from "@/components/card-grid";
 import DocumentService from "@/services/DocumentService";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -28,7 +28,7 @@ export default function Page() {
   }, []);
 
   return (
-    <Base
+    <CardGrid
       data={data}
       handleCardClick={() => router.push("/my-community/detail")}
     />

@@ -4,7 +4,7 @@ import styles from "./community.module.css";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/theme/ThemeContext";
 import { SearchOutlined } from "@ant-design/icons";
-import { Base } from "@/components/base";
+import { CardGrid } from "@/components/card-grid";
 import { useEffect, useState } from "react";
 import CommunityService from "@/services/CommunityService";
 
@@ -110,7 +110,7 @@ export default function Page() {
         </div>
       </div>
 
-      <Base data={data} handleCardClick={handleCardClick} />
+      <CardGrid data={data} handleCardClick={handleCardClick} />
     </main>
   );
 }

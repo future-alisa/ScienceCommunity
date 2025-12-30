@@ -21,7 +21,7 @@ export default function RootLayout({
         <h2>社区</h2>
         <ul>
           <li>
-            <a href="/my-community/base">基础知识</a>
+            <a href="/my-community/basis">基础知识</a>
           </li>
           <li>
             <a href="/my-community/case">案例</a>

@@ -1,7 +1,6 @@
 "use client";
 
-import { api } from "@/services/ApiService";
-import { Base } from "@/components/base";
+import { CardGrid } from "@/components/card-grid";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import DocumentService from "@/services/DocumentService";
@@ -39,7 +38,7 @@ export default function Page() {
     fethData();
   }, []);
   return (
-    <Base
+    <CardGrid
       data={data}
       handleCardClick={(id) => {
         router.push(`/my-community/document/${id}`);

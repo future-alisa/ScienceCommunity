@@ -33,7 +33,7 @@ const CardGrid = ({ data, handleCardClick }: CardGridProps) => {
             cover={
               <img
                 alt="没有找到图片资源"
-                src={item.imageUrl || "community-thumbnail.png"}
+                src={item.imageUrl || "/community-thumbnail.png"}
               />
             }
             onClick={() => handleCardClick(item.id)}
@@ -46,4 +46,4 @@ const CardGrid = ({ data, handleCardClick }: CardGridProps) => {
   );
 };
 
-export { CardGrid as Base };
+export { CardGrid };
