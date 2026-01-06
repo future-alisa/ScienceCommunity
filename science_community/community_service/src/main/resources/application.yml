@@ -5,7 +5,7 @@ spring:
     name: community-service
   config:
     import:
-      - optional:file:./Server/science_community/community_service/.env[.properties]
+      - optional:file:./community_service/.env[.properties]
   profiles:
     active: dev
 

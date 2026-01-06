@@ -42,9 +42,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.alisa</groupId>
-            <artifactId>common</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <groupId>com.alisa.cloud</groupId>
+            <artifactId>alisa-common</artifactId>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

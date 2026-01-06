@@ -5,7 +5,7 @@ spring:
     name: tranfer-service
   config:
     import:
-      - optional:file:./Server/science_community/tranfer_service/.env[.properties]
+      - optional:file:./tranfer_service/.env[.properties]
   profiles:
     active: dev
     # sentinel:
