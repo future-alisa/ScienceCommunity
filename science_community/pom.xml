@@ -70,17 +70,20 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<outputDirectory>${project.basedir}/../package</outputDirectory>
-					<includeSystemScope>true</includeSystemScope>
-				</configuration>
-			</plugin>
-		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<outputDirectory>${project.basedir}/../package</outputDirectory>
+						<includeSystemScope>true</includeSystemScope>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 
 		<resources>
             <resource>
