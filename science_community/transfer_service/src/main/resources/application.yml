@@ -2,10 +2,10 @@ server:
   port: 9092
 spring:
   application:
-    name: tranfer-service
+    name: transfer-service
   config:
     import:
-      - optional:file:./tranfer_service/.env[.properties]
+      - optional:file:./transfer_service/.env[.properties]
   profiles:
     active: dev
     # sentinel:

@@ -14,7 +14,7 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>community_service</module>
-		<module>tranfer_service</module>
+		<module>transfer_service</module>
 	</modules>
 	<name>science_community</name>
 	<description>Demo project for Spring Boot</description>

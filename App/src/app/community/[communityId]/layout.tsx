@@ -37,16 +37,20 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           </li>
           <li>
             <Link href={`/community/${communityId}/channel`}>频道</Link>
-            {channels.map((val, index) => {
-              const channelId = index + 1;
-              return (
-                <li key={index} className={styles.secondMenu}>
-                  <Link href={`/community/${communityId}/channel/${channelId}`}>
-                    {val}
-                  </Link>
-                </li>
-              );
-            })}
+            <ul>
+              {channels.map((val, index) => {
+                const channelId = index + 1;
+                return (
+                  <li key={index} className={styles.secondMenu}>
+                    <Link
+                      href={`/community/${communityId}/channel/${channelId}`}
+                    >
+                      {val}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
           </li>
         </ul>
       </aside>
