@@ -6,7 +6,7 @@ const DocumentService = {
     console.log(`Fetching document with ID: ${id}`);
   },
 
-  getDocumentByBaseType: async (baseId: string) => {
+  getDocumentByBasisType: async (baseId: string) => {
     // Implementation to fetch a document by its ID
     console.log(`Fetching document with BASE ID: ${baseId}`);
     const data = await api.get<Document[]>("/api/document/get", { baseId });

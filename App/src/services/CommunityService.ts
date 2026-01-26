@@ -10,6 +10,10 @@ const CommunityService = {
     console.log(`Fetching community with ID: ${id}`);
     return api.get(`/communities/${id}`);
   },
+  getCommunityByTag(tag: string) {
+    console.log(`Fetching community with tag: ${tag}`);
+    return api.get(`/communities/${tag}`);
+  },
   upsertCommunity(data: Community) {
     console.log("Creating a new community with data:", data);
     return api.post<boolean>(Constants.API_COMMUNITY_UPSERT, data);
