@@ -3,7 +3,7 @@
   flex: 1;
 }
 .sidebar {
-  width: 250px;
+  flex: 0 0 200px;
   padding: 20px;
   background-color: gray;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -32,4 +32,10 @@
 
 .secondMenu {
   padding-left: 20px;
+}
+
+.contentContainer {
+  flex: 1;
+  align-items: center;
+  padding: 20px;
 }

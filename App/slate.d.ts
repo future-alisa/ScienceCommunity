@@ -17,9 +17,9 @@ export type BulletedListElement = {
   children: ListItemElement[];
 };
 
-export type NumberdListElement = {
+export type NumberedListElement = {
   type: "numbered-list";
-  children: CustomText[];
+  children: ListItemElement[];
 };
 
 export type ListItemElement = {
@@ -39,12 +39,19 @@ export type CustomElement =
   | ListItemElement
   | BlockQuoteElement;
 
-export type FormattedText = { text: string; bold?: true };
+export type FormattedText = {
+  text: string;
+  bold?: true;
+  italic?: boolean;
+  underline?: boolean;
+  code?: boolean;
+};
 export type CustomText = FormattedText;
 
 declare module "slate" {
   interface CustomTypes {
     Editor: BaseEditor & ReactEditor;
     Element: CustomElement;
+    Text: CustomText;
   }
 }

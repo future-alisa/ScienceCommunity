@@ -54,7 +54,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           </li>
         </ul>
       </aside>
-      {children}
+      <div className={styles.contentContainer}>{children}</div>
     </main>
   );
 }
