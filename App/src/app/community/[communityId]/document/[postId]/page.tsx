@@ -3,8 +3,11 @@ import { api } from "@/services/ApiService";
 import { MyEditor } from "@/components/richtext-editor";
 import { useEffect, useState } from "react";
 import { Descendant } from "slate";
+import { DocumentRouteParams } from "@/model/MyRouteParams";
+import { useParams } from "next/navigation";
 
-export default function Page({ params }: { params: { id: string } }) {
+export default function Page() {
+  const { postId } = useParams<DocumentRouteParams>();
   const [value, setValue] = useState<Descendant[]>([
     {
       type: "paragraph",
@@ -18,6 +21,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log(postId);
     const parseSlateJson = function (jsonString: string): Descendant[] {
       try {
         const parsed = JSON.parse(jsonString);
@@ -42,7 +46,7 @@ export default function Page({ params }: { params: { id: string } }) {
       try {
         setIsLoading(true);
         const data = await api.get("/api/document/getById", {
-          id: params.id,
+          id: postId,
         });
         setValue(parseSlateJson(data.documentContent));
         console.log(data);
@@ -60,14 +64,14 @@ export default function Page({ params }: { params: { id: string } }) {
     };
 
     fethData();
-  }, [params.id]);
+  }, [postId]);
 
   return (
     <div>
       {isLoading ? (
         <div>加载文档中...</div>
       ) : (
-        <MyEditor key={params.id} initialValue={value} onChange={onChange} />
+        <MyEditor key={postId} initialValue={value} onChange={onChange} />
       )}
     </div>
   );
