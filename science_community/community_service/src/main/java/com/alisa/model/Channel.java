@@ -5,6 +5,8 @@ public class Channel {
 
     private String channelName;
 
+    private String channelCommunityId;
+
     public String getChannelId() {
         return channelId;
     }
@@ -19,5 +21,13 @@ public class Channel {
 
     public void setChannelName(String channelName) {
         this.channelName = channelName;
+    }
+
+    public String getChannelCommunityId() {
+        return channelCommunityId;
+    }
+
+    public void setChannelCommunityId(String channelCommunityId) {
+        this.channelCommunityId = channelCommunityId;
     }
 }

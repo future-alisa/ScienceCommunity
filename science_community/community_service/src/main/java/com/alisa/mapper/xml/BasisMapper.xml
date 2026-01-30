@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alisa.mapper.BasisMapper">
+  <resultMap id="BaseResultMap" type="com.alisa.model.Basis">
+    <id column="basis_id" jdbcType="CHAR" property="basisId" />
+    <result column="basis_document_id" jdbcType="CHAR" property="basisDocumentId" />
+    <result column="basis_community_id" jdbcType="CHAR" property="basisCommunityId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    basis_id, basis_document_id, basis_community_id
+  </sql>
+  <select id="selectByExample" parameterType="com.alisa.dto.BasisFilter" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_basis
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_basis
+    where basis_id = #{basisId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_basis
+    where basis_id = #{basisId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.alisa.dto.BasisFilter">
+    delete from tb_basis
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.alisa.model.Basis">
+    insert into tb_basis (basis_id, basis_document_id, basis_community_id
+      )
+    values (#{basisId,jdbcType=CHAR}, #{basisDocumentId,jdbcType=CHAR}, #{basisCommunityId,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.alisa.model.Basis">
+    insert into tb_basis
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="basisId != null">
+        basis_id,
+      </if>
+      <if test="basisDocumentId != null">
+        basis_document_id,
+      </if>
+      <if test="basisCommunityId != null">
+        basis_community_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="basisId != null">
+        #{basisId,jdbcType=CHAR},
+      </if>
+      <if test="basisDocumentId != null">
+        #{basisDocumentId,jdbcType=CHAR},
+      </if>
+      <if test="basisCommunityId != null">
+        #{basisCommunityId,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.alisa.dto.BasisFilter" resultType="java.lang.Long">
+    select count(*) from tb_basis
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_basis
+    <set>
+      <if test="row.basisId != null">
+        basis_id = #{row.basisId,jdbcType=CHAR},
+      </if>
+      <if test="row.basisDocumentId != null">
+        basis_document_id = #{row.basisDocumentId,jdbcType=CHAR},
+      </if>
+      <if test="row.basisCommunityId != null">
+        basis_community_id = #{row.basisCommunityId,jdbcType=CHAR},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_basis
+    set basis_id = #{row.basisId,jdbcType=CHAR},
+      basis_document_id = #{row.basisDocumentId,jdbcType=CHAR},
+      basis_community_id = #{row.basisCommunityId,jdbcType=CHAR}
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.alisa.model.Basis">
+    update tb_basis
+    <set>
+      <if test="basisDocumentId != null">
+        basis_document_id = #{basisDocumentId,jdbcType=CHAR},
+      </if>
+      <if test="basisCommunityId != null">
+        basis_community_id = #{basisCommunityId,jdbcType=CHAR},
+      </if>
+    </set>
+    where basis_id = #{basisId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.alisa.model.Basis">
+    update tb_basis
+    set basis_document_id = #{basisDocumentId,jdbcType=CHAR},
+      basis_community_id = #{basisCommunityId,jdbcType=CHAR}
+    where basis_id = #{basisId,jdbcType=CHAR}
+  </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_basis (basis_id, basis_document_id, basis_community_id) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.basisId,jdbcType=CHAR}, #{item.basisDocumentId,jdbcType=CHAR}, #{item.basisCommunityId,jdbcType=CHAR})
+    </foreach>
+    on duplicate key update basis_document_id = values(basis_document_id), basis_community_id = values(basis_community_id)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.Basis">
+    insert into tb_basis (basis_id, basis_document_id, basis_community_id) values 
+    (#{basisId,jdbcType=CHAR}, #{basisDocumentId,jdbcType=CHAR}, #{basisCommunityId,jdbcType=CHAR})
+    on duplicate key update basis_document_id = values(basis_document_id), basis_community_id = values(basis_community_id)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_basis where basis_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
+</mapper>

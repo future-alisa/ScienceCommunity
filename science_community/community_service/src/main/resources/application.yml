@@ -1,5 +1,10 @@
 server:
   port: 9091
+  servlet:
+    context-path: /community
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 spring:
   application:
     name: community-service

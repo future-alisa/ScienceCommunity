@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alisa.mapper.CommentMapper">
+  <resultMap id="BaseResultMap" type="com.alisa.model.Comment">
+    <id column="comment_id" jdbcType="CHAR" property="commentId" />
+    <result column="message_id" jdbcType="CHAR" property="messageId" />
+    <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+    <result column="comment_create_datetime" jdbcType="TIMESTAMP" property="commentCreateDatetime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    comment_id, message_id, comment_content, comment_create_datetime
+  </sql>
+  <select id="selectByExample" parameterType="com.alisa.dto.CommentFilter" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_comment
+    where comment_id = #{commentId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_comment
+    where comment_id = #{commentId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.alisa.dto.CommentFilter">
+    delete from tb_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.alisa.model.Comment">
+    insert into tb_comment (comment_id, message_id, comment_content, 
+      comment_create_datetime)
+    values (#{commentId,jdbcType=CHAR}, #{messageId,jdbcType=CHAR}, #{commentContent,jdbcType=VARCHAR}, 
+      #{commentCreateDatetime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.alisa.model.Comment">
+    insert into tb_comment
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="commentId != null">
+        comment_id,
+      </if>
+      <if test="messageId != null">
+        message_id,
+      </if>
+      <if test="commentContent != null">
+        comment_content,
+      </if>
+      <if test="commentCreateDatetime != null">
+        comment_create_datetime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="commentId != null">
+        #{commentId,jdbcType=CHAR},
+      </if>
+      <if test="messageId != null">
+        #{messageId,jdbcType=CHAR},
+      </if>
+      <if test="commentContent != null">
+        #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="commentCreateDatetime != null">
+        #{commentCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.alisa.dto.CommentFilter" resultType="java.lang.Long">
+    select count(*) from tb_comment
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_comment
+    <set>
+      <if test="row.commentId != null">
+        comment_id = #{row.commentId,jdbcType=CHAR},
+      </if>
+      <if test="row.messageId != null">
+        message_id = #{row.messageId,jdbcType=CHAR},
+      </if>
+      <if test="row.commentContent != null">
+        comment_content = #{row.commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="row.commentCreateDatetime != null">
+        comment_create_datetime = #{row.commentCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_comment
+    set comment_id = #{row.commentId,jdbcType=CHAR},
+      message_id = #{row.messageId,jdbcType=CHAR},
+      comment_content = #{row.commentContent,jdbcType=VARCHAR},
+      comment_create_datetime = #{row.commentCreateDatetime,jdbcType=TIMESTAMP}
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.alisa.model.Comment">
+    update tb_comment
+    <set>
+      <if test="messageId != null">
+        message_id = #{messageId,jdbcType=CHAR},
+      </if>
+      <if test="commentContent != null">
+        comment_content = #{commentContent,jdbcType=VARCHAR},
+      </if>
+      <if test="commentCreateDatetime != null">
+        comment_create_datetime = #{commentCreateDatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where comment_id = #{commentId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.alisa.model.Comment">
+    update tb_comment
+    set message_id = #{messageId,jdbcType=CHAR},
+      comment_content = #{commentContent,jdbcType=VARCHAR},
+      comment_create_datetime = #{commentCreateDatetime,jdbcType=TIMESTAMP}
+    where comment_id = #{commentId,jdbcType=CHAR}
+  </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_comment (comment_id, message_id, comment_content, comment_create_datetime) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.commentId,jdbcType=CHAR}, #{item.messageId,jdbcType=CHAR}, #{item.commentContent,jdbcType=VARCHAR}, #{item.commentCreateDatetime,jdbcType=TIMESTAMP})
+    </foreach>
+    on duplicate key update message_id = values(message_id), comment_content = values(comment_content), comment_create_datetime = values(comment_create_datetime)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.Comment">
+    insert into tb_comment (comment_id, message_id, comment_content, comment_create_datetime) values 
+    (#{commentId,jdbcType=CHAR}, #{messageId,jdbcType=CHAR}, #{commentContent,jdbcType=VARCHAR}, #{commentCreateDatetime,jdbcType=TIMESTAMP})
+    on duplicate key update message_id = values(message_id), comment_content = values(comment_content), comment_create_datetime = values(comment_create_datetime)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_comment where comment_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
+</mapper>

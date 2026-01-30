@@ -7,11 +7,13 @@ public class Document {
 
     private String documentCategoryId;
 
-    private String documentAuthor;
+    private String documentAuthorId;
 
     private Date documentCreateDate;
 
     private Date documentUpdateDate;
+
+    private String documentCommunityId;
 
     private String documentContent;
 
@@ -31,12 +33,12 @@ public class Document {
         this.documentCategoryId = documentCategoryId;
     }
 
-    public String getDocumentAuthor() {
-        return documentAuthor;
+    public String getDocumentAuthorId() {
+        return documentAuthorId;
     }
 
-    public void setDocumentAuthor(String documentAuthor) {
-        this.documentAuthor = documentAuthor;
+    public void setDocumentAuthorId(String documentAuthorId) {
+        this.documentAuthorId = documentAuthorId;
     }
 
     public Date getDocumentCreateDate() {
@@ -53,6 +55,14 @@ public class Document {
 
     public void setDocumentUpdateDate(Date documentUpdateDate) {
         this.documentUpdateDate = documentUpdateDate;
+    }
+
+    public String getDocumentCommunityId() {
+        return documentCommunityId;
+    }
+
+    public void setDocumentCommunityId(String documentCommunityId) {
+        this.documentCommunityId = documentCommunityId;
     }
 
     public String getDocumentContent() {

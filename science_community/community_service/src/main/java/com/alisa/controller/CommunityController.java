@@ -2,18 +2,10 @@ package com.alisa.controller;
 
 import com.alisa.model.Community;
 import com.alisa.service.CommunityService;
-import com.alisa.util.JwtUtil;
-import com.alisa.util.Result;
-
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.function.Function;
 
 @RestController
 @RequestMapping("/community")
@@ -33,9 +25,8 @@ public class CommunityController {
     }
 
     @PostMapping("/upsert")
-    public Result<Integer> upsert(@RequestBody Community community) {
-        int result = communityService.upsert(community);
-        return new Result<>(result);
+    public void upsert(@RequestBody Community community) {
+        communityService.upsert(community);
     }
 
     @PostMapping("/batch-upsert")
@@ -46,23 +37,5 @@ public class CommunityController {
     @DeleteMapping("/batch-delete")
     public void batchDelete(@RequestBody List<String> ids) {
         communityService.batchDelete(ids);
-    }
-
-    @GetMapping("getByUser")
-    public ResponseEntity<List<Community>> getByUser(HttpServletRequest request) {
-        var userId = getUserId(request);
-        List<Community> communities = communityService.getAll();
-        return ResponseEntity.ok(communities);
-    }
-
-    private String getUserId(HttpServletRequest request) {
-        var token = request.getHeader("Authorization").substring(7);
-        var userId = JwtUtil.extractClaim(token, new Function<Claims, String>() {
-            @Override
-            public String apply(Claims claims) {
-                return (String) claims.get("userId"); // 假设自定义声明为 userId
-            }
-        });
-        return userId;
     }
 }

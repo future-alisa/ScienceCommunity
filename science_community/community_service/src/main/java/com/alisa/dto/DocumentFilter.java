@@ -244,73 +244,73 @@ public final class DocumentFilter {
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorIsNull() {
-            addCriterion("document_author is null");
+        public Criteria andDocumentAuthorIdIsNull() {
+            addCriterion("document_author_id is null");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorIsNotNull() {
-            addCriterion("document_author is not null");
+        public Criteria andDocumentAuthorIdIsNotNull() {
+            addCriterion("document_author_id is not null");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorEqualTo(String value) {
-            addCriterion("document_author =", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdEqualTo(String value) {
+            addCriterion("document_author_id =", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorNotEqualTo(String value) {
-            addCriterion("document_author <>", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdNotEqualTo(String value) {
+            addCriterion("document_author_id <>", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorGreaterThan(String value) {
-            addCriterion("document_author >", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdGreaterThan(String value) {
+            addCriterion("document_author_id >", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorGreaterThanOrEqualTo(String value) {
-            addCriterion("document_author >=", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdGreaterThanOrEqualTo(String value) {
+            addCriterion("document_author_id >=", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorLessThan(String value) {
-            addCriterion("document_author <", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdLessThan(String value) {
+            addCriterion("document_author_id <", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorLessThanOrEqualTo(String value) {
-            addCriterion("document_author <=", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdLessThanOrEqualTo(String value) {
+            addCriterion("document_author_id <=", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorLike(String value) {
-            addCriterion("document_author like", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdLike(String value) {
+            addCriterion("document_author_id like", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorNotLike(String value) {
-            addCriterion("document_author not like", value, "documentAuthor");
+        public Criteria andDocumentAuthorIdNotLike(String value) {
+            addCriterion("document_author_id not like", value, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorIn(List<String> values) {
-            addCriterion("document_author in", values, "documentAuthor");
+        public Criteria andDocumentAuthorIdIn(List<String> values) {
+            addCriterion("document_author_id in", values, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorNotIn(List<String> values) {
-            addCriterion("document_author not in", values, "documentAuthor");
+        public Criteria andDocumentAuthorIdNotIn(List<String> values) {
+            addCriterion("document_author_id not in", values, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorBetween(String value1, String value2) {
-            addCriterion("document_author between", value1, value2, "documentAuthor");
+        public Criteria andDocumentAuthorIdBetween(String value1, String value2) {
+            addCriterion("document_author_id between", value1, value2, "documentAuthorId");
             return (Criteria) this;
         }
 
-        public Criteria andDocumentAuthorNotBetween(String value1, String value2) {
-            addCriterion("document_author not between", value1, value2, "documentAuthor");
+        public Criteria andDocumentAuthorIdNotBetween(String value1, String value2) {
+            addCriterion("document_author_id not between", value1, value2, "documentAuthorId");
             return (Criteria) this;
         }
 
@@ -431,6 +431,76 @@ public final class DocumentFilter {
 
         public Criteria andDocumentUpdateDateNotBetween(java.util.Date value1, java.util.Date value2) {
             addCriterion("document_update_date not between", value1, value2, "documentUpdateDate");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdIsNull() {
+            addCriterion("document_community_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdIsNotNull() {
+            addCriterion("document_community_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdEqualTo(String value) {
+            addCriterion("document_community_id =", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdNotEqualTo(String value) {
+            addCriterion("document_community_id <>", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdGreaterThan(String value) {
+            addCriterion("document_community_id >", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdGreaterThanOrEqualTo(String value) {
+            addCriterion("document_community_id >=", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdLessThan(String value) {
+            addCriterion("document_community_id <", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdLessThanOrEqualTo(String value) {
+            addCriterion("document_community_id <=", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdLike(String value) {
+            addCriterion("document_community_id like", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdNotLike(String value) {
+            addCriterion("document_community_id not like", value, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdIn(List<String> values) {
+            addCriterion("document_community_id in", values, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdNotIn(List<String> values) {
+            addCriterion("document_community_id not in", values, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdBetween(String value1, String value2) {
+            addCriterion("document_community_id between", value1, value2, "documentCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andDocumentCommunityIdNotBetween(String value1, String value2) {
+            addCriterion("document_community_id not between", value1, value2, "documentCommunityId");
             return (Criteria) this;
         }
     }

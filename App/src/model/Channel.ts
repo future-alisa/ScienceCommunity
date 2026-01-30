@@ -7,4 +7,8 @@ export interface Channel {
    * []
    */
   channelName: string;
+  /**
+   * []
+   */
+  channelCommunityId: string;
 }

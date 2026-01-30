@@ -383,6 +383,76 @@ public final class CommunityFilter {
             addCriterion("community_url not between", value1, value2, "communityUrl");
             return (Criteria) this;
         }
+
+        public Criteria andCommunityImageUrlIsNull() {
+            addCriterion("community_image_url is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlIsNotNull() {
+            addCriterion("community_image_url is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlEqualTo(String value) {
+            addCriterion("community_image_url =", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlNotEqualTo(String value) {
+            addCriterion("community_image_url <>", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlGreaterThan(String value) {
+            addCriterion("community_image_url >", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlGreaterThanOrEqualTo(String value) {
+            addCriterion("community_image_url >=", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlLessThan(String value) {
+            addCriterion("community_image_url <", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlLessThanOrEqualTo(String value) {
+            addCriterion("community_image_url <=", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlLike(String value) {
+            addCriterion("community_image_url like", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlNotLike(String value) {
+            addCriterion("community_image_url not like", value, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlIn(List<String> values) {
+            addCriterion("community_image_url in", values, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlNotIn(List<String> values) {
+            addCriterion("community_image_url not in", values, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlBetween(String value1, String value2) {
+            addCriterion("community_image_url between", value1, value2, "communityImageUrl");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommunityImageUrlNotBetween(String value1, String value2) {
+            addCriterion("community_image_url not between", value1, value2, "communityImageUrl");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

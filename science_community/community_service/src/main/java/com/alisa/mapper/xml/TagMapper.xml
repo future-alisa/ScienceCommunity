@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.alisa.mapper.TagMapper">
+  <resultMap id="BaseResultMap" type="com.alisa.model.Tag">
+    <id column="tab_id" jdbcType="CHAR" property="tabId" />
+    <result column="tag_name" jdbcType="VARCHAR" property="tagName" />
+    <result column="tag_owner_id" jdbcType="CHAR" property="tagOwnerId" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    tab_id, tag_name, tag_owner_id
+  </sql>
+  <select id="selectByExample" parameterType="com.alisa.dto.TagFilter" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from tb_tag
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tb_tag
+    where tab_id = #{tabId,jdbcType=CHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from tb_tag
+    where tab_id = #{tabId,jdbcType=CHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.alisa.dto.TagFilter">
+    delete from tb_tag
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.alisa.model.Tag">
+    insert into tb_tag (tab_id, tag_name, tag_owner_id
+      )
+    values (#{tabId,jdbcType=CHAR}, #{tagName,jdbcType=VARCHAR}, #{tagOwnerId,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.alisa.model.Tag">
+    insert into tb_tag
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="tabId != null">
+        tab_id,
+      </if>
+      <if test="tagName != null">
+        tag_name,
+      </if>
+      <if test="tagOwnerId != null">
+        tag_owner_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="tabId != null">
+        #{tabId,jdbcType=CHAR},
+      </if>
+      <if test="tagName != null">
+        #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagOwnerId != null">
+        #{tagOwnerId,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.alisa.dto.TagFilter" resultType="java.lang.Long">
+    select count(*) from tb_tag
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update tb_tag
+    <set>
+      <if test="row.tabId != null">
+        tab_id = #{row.tabId,jdbcType=CHAR},
+      </if>
+      <if test="row.tagName != null">
+        tag_name = #{row.tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="row.tagOwnerId != null">
+        tag_owner_id = #{row.tagOwnerId,jdbcType=CHAR},
+      </if>
+    </set>
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update tb_tag
+    set tab_id = #{row.tabId,jdbcType=CHAR},
+      tag_name = #{row.tagName,jdbcType=VARCHAR},
+      tag_owner_id = #{row.tagOwnerId,jdbcType=CHAR}
+    <if test="example != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.alisa.model.Tag">
+    update tb_tag
+    <set>
+      <if test="tagName != null">
+        tag_name = #{tagName,jdbcType=VARCHAR},
+      </if>
+      <if test="tagOwnerId != null">
+        tag_owner_id = #{tagOwnerId,jdbcType=CHAR},
+      </if>
+    </set>
+    where tab_id = #{tabId,jdbcType=CHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.alisa.model.Tag">
+    update tb_tag
+    set tag_name = #{tagName,jdbcType=VARCHAR},
+      tag_owner_id = #{tagOwnerId,jdbcType=CHAR}
+    where tab_id = #{tabId,jdbcType=CHAR}
+  </update>
+  <insert id="batchUpsert" parameterType="java.util.List">
+    insert into tb_tag (tab_id, tag_name, tag_owner_id) values 
+    <foreach collection="list" item="item" separator=",">
+      (#{item.tabId,jdbcType=CHAR}, #{item.tagName,jdbcType=VARCHAR}, #{item.tagOwnerId,jdbcType=CHAR})
+    </foreach>
+    on duplicate key update tag_name = values(tag_name), tag_owner_id = values(tag_owner_id)
+  </insert>
+  <insert id="upsert" parameterType="com.alisa.model.Tag">
+    insert into tb_tag (tab_id, tag_name, tag_owner_id) values 
+    (#{tabId,jdbcType=CHAR}, #{tagName,jdbcType=VARCHAR}, #{tagOwnerId,jdbcType=CHAR})
+    on duplicate key update tag_name = values(tag_name), tag_owner_id = values(tag_owner_id)
+  </insert>
+  <delete id="batchDelete" parameterType="java.util.List">
+    delete from tb_tag where tab_id in 
+    <foreach close=")" collection="list" item="id" open="(" separator=",">
+      #{id}
+    </foreach>
+  </delete>
+</mapper>

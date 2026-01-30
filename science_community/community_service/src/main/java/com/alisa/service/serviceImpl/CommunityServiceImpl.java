@@ -25,32 +25,31 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
-    public int create(Community model) {
-        return communityMapper.insert(model);
+    public void create(Community model) {
+        communityMapper.insert(model);
     }
 
     @Override
-    public int update(Community model) {
-        return communityMapper.updateByPrimaryKey(model);
+    public void update(Community model) {
+        communityMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public int delete(String id) {
-        return communityMapper.deleteByPrimaryKey(id);
+    public void delete(String id) {
+        communityMapper.deleteByPrimaryKey(id);
+    }
+    @Override
+    public void upsert(Community model) {
+        communityMapper.upsert(model);
     }
 
     @Override
-    public int upsert(Community model) {
-        return communityMapper.upsert(model);
+    public void batchUpsert(List<Community> list) {
+        communityMapper.batchUpsert(list);
     }
 
     @Override
-    public int batchUpsert(List<Community> list) {
-        return communityMapper.batchUpsert(list);
-    }
-
-    @Override
-    public int batchDelete(List<String> ids) {
-        return communityMapper.batchDelete(ids);
+    public void batchDelete(List<String> ids) {
+        communityMapper.batchDelete(ids);
     }
 }

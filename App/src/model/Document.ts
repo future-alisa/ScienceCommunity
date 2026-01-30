@@ -10,7 +10,7 @@ export interface Document {
   /**
    * []
    */
-  documentAuthor: string;
+  documentAuthorId: string;
   /**
    * []
    */
@@ -19,6 +19,10 @@ export interface Document {
    * []
    */
   documentUpdateDate: Date;
+  /**
+   * []
+   */
+  documentCommunityId: string;
   /**
    * []
    */
