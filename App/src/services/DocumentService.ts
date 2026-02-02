@@ -1,22 +1,24 @@
 import { Document } from "@/model/Document";
 import { api } from "./ApiService";
+import Constants from "@/config/Constants";
 const DocumentService = {
-  getDocumentById: (id: string) => {
+  getDocumentById: async (id: string) => {
     // Implementation to fetch a document by its ID
     console.log(`Fetching document with ID: ${id}`);
+    return await api.get<Document>(`/document/${id}`);
   },
 
   getDocumentByBasisType: async (baseId: string) => {
     // Implementation to fetch a document by its ID
     console.log(`Fetching document with BASE ID: ${baseId}`);
-    const data = await api.get<Document[]>("/api/document/get", { baseId });
+    const data = await api.get<Document[]>(Constants.API_COMMUNITY_GET_ALL);
     return data;
   },
 
   getDocumentByCaseType: async (baseId: string) => {
     // Implementation to fetch a document by its ID
     console.log(`Fetching document with BASE ID: ${baseId}`);
-    const data = await api.get<Document[]>("/api/document/get", { baseId });
+    const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
     return data;
   },
 
@@ -32,9 +34,13 @@ const DocumentService = {
     console.log("Creating a new document with data:", data);
   },
 
-  updateDocument: async (id: string, data: any) => {
+  upsertDocument: async (data: Document) => {
     // Implementation to update an existing document
-    console.log(`Updating document with ID: ${id} with data:`, data);
+    console.log(
+      `Updating document with ID: ${data.documentId} with data:`,
+      data
+    );
+    const res = await api.post(Constants.API_DOCUMENT_UPSERT, data);
   },
 
   deleteDocument: async (id: string) => {

@@ -4,10 +4,13 @@
   <resultMap id="BaseResultMap" type="com.alisa.model.Document">
     <id column="document_id" jdbcType="CHAR" property="documentId" />
     <result column="document_category_id" jdbcType="VARCHAR" property="documentCategoryId" />
+    <result column="document_community_id" jdbcType="CHAR" property="documentCommunityId" />
     <result column="document_author_id" jdbcType="CHAR" property="documentAuthorId" />
+    <result column="document_name" jdbcType="VARCHAR" property="documentName" />
+    <result column="document_description" jdbcType="VARCHAR" property="documentDescription" />
     <result column="document_create_date" jdbcType="TIMESTAMP" property="documentCreateDate" />
     <result column="document_update_date" jdbcType="TIMESTAMP" property="documentUpdateDate" />
-    <result column="document_community_id" jdbcType="CHAR" property="documentCommunityId" />
+    <result column="document_thumbnail_url" jdbcType="VARCHAR" property="documentThumbnailUrl" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.alisa.model.Document">
     <result column="document_content" jdbcType="LONGVARCHAR" property="documentContent" />
@@ -71,8 +74,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    document_id, document_category_id, document_author_id, document_create_date, document_update_date, 
-    document_community_id
+    document_id, document_category_id, document_community_id, document_author_id, document_name, 
+    document_description, document_create_date, document_update_date, document_thumbnail_url
   </sql>
   <sql id="Blob_Column_List">
     document_content
@@ -126,12 +129,16 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.alisa.model.Document">
-    insert into tb_document (document_id, document_category_id, document_author_id, 
+    insert into tb_document (document_id, document_category_id, document_community_id, 
+      document_author_id, document_name, document_description, 
       document_create_date, document_update_date, 
-      document_community_id, document_content)
-    values (#{documentId,jdbcType=CHAR}, #{documentCategoryId,jdbcType=VARCHAR}, #{documentAuthorId,jdbcType=CHAR}, 
+      document_thumbnail_url, document_content
+      )
+    values (#{documentId,jdbcType=CHAR}, #{documentCategoryId,jdbcType=VARCHAR}, #{documentCommunityId,jdbcType=CHAR}, 
+      #{documentAuthorId,jdbcType=CHAR}, #{documentName,jdbcType=VARCHAR}, #{documentDescription,jdbcType=VARCHAR}, 
       #{documentCreateDate,jdbcType=TIMESTAMP}, #{documentUpdateDate,jdbcType=TIMESTAMP}, 
-      #{documentCommunityId,jdbcType=CHAR}, #{documentContent,jdbcType=LONGVARCHAR})
+      #{documentThumbnailUrl,jdbcType=VARCHAR}, #{documentContent,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.alisa.model.Document">
     insert into tb_document
@@ -142,8 +149,17 @@
       <if test="documentCategoryId != null">
         document_category_id,
       </if>
+      <if test="documentCommunityId != null">
+        document_community_id,
+      </if>
       <if test="documentAuthorId != null">
         document_author_id,
+      </if>
+      <if test="documentName != null">
+        document_name,
+      </if>
+      <if test="documentDescription != null">
+        document_description,
       </if>
       <if test="documentCreateDate != null">
         document_create_date,
@@ -151,8 +167,8 @@
       <if test="documentUpdateDate != null">
         document_update_date,
       </if>
-      <if test="documentCommunityId != null">
-        document_community_id,
+      <if test="documentThumbnailUrl != null">
+        document_thumbnail_url,
       </if>
       <if test="documentContent != null">
         document_content,
@@ -165,8 +181,17 @@
       <if test="documentCategoryId != null">
         #{documentCategoryId,jdbcType=VARCHAR},
       </if>
+      <if test="documentCommunityId != null">
+        #{documentCommunityId,jdbcType=CHAR},
+      </if>
       <if test="documentAuthorId != null">
         #{documentAuthorId,jdbcType=CHAR},
+      </if>
+      <if test="documentName != null">
+        #{documentName,jdbcType=VARCHAR},
+      </if>
+      <if test="documentDescription != null">
+        #{documentDescription,jdbcType=VARCHAR},
       </if>
       <if test="documentCreateDate != null">
         #{documentCreateDate,jdbcType=TIMESTAMP},
@@ -174,8 +199,8 @@
       <if test="documentUpdateDate != null">
         #{documentUpdateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="documentCommunityId != null">
-        #{documentCommunityId,jdbcType=CHAR},
+      <if test="documentThumbnailUrl != null">
+        #{documentThumbnailUrl,jdbcType=VARCHAR},
       </if>
       <if test="documentContent != null">
         #{documentContent,jdbcType=LONGVARCHAR},
@@ -197,8 +222,17 @@
       <if test="row.documentCategoryId != null">
         document_category_id = #{row.documentCategoryId,jdbcType=VARCHAR},
       </if>
+      <if test="row.documentCommunityId != null">
+        document_community_id = #{row.documentCommunityId,jdbcType=CHAR},
+      </if>
       <if test="row.documentAuthorId != null">
         document_author_id = #{row.documentAuthorId,jdbcType=CHAR},
+      </if>
+      <if test="row.documentName != null">
+        document_name = #{row.documentName,jdbcType=VARCHAR},
+      </if>
+      <if test="row.documentDescription != null">
+        document_description = #{row.documentDescription,jdbcType=VARCHAR},
       </if>
       <if test="row.documentCreateDate != null">
         document_create_date = #{row.documentCreateDate,jdbcType=TIMESTAMP},
@@ -206,8 +240,8 @@
       <if test="row.documentUpdateDate != null">
         document_update_date = #{row.documentUpdateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="row.documentCommunityId != null">
-        document_community_id = #{row.documentCommunityId,jdbcType=CHAR},
+      <if test="row.documentThumbnailUrl != null">
+        document_thumbnail_url = #{row.documentThumbnailUrl,jdbcType=VARCHAR},
       </if>
       <if test="row.documentContent != null">
         document_content = #{row.documentContent,jdbcType=LONGVARCHAR},
@@ -221,10 +255,13 @@
     update tb_document
     set document_id = #{row.documentId,jdbcType=CHAR},
       document_category_id = #{row.documentCategoryId,jdbcType=VARCHAR},
+      document_community_id = #{row.documentCommunityId,jdbcType=CHAR},
       document_author_id = #{row.documentAuthorId,jdbcType=CHAR},
+      document_name = #{row.documentName,jdbcType=VARCHAR},
+      document_description = #{row.documentDescription,jdbcType=VARCHAR},
       document_create_date = #{row.documentCreateDate,jdbcType=TIMESTAMP},
       document_update_date = #{row.documentUpdateDate,jdbcType=TIMESTAMP},
-      document_community_id = #{row.documentCommunityId,jdbcType=CHAR},
+      document_thumbnail_url = #{row.documentThumbnailUrl,jdbcType=VARCHAR},
       document_content = #{row.documentContent,jdbcType=LONGVARCHAR}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -234,10 +271,13 @@
     update tb_document
     set document_id = #{row.documentId,jdbcType=CHAR},
       document_category_id = #{row.documentCategoryId,jdbcType=VARCHAR},
+      document_community_id = #{row.documentCommunityId,jdbcType=CHAR},
       document_author_id = #{row.documentAuthorId,jdbcType=CHAR},
+      document_name = #{row.documentName,jdbcType=VARCHAR},
+      document_description = #{row.documentDescription,jdbcType=VARCHAR},
       document_create_date = #{row.documentCreateDate,jdbcType=TIMESTAMP},
       document_update_date = #{row.documentUpdateDate,jdbcType=TIMESTAMP},
-      document_community_id = #{row.documentCommunityId,jdbcType=CHAR}
+      document_thumbnail_url = #{row.documentThumbnailUrl,jdbcType=VARCHAR}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -248,8 +288,17 @@
       <if test="documentCategoryId != null">
         document_category_id = #{documentCategoryId,jdbcType=VARCHAR},
       </if>
+      <if test="documentCommunityId != null">
+        document_community_id = #{documentCommunityId,jdbcType=CHAR},
+      </if>
       <if test="documentAuthorId != null">
         document_author_id = #{documentAuthorId,jdbcType=CHAR},
+      </if>
+      <if test="documentName != null">
+        document_name = #{documentName,jdbcType=VARCHAR},
+      </if>
+      <if test="documentDescription != null">
+        document_description = #{documentDescription,jdbcType=VARCHAR},
       </if>
       <if test="documentCreateDate != null">
         document_create_date = #{documentCreateDate,jdbcType=TIMESTAMP},
@@ -257,8 +306,8 @@
       <if test="documentUpdateDate != null">
         document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="documentCommunityId != null">
-        document_community_id = #{documentCommunityId,jdbcType=CHAR},
+      <if test="documentThumbnailUrl != null">
+        document_thumbnail_url = #{documentThumbnailUrl,jdbcType=VARCHAR},
       </if>
       <if test="documentContent != null">
         document_content = #{documentContent,jdbcType=LONGVARCHAR},
@@ -269,33 +318,39 @@
   <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.alisa.model.Document">
     update tb_document
     set document_category_id = #{documentCategoryId,jdbcType=VARCHAR},
+      document_community_id = #{documentCommunityId,jdbcType=CHAR},
       document_author_id = #{documentAuthorId,jdbcType=CHAR},
+      document_name = #{documentName,jdbcType=VARCHAR},
+      document_description = #{documentDescription,jdbcType=VARCHAR},
       document_create_date = #{documentCreateDate,jdbcType=TIMESTAMP},
       document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP},
-      document_community_id = #{documentCommunityId,jdbcType=CHAR},
+      document_thumbnail_url = #{documentThumbnailUrl,jdbcType=VARCHAR},
       document_content = #{documentContent,jdbcType=LONGVARCHAR}
     where document_id = #{documentId,jdbcType=CHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.alisa.model.Document">
     update tb_document
     set document_category_id = #{documentCategoryId,jdbcType=VARCHAR},
+      document_community_id = #{documentCommunityId,jdbcType=CHAR},
       document_author_id = #{documentAuthorId,jdbcType=CHAR},
+      document_name = #{documentName,jdbcType=VARCHAR},
+      document_description = #{documentDescription,jdbcType=VARCHAR},
       document_create_date = #{documentCreateDate,jdbcType=TIMESTAMP},
       document_update_date = #{documentUpdateDate,jdbcType=TIMESTAMP},
-      document_community_id = #{documentCommunityId,jdbcType=CHAR}
+      document_thumbnail_url = #{documentThumbnailUrl,jdbcType=VARCHAR}
     where document_id = #{documentId,jdbcType=CHAR}
   </update>
   <insert id="batchUpsert" parameterType="java.util.List">
-    insert into tb_document (document_id, document_category_id, document_author_id, document_create_date, document_update_date, document_community_id, document_content) values 
+    insert into tb_document (document_id, document_category_id, document_community_id, document_author_id, document_name, document_description, document_create_date, document_update_date, document_thumbnail_url, document_content) values 
     <foreach collection="list" item="item" separator=",">
-      (#{item.documentId,jdbcType=CHAR}, #{item.documentCategoryId,jdbcType=VARCHAR}, #{item.documentAuthorId,jdbcType=CHAR}, #{item.documentCreateDate,jdbcType=TIMESTAMP}, #{item.documentUpdateDate,jdbcType=TIMESTAMP}, #{item.documentCommunityId,jdbcType=CHAR}, #{item.documentContent,jdbcType=LONGVARCHAR})
+      (#{item.documentId,jdbcType=CHAR}, #{item.documentCategoryId,jdbcType=VARCHAR}, #{item.documentCommunityId,jdbcType=CHAR}, #{item.documentAuthorId,jdbcType=CHAR}, #{item.documentName,jdbcType=VARCHAR}, #{item.documentDescription,jdbcType=VARCHAR}, #{item.documentCreateDate,jdbcType=TIMESTAMP}, #{item.documentUpdateDate,jdbcType=TIMESTAMP}, #{item.documentThumbnailUrl,jdbcType=VARCHAR}, #{item.documentContent,jdbcType=LONGVARCHAR})
     </foreach>
-    on duplicate key update document_category_id = values(document_category_id), document_author_id = values(document_author_id), document_create_date = values(document_create_date), document_update_date = values(document_update_date), document_community_id = values(document_community_id), document_content = values(document_content)
+    on duplicate key update document_category_id = values(document_category_id), document_community_id = values(document_community_id), document_author_id = values(document_author_id), document_name = values(document_name), document_description = values(document_description), document_create_date = values(document_create_date), document_update_date = values(document_update_date), document_thumbnail_url = values(document_thumbnail_url), document_content = values(document_content)
   </insert>
   <insert id="upsert" parameterType="com.alisa.model.Document">
-    insert into tb_document (document_id, document_category_id, document_author_id, document_create_date, document_update_date, document_community_id, document_content) values 
-    (#{documentId,jdbcType=CHAR}, #{documentCategoryId,jdbcType=VARCHAR}, #{documentAuthorId,jdbcType=CHAR}, #{documentCreateDate,jdbcType=TIMESTAMP}, #{documentUpdateDate,jdbcType=TIMESTAMP}, #{documentCommunityId,jdbcType=CHAR}, #{documentContent,jdbcType=LONGVARCHAR})
-    on duplicate key update document_category_id = values(document_category_id), document_author_id = values(document_author_id), document_create_date = values(document_create_date), document_update_date = values(document_update_date), document_community_id = values(document_community_id), document_content = values(document_content)
+    insert into tb_document (document_id, document_category_id, document_community_id, document_author_id, document_name, document_description, document_create_date, document_update_date, document_thumbnail_url, document_content) values 
+    (#{documentId,jdbcType=CHAR}, #{documentCategoryId,jdbcType=VARCHAR}, #{documentCommunityId,jdbcType=CHAR}, #{documentAuthorId,jdbcType=CHAR}, #{documentName,jdbcType=VARCHAR}, #{documentDescription,jdbcType=VARCHAR}, #{documentCreateDate,jdbcType=TIMESTAMP}, #{documentUpdateDate,jdbcType=TIMESTAMP}, #{documentThumbnailUrl,jdbcType=VARCHAR}, #{documentContent,jdbcType=LONGVARCHAR})
+    on duplicate key update document_category_id = values(document_category_id), document_community_id = values(document_community_id), document_author_id = values(document_author_id), document_name = values(document_name), document_description = values(document_description), document_create_date = values(document_create_date), document_update_date = values(document_update_date), document_thumbnail_url = values(document_thumbnail_url), document_content = values(document_content)
   </insert>
   <delete id="batchDelete" parameterType="java.util.List">
     delete from tb_document where document_id in 

@@ -7,13 +7,19 @@ public class Document {
 
     private String documentCategoryId;
 
+    private String documentCommunityId;
+
     private String documentAuthorId;
+
+    private String documentName;
+
+    private String documentDescription;
 
     private Date documentCreateDate;
 
     private Date documentUpdateDate;
 
-    private String documentCommunityId;
+    private String documentThumbnailUrl;
 
     private String documentContent;
 
@@ -33,12 +39,36 @@ public class Document {
         this.documentCategoryId = documentCategoryId;
     }
 
+    public String getDocumentCommunityId() {
+        return documentCommunityId;
+    }
+
+    public void setDocumentCommunityId(String documentCommunityId) {
+        this.documentCommunityId = documentCommunityId;
+    }
+
     public String getDocumentAuthorId() {
         return documentAuthorId;
     }
 
     public void setDocumentAuthorId(String documentAuthorId) {
         this.documentAuthorId = documentAuthorId;
+    }
+
+    public String getDocumentName() {
+        return documentName;
+    }
+
+    public void setDocumentName(String documentName) {
+        this.documentName = documentName;
+    }
+
+    public String getDocumentDescription() {
+        return documentDescription;
+    }
+
+    public void setDocumentDescription(String documentDescription) {
+        this.documentDescription = documentDescription;
     }
 
     public Date getDocumentCreateDate() {
@@ -57,12 +87,12 @@ public class Document {
         this.documentUpdateDate = documentUpdateDate;
     }
 
-    public String getDocumentCommunityId() {
-        return documentCommunityId;
+    public String getDocumentThumbnailUrl() {
+        return documentThumbnailUrl;
     }
 
-    public void setDocumentCommunityId(String documentCommunityId) {
-        this.documentCommunityId = documentCommunityId;
+    public void setDocumentThumbnailUrl(String documentThumbnailUrl) {
+        this.documentThumbnailUrl = documentThumbnailUrl;
     }
 
     public String getDocumentContent() {

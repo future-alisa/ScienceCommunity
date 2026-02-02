@@ -7,6 +7,7 @@ import { Descendant } from "slate";
 import { UserContext } from "@/context/UserContext";
 
 import styles from "./publish.module.css"; // 引入 CSS Module
+import DocumentService from "@/services/DocumentService";
 
 export default function Page() {
   const userContext = useContext(UserContext);
@@ -65,12 +66,19 @@ export default function Page() {
   const onChange = (value: Descendant[]) => setValue(value);
 
   const publish = async (content: string) => {
-    await api.post("/api/document/save", {
+    await DocumentService.upsertDocument({
       documentId: "",
       documentCategoryId: typeId,
-      documentAuthor: "",
-      documentCreateDate: "2025-01-03 13:00:00",
-      documentUpdateDate: "2025-01-03 13:00:00",
+      documentCommunityId: userContext.name,
+      documentAuthorId: "",
+
+      documentName: "未命名文档",
+      documentDescription: "dsaljkdljlkjdlkajkljl",
+
+      documentCreateDate: new Date(),
+      documentUpdateDate: new Date(),
+
+      documentThumbnailUrl: "",
       documentContent: content,
     });
   };

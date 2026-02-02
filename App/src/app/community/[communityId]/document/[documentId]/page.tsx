@@ -5,9 +5,10 @@ import { useEffect, useState } from "react";
 import { Descendant } from "slate";
 import { DocumentRouteParams } from "@/model/MyRouteParams";
 import { useParams } from "next/navigation";
+import DocumentService from "@/services/DocumentService";
 
 export default function Page() {
-  const { postId } = useParams<DocumentRouteParams>();
+  const { documentId } = useParams<DocumentRouteParams>();
   const [value, setValue] = useState<Descendant[]>([
     {
       type: "paragraph",
@@ -21,7 +22,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(postId);
+    console.log(documentId);
     const parseSlateJson = function (jsonString: string): Descendant[] {
       try {
         const parsed = JSON.parse(jsonString);
@@ -45,9 +46,7 @@ export default function Page() {
     const fethData = async () => {
       try {
         setIsLoading(true);
-        const data = await api.get("/api/document/getById", {
-          id: postId,
-        });
+        const data = await DocumentService.getDocumentById(documentId);
         setValue(parseSlateJson(data.documentContent));
         console.log(data);
       } catch (error) {
@@ -64,14 +63,14 @@ export default function Page() {
     };
 
     fethData();
-  }, [postId]);
+  }, [documentId]);
 
   return (
     <div>
       {isLoading ? (
         <div>加载文档中...</div>
       ) : (
-        <MyEditor key={postId} initialValue={value} onChange={onChange} />
+        <MyEditor key={documentId} initialValue={value} onChange={onChange} />
       )}
     </div>
   );

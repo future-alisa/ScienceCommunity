@@ -154,6 +154,10 @@ export const api = new ApiService({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
 });
 
+export const userApi = new ApiService({
+  baseUrl: process.env.NEXT_PUBLIC_USER_API_BASE_URL,
+});
+
 const savedToken =
   typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
 if (savedToken) {

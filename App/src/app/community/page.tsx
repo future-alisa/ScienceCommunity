@@ -29,25 +29,24 @@ export default function Page() {
     router.push(`/community/${cardId}`);
   };
 
-  const fetchData = async () => {
-    try {
-      const data = await CommunityService.getCommunities();
-      const newData = data.map((value) => {
-        return {
-          title: value.communityName,
-          id: value.communityId,
-          description: value.communityDescription,
-          imageUrl: value.communityImageUrl,
-        };
-      });
-      setData(newData);
-      console.log(newData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await CommunityService.getCommunities();
+        const newData = data.map((value) => {
+          return {
+            title: value.communityName,
+            id: value.communityId,
+            description: value.communityDescription,
+            imageUrl: value.communityImageUrl,
+          };
+        });
+        setData(newData);
+        console.log(newData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
     fetchData();
   }, []);
   function handleChange(

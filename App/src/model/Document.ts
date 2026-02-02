@@ -10,7 +10,19 @@ export interface Document {
   /**
    * []
    */
+  documentCommunityId: string;
+  /**
+   * []
+   */
   documentAuthorId: string;
+  /**
+   * []
+   */
+  documentName: string;
+  /**
+   * []
+   */
+  documentDescription: string;
   /**
    * []
    */
@@ -22,7 +34,7 @@ export interface Document {
   /**
    * []
    */
-  documentCommunityId: string;
+  documentThumbnailUrl: string;
   /**
    * []
    */

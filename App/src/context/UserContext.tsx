@@ -11,6 +11,7 @@ import {
 
 export interface UserContextType {
   name: string;
+  communityId: string;
   token: string;
   state: UserState;
 }
@@ -24,6 +25,7 @@ interface UserAction {
 
 const initUserContext: UserContextType = {
   name: "",
+  communityId: "",
   token: "",
   state: "Offline",
 };
@@ -85,6 +87,7 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
           type: "Login",
           user: {
             name: auth.name,
+            communityId: "01290873b68b4806aefd79eeace6c38f",
             token: auth.token,
             state: "Online",
           },

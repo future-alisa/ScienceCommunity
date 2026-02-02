@@ -5,7 +5,7 @@ type CommunityRouteParams = {
 
 // 文档页面参数
 export interface DocumentRouteParams extends CommunityRouteParams {
-  postId: string;
+  documentId: string;
 }
 
 // 频道页面参数

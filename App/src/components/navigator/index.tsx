@@ -63,35 +63,27 @@ export default function Navigator({ toggleMenu }: { toggleMenu: () => void }) {
       </div>
 
       <div className={styles.nav_right}>
-        {user.state === "Online" ? (
-          <Avatar
-            className={styles.avatar}
-            size={50}
-            onClick={() => {
-              if (user.state === "Offline") {
-                router.push("/signin");
-              } else {
-                console.log("toggler menu:");
-                toggleMenu();
+        <Avatar
+          className={styles.avatar}
+          size={50}
+          {...(user.state === "Online"
+            ? {
+                // 登录状态：显示首字母或图片
+                children: user.name ? (
+                  user.name.charAt(0).toUpperCase()
+                ) : (
+                  <UserOutlined />
+                ),
+                style: { backgroundColor: "#1890ff", cursor: "pointer" }, // 设置一个好看的背景色
+                onClick: toggleMenu,
               }
-            }}
-            src={
-              <img
-                src={"https://avatars.githubusercontent.com/u/12345678?v=4"}
-                alt="avatar"
-              />
-            }
-          />
-        ) : (
-          <Avatar
-            size={50}
-            className={styles.avatar}
-            onClick={() => {
-              router.push("/signin");
-            }}
-            icon={<UserOutlined />}
-          />
-        )}
+            : {
+                // 未登录状态：显示默认图标
+                icon: <UserOutlined />,
+                style: { cursor: "pointer" },
+                onClick: () => router.push("/signin"),
+              })}
+        />
       </div>
     </nav>
   );

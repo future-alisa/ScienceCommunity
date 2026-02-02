@@ -1,8 +1,9 @@
 "use client";
 import styles from "@/app/my-community/post/post.module.css";
 import { CardGrid } from "@/components/card-grid";
+import { CommunityRouteParams } from "@/model/MyRouteParams";
 import DocumentService from "@/services/DocumentService";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Page() {
@@ -21,6 +22,8 @@ export default function Page() {
   const postId = "129f2c1efc9d4e8a821d202bec89f288";
 
   const router = useRouter();
+  const params = useParams<CommunityRouteParams>();
+  const communityId = params?.communityId;
   useEffect(() => {
     const fetchData = async () => {
       const res = await DocumentService.getDocumentByPostType(postId);
@@ -30,7 +33,9 @@ export default function Page() {
   return (
     <CardGrid
       data={data}
-      handleCardClick={() => router.push("/my-community/detail")}
+      handleCardClick={(id) => {
+        router.push(`/community/${communityId}/document/${id}`);
+      }}
     />
   );
 }

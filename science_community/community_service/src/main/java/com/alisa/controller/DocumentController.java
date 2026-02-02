@@ -1,7 +1,11 @@
 package com.alisa.controller;
 
 import com.alisa.model.Document;
+import com.alisa.model.UserContext;
 import com.alisa.service.DocumentService;
+import com.alisa.util.UUIDTool;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +30,9 @@ public class DocumentController {
 
     @PostMapping("/upsert")
     public void upsert(@RequestBody Document document) {
+        var userContext = UserContext.get();
+        document.setDocumentAuthorId(userContext.getUserId());
+        document.setDocumentId(UUIDTool.getUUID());
         documentService.upsert(document);
     }
 
