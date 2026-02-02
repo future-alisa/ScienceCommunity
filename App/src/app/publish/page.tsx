@@ -69,7 +69,7 @@ export default function Page() {
     await DocumentService.upsertDocument({
       documentId: "",
       documentCategoryId: typeId,
-      documentCommunityId: userContext.name,
+      documentCommunityId: userContext.communityId,
       documentAuthorId: "",
 
       documentName: title || "未命名文档",

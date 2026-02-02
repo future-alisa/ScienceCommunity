@@ -8,24 +8,24 @@ const DocumentService = {
     return await api.get<Document>(`/document/${id}`);
   },
 
-  getDocumentByBasisType: async (baseId: string) => {
+  getDocumentByBasisType: async (basisId: string) => {
     // Implementation to fetch a document by its ID
-    console.log(`Fetching document with BASE ID: ${baseId}`);
-    const data = await api.get<Document[]>(Constants.API_COMMUNITY_GET_ALL);
-    return data;
-  },
-
-  getDocumentByCaseType: async (baseId: string) => {
-    // Implementation to fetch a document by its ID
-    console.log(`Fetching document with BASE ID: ${baseId}`);
+    console.log(`Fetching document with BASIS ID: ${basisId}`);
     const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
     return data;
   },
 
-  getDocumentByPostType: async (baseId: string) => {
+  getDocumentByCaseType: async (caseId: string) => {
     // Implementation to fetch a document by its ID
-    console.log(`Fetching document with BASE ID: ${baseId}`);
-    const data = await api.get<Document[]>("/api/document/get", { baseId });
+    console.log(`Fetching document with CASE ID: ${caseId}`);
+    const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
+    return data;
+  },
+
+  getDocumentByPostType: async (postId: string) => {
+    // Implementation to fetch a document by its ID
+    console.log(`Fetching document with POST ID: ${postId}`);
+    const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
     return data;
   },
 
