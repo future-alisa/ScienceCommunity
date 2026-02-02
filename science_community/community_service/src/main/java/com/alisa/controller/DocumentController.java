@@ -4,7 +4,6 @@ import com.alisa.model.Document;
 import com.alisa.model.UserContext;
 import com.alisa.service.DocumentService;
 import com.alisa.util.UUIDTool;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators.UUIDGenerator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
