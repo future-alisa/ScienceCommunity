@@ -25,31 +25,31 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public void create(Document model) {
-        documentMapper.insert(model);
+    public int create(Document model) {
+        return documentMapper.insert(model);
     }
 
     @Override
-    public void update(Document model) {
-        documentMapper.updateByPrimaryKey(model);
+    public int update(Document model) {
+        return documentMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        documentMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return documentMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Document model) {
-        documentMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Document> list) {
-        documentMapper.batchUpsert(list);
+    public int upsert(Document model) {
+        return documentMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        documentMapper.batchDelete(ids);
+    public int batchUpsert(List<Document> list) {
+        return documentMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return documentMapper.batchDelete(ids);
     }
 }

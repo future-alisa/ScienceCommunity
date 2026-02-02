@@ -6,10 +6,10 @@ import java.util.List;
 public interface ChannelUserService {
     List<ChannelUser> getAll();
     ChannelUser getById(String id);
-    void create(ChannelUser model);
-    void update(ChannelUser model);
-    void delete(String id);
-    void upsert(ChannelUser model);
-    void batchUpsert(List<ChannelUser> list);
-    void batchDelete(List<String> ids);
+    int create(ChannelUser model);
+    int update(ChannelUser model);
+    int delete(String id);
+    int upsert(ChannelUser model);
+    int batchUpsert(List<ChannelUser> list);
+    int batchDelete(List<String> ids);
 }

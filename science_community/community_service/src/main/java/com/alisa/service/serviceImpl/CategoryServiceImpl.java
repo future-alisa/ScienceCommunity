@@ -25,31 +25,31 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void create(Category model) {
-        categoryMapper.insert(model);
+    public int create(Category model) {
+        return categoryMapper.insert(model);
     }
 
     @Override
-    public void update(Category model) {
-        categoryMapper.updateByPrimaryKey(model);
+    public int update(Category model) {
+        return categoryMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        categoryMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return categoryMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Category model) {
-        categoryMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Category> list) {
-        categoryMapper.batchUpsert(list);
+    public int upsert(Category model) {
+        return categoryMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        categoryMapper.batchDelete(ids);
+    public int batchUpsert(List<Category> list) {
+        return categoryMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return categoryMapper.batchDelete(ids);
     }
 }

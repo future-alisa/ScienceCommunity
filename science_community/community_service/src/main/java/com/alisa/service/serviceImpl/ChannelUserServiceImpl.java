@@ -25,31 +25,31 @@ public class ChannelUserServiceImpl implements ChannelUserService {
     }
 
     @Override
-    public void create(ChannelUser model) {
-        channeluserMapper.insert(model);
+    public int create(ChannelUser model) {
+        return channeluserMapper.insert(model);
     }
 
     @Override
-    public void update(ChannelUser model) {
-        channeluserMapper.updateByPrimaryKey(model);
+    public int update(ChannelUser model) {
+        return channeluserMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        channeluserMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return channeluserMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(ChannelUser model) {
-        channeluserMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<ChannelUser> list) {
-        channeluserMapper.batchUpsert(list);
+    public int upsert(ChannelUser model) {
+        return channeluserMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        channeluserMapper.batchDelete(ids);
+    public int batchUpsert(List<ChannelUser> list) {
+        return channeluserMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return channeluserMapper.batchDelete(ids);
     }
 }

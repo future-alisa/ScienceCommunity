@@ -25,31 +25,31 @@ public class TagCommunityServiceImpl implements TagCommunityService {
     }
 
     @Override
-    public void create(TagCommunity model) {
-        tagcommunityMapper.insert(model);
+    public int create(TagCommunity model) {
+        return tagcommunityMapper.insert(model);
     }
 
     @Override
-    public void update(TagCommunity model) {
-        tagcommunityMapper.updateByPrimaryKey(model);
+    public int update(TagCommunity model) {
+        return tagcommunityMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        tagcommunityMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return tagcommunityMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(TagCommunity model) {
-        tagcommunityMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<TagCommunity> list) {
-        tagcommunityMapper.batchUpsert(list);
+    public int upsert(TagCommunity model) {
+        return tagcommunityMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        tagcommunityMapper.batchDelete(ids);
+    public int batchUpsert(List<TagCommunity> list) {
+        return tagcommunityMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return tagcommunityMapper.batchDelete(ids);
     }
 }

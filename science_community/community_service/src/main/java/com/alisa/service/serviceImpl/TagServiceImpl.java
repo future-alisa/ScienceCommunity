@@ -25,31 +25,31 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void create(Tag model) {
-        tagMapper.insert(model);
+    public int create(Tag model) {
+        return tagMapper.insert(model);
     }
 
     @Override
-    public void update(Tag model) {
-        tagMapper.updateByPrimaryKey(model);
+    public int update(Tag model) {
+        return tagMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        tagMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return tagMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Tag model) {
-        tagMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Tag> list) {
-        tagMapper.batchUpsert(list);
+    public int upsert(Tag model) {
+        return tagMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        tagMapper.batchDelete(ids);
+    public int batchUpsert(List<Tag> list) {
+        return tagMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return tagMapper.batchDelete(ids);
     }
 }

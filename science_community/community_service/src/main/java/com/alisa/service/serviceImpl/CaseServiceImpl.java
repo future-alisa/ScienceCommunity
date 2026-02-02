@@ -25,31 +25,31 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public void create(Case model) {
-        caseMapper.insert(model);
+    public int create(Case model) {
+        return caseMapper.insert(model);
     }
 
     @Override
-    public void update(Case model) {
-        caseMapper.updateByPrimaryKey(model);
+    public int update(Case model) {
+        return caseMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        caseMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return caseMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Case model) {
-        caseMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Case> list) {
-        caseMapper.batchUpsert(list);
+    public int upsert(Case model) {
+        return caseMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        caseMapper.batchDelete(ids);
+    public int batchUpsert(List<Case> list) {
+        return caseMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return caseMapper.batchDelete(ids);
     }
 }

@@ -3,6 +3,7 @@ package com.alisa.controller;
 import com.alisa.model.Document;
 import com.alisa.model.UserContext;
 import com.alisa.service.DocumentService;
+import com.alisa.util.Result;
 import com.alisa.util.UUIDTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,30 +19,35 @@ public class DocumentController {
     private DocumentService documentService;
 
     @GetMapping("/getAll")
-    public List<Document> getAll() {
-        return documentService.getAll();
+    public Result<List<Document>> getAll() {
+        var data = documentService.getAll();
+        return new Result<List<Document>>(data);
     }
 
     @GetMapping("/{id}")
-    public Document getById(@PathVariable String id) {
-        return documentService.getById(id);
+    public Result<Document> getById(@PathVariable String id) {
+        var data = documentService.getById(id);
+        return new Result<>(data);
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody Document document) {
+    public Result<Integer> upsert(@RequestBody Document document) {
         var userContext = UserContext.get();
         document.setDocumentAuthorId(userContext.getUserId());
         document.setDocumentId(UUIDTool.getUUID());
-        documentService.upsert(document);
+        var count = documentService.upsert(document);
+        return new Result<Integer>(count);
     }
 
     @PostMapping("/batch-upsert")
-    public void batchUpsert(@RequestBody List<Document> list) {
-        documentService.batchUpsert(list);
+    public Result<Integer> batchUpsert(@RequestBody List<Document> list) {
+        var count = documentService.batchUpsert(list);
+        return new Result<Integer>(count);
     }
 
     @DeleteMapping("/batch-delete")
-    public void batchDelete(@RequestBody List<String> ids) {
-        documentService.batchDelete(ids);
+    public Result<Integer> batchDelete(@RequestBody List<String> ids) {
+        var count = documentService.batchDelete(ids);
+        return new Result<Integer>(count);
     }
 }

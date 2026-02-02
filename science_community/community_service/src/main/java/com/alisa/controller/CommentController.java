@@ -2,6 +2,7 @@ package com.alisa.controller;
 
 import com.alisa.model.Comment;
 import com.alisa.service.CommentService;
+import com.alisa.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +16,32 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping("/getAll")
-    public List<Comment> getAll() {
-        return commentService.getAll();
+    public Result<List<Comment>> getAll() {
+        var data = commentService.getAll();
+        return new Result<>(data);
     }
 
     @GetMapping("/{id}")
-    public Comment getById(@PathVariable String id) {
-        return commentService.getById(id);
+    public Result<Comment> getById(@PathVariable String id) {
+        var data = commentService.getById(id);
+        return new Result<>(data);
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody Comment comment) {
-        commentService.upsert(comment);
+    public Result<Integer> upsert(@RequestBody Comment comment) {
+        var count = commentService.upsert(comment);
+        return new Result<Integer>(count);
     }
 
     @PostMapping("/batch-upsert")
-    public void batchUpsert(@RequestBody List<Comment> list) {
-        commentService.batchUpsert(list);
+    public Result<Integer> batchUpsert(@RequestBody List<Comment> list) {
+        var count = commentService.batchUpsert(list);
+        return new Result<>(count);
     }
 
     @DeleteMapping("/batch-delete")
-    public void batchDelete(@RequestBody List<String> ids) {
-        commentService.batchDelete(ids);
+    public Result<Integer> batchDelete(@RequestBody List<String> ids) {
+        var count = commentService.batchDelete(ids);
+        return new Result<>(count);
     }
 }

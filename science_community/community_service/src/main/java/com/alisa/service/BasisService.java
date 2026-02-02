@@ -6,10 +6,10 @@ import java.util.List;
 public interface BasisService {
     List<Basis> getAll();
     Basis getById(String id);
-    void create(Basis model);
-    void update(Basis model);
-    void delete(String id);
-    void upsert(Basis model);
-    void batchUpsert(List<Basis> list);
-    void batchDelete(List<String> ids);
+    int create(Basis model);
+    int update(Basis model);
+    int delete(String id);
+    int upsert(Basis model);
+    int batchUpsert(List<Basis> list);
+    int batchDelete(List<String> ids);
 }

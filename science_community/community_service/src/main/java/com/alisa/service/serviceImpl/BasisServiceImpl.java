@@ -25,31 +25,31 @@ public class BasisServiceImpl implements BasisService {
     }
 
     @Override
-    public void create(Basis model) {
-        basisMapper.insert(model);
+    public int create(Basis model) {
+        return basisMapper.insert(model);
     }
 
     @Override
-    public void update(Basis model) {
-        basisMapper.updateByPrimaryKey(model);
+    public int update(Basis model) {
+        return basisMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        basisMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return basisMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Basis model) {
-        basisMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Basis> list) {
-        basisMapper.batchUpsert(list);
+    public int upsert(Basis model) {
+        return basisMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        basisMapper.batchDelete(ids);
+    public int batchUpsert(List<Basis> list) {
+        return basisMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return basisMapper.batchDelete(ids);
     }
 }

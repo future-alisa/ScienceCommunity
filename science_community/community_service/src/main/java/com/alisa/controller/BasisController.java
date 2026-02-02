@@ -2,6 +2,7 @@ package com.alisa.controller;
 
 import com.alisa.model.Basis;
 import com.alisa.service.BasisService;
+import com.alisa.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +16,32 @@ public class BasisController {
     private BasisService basisService;
 
     @GetMapping("/getAll")
-    public List<Basis> getAll() {
-        return basisService.getAll();
+    public Result<List<Basis>> getAll() {
+        var data = basisService.getAll();
+        return new Result<>(data);
     }
 
     @GetMapping("/{id}")
-    public Basis getById(@PathVariable String id) {
-        return basisService.getById(id);
+    public Result<Basis> getById(@PathVariable String id) {
+        var data = basisService.getById(id);
+        return new Result<>(data);
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody Basis basis) {
-        basisService.upsert(basis);
+    public Result<Integer> upsert(@RequestBody Basis basis) {
+        var count = basisService.upsert(basis);
+        return new Result<Integer>(count);
     }
 
     @PostMapping("/batch-upsert")
-    public void batchUpsert(@RequestBody List<Basis> list) {
-        basisService.batchUpsert(list);
+    public Result<Integer> batchUpsert(@RequestBody List<Basis> list) {
+        var count = basisService.batchUpsert(list);
+        return new Result<>(count);
     }
 
     @DeleteMapping("/batch-delete")
-    public void batchDelete(@RequestBody List<String> ids) {
-        basisService.batchDelete(ids);
+    public Result<Integer> batchDelete(@RequestBody List<String> ids) {
+        var count = basisService.batchDelete(ids);
+        return new Result<>(count);
     }
 }

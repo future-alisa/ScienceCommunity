@@ -6,10 +6,10 @@ import java.util.List;
 public interface TagCommunityService {
     List<TagCommunity> getAll();
     TagCommunity getById(String id);
-    void create(TagCommunity model);
-    void update(TagCommunity model);
-    void delete(String id);
-    void upsert(TagCommunity model);
-    void batchUpsert(List<TagCommunity> list);
-    void batchDelete(List<String> ids);
+    int create(TagCommunity model);
+    int update(TagCommunity model);
+    int delete(String id);
+    int upsert(TagCommunity model);
+    int batchUpsert(List<TagCommunity> list);
+    int batchDelete(List<String> ids);
 }

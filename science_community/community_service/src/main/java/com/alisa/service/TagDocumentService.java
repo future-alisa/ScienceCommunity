@@ -6,10 +6,10 @@ import java.util.List;
 public interface TagDocumentService {
     List<TagDocument> getAll();
     TagDocument getById(String id);
-    void create(TagDocument model);
-    void update(TagDocument model);
-    void delete(String id);
-    void upsert(TagDocument model);
-    void batchUpsert(List<TagDocument> list);
-    void batchDelete(List<String> ids);
+    int create(TagDocument model);
+    int update(TagDocument model);
+    int delete(String id);
+    int upsert(TagDocument model);
+    int batchUpsert(List<TagDocument> list);
+    int batchDelete(List<String> ids);
 }

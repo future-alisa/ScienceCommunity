@@ -25,31 +25,31 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public void create(Channel model) {
-        channelMapper.insert(model);
+    public int create(Channel model) {
+        return channelMapper.insert(model);
     }
 
     @Override
-    public void update(Channel model) {
-        channelMapper.updateByPrimaryKey(model);
+    public int update(Channel model) {
+        return channelMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        channelMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return channelMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Channel model) {
-        channelMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Channel> list) {
-        channelMapper.batchUpsert(list);
+    public int upsert(Channel model) {
+        return channelMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        channelMapper.batchDelete(ids);
+    public int batchUpsert(List<Channel> list) {
+        return channelMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return channelMapper.batchDelete(ids);
     }
 }

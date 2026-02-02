@@ -2,6 +2,7 @@ package com.alisa.controller;
 
 import com.alisa.model.CommunityUser;
 import com.alisa.service.CommunityUserService;
+import com.alisa.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +16,32 @@ public class CommunityUserController {
     private CommunityUserService communityuserService;
 
     @GetMapping("/getAll")
-    public List<CommunityUser> getAll() {
-        return communityuserService.getAll();
+    public Result<List<CommunityUser>> getAll() {
+        var data = communityuserService.getAll();
+        return new Result<>(data);
     }
 
     @GetMapping("/{id}")
-    public CommunityUser getById(@PathVariable String id) {
-        return communityuserService.getById(id);
+    public Result<CommunityUser> getById(@PathVariable String id) {
+        var data = communityuserService.getById(id);
+        return new Result<>(data);
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody CommunityUser communityuser) {
-        communityuserService.upsert(communityuser);
+    public Result<Integer> upsert(@RequestBody CommunityUser communityuser) {
+        var count = communityuserService.upsert(communityuser);
+        return new Result<Integer>(count);
     }
 
     @PostMapping("/batch-upsert")
-    public void batchUpsert(@RequestBody List<CommunityUser> list) {
-        communityuserService.batchUpsert(list);
+    public Result<Integer> batchUpsert(@RequestBody List<CommunityUser> list) {
+        var count = communityuserService.batchUpsert(list);
+        return new Result<>(count);
     }
 
     @DeleteMapping("/batch-delete")
-    public void batchDelete(@RequestBody List<String> ids) {
-        communityuserService.batchDelete(ids);
+    public Result<Integer> batchDelete(@RequestBody List<String> ids) {
+        var count = communityuserService.batchDelete(ids);
+        return new Result<>(count);
     }
 }

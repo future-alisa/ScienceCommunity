@@ -2,6 +2,7 @@ package com.alisa.controller;
 
 import com.alisa.model.ChannelUser;
 import com.alisa.service.ChannelUserService;
+import com.alisa.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +16,32 @@ public class ChannelUserController {
     private ChannelUserService channeluserService;
 
     @GetMapping("/getAll")
-    public List<ChannelUser> getAll() {
-        return channeluserService.getAll();
+    public Result<List<ChannelUser>> getAll() {
+        var data = channeluserService.getAll();
+        return new Result<>(data);
     }
 
     @GetMapping("/{id}")
-    public ChannelUser getById(@PathVariable String id) {
-        return channeluserService.getById(id);
+    public Result<ChannelUser> getById(@PathVariable String id) {
+        var data = channeluserService.getById(id);
+        return new Result<>(data);
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody ChannelUser channeluser) {
-        channeluserService.upsert(channeluser);
+    public Result<Integer> upsert(@RequestBody ChannelUser channeluser) {
+        var count = channeluserService.upsert(channeluser);
+        return new Result<Integer>(count);
     }
 
     @PostMapping("/batch-upsert")
-    public void batchUpsert(@RequestBody List<ChannelUser> list) {
-        channeluserService.batchUpsert(list);
+    public Result<Integer> batchUpsert(@RequestBody List<ChannelUser> list) {
+        var count = channeluserService.batchUpsert(list);
+        return new Result<>(count);
     }
 
     @DeleteMapping("/batch-delete")
-    public void batchDelete(@RequestBody List<String> ids) {
-        channeluserService.batchDelete(ids);
+    public Result<Integer> batchDelete(@RequestBody List<String> ids) {
+        var count = channeluserService.batchDelete(ids);
+        return new Result<>(count);
     }
 }

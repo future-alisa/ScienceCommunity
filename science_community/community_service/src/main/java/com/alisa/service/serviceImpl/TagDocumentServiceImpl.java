@@ -25,31 +25,31 @@ public class TagDocumentServiceImpl implements TagDocumentService {
     }
 
     @Override
-    public void create(TagDocument model) {
-        tagdocumentMapper.insert(model);
+    public int create(TagDocument model) {
+        return tagdocumentMapper.insert(model);
     }
 
     @Override
-    public void update(TagDocument model) {
-        tagdocumentMapper.updateByPrimaryKey(model);
+    public int update(TagDocument model) {
+        return tagdocumentMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        tagdocumentMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return tagdocumentMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(TagDocument model) {
-        tagdocumentMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<TagDocument> list) {
-        tagdocumentMapper.batchUpsert(list);
+    public int upsert(TagDocument model) {
+        return tagdocumentMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        tagdocumentMapper.batchDelete(ids);
+    public int batchUpsert(List<TagDocument> list) {
+        return tagdocumentMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return tagdocumentMapper.batchDelete(ids);
     }
 }

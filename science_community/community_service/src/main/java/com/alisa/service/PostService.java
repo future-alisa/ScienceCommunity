@@ -6,10 +6,10 @@ import java.util.List;
 public interface PostService {
     List<Post> getAll();
     Post getById(String id);
-    void create(Post model);
-    void update(Post model);
-    void delete(String id);
-    void upsert(Post model);
-    void batchUpsert(List<Post> list);
-    void batchDelete(List<String> ids);
+    int create(Post model);
+    int update(Post model);
+    int delete(String id);
+    int upsert(Post model);
+    int batchUpsert(List<Post> list);
+    int batchDelete(List<String> ids);
 }

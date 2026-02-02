@@ -6,10 +6,10 @@ import java.util.List;
 public interface CategoryService {
     List<Category> getAll();
     Category getById(String id);
-    void create(Category model);
-    void update(Category model);
-    void delete(String id);
-    void upsert(Category model);
-    void batchUpsert(List<Category> list);
-    void batchDelete(List<String> ids);
+    int create(Category model);
+    int update(Category model);
+    int delete(String id);
+    int upsert(Category model);
+    int batchUpsert(List<Category> list);
+    int batchDelete(List<String> ids);
 }

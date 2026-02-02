@@ -25,31 +25,31 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void create(Comment model) {
-        commentMapper.insert(model);
+    public int create(Comment model) {
+        return commentMapper.insert(model);
     }
 
     @Override
-    public void update(Comment model) {
-        commentMapper.updateByPrimaryKey(model);
+    public int update(Comment model) {
+        return commentMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        commentMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return commentMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Comment model) {
-        commentMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Comment> list) {
-        commentMapper.batchUpsert(list);
+    public int upsert(Comment model) {
+        return commentMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        commentMapper.batchDelete(ids);
+    public int batchUpsert(List<Comment> list) {
+        return commentMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return commentMapper.batchDelete(ids);
     }
 }

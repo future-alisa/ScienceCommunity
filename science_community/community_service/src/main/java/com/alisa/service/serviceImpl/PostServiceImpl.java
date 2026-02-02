@@ -25,31 +25,31 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void create(Post model) {
-        postMapper.insert(model);
+    public int create(Post model) {
+        return postMapper.insert(model);
     }
 
     @Override
-    public void update(Post model) {
-        postMapper.updateByPrimaryKey(model);
+    public int update(Post model) {
+        return postMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        postMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return postMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Post model) {
-        postMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Post> list) {
-        postMapper.batchUpsert(list);
+    public int upsert(Post model) {
+        return postMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        postMapper.batchDelete(ids);
+    public int batchUpsert(List<Post> list) {
+        return postMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return postMapper.batchDelete(ids);
     }
 }

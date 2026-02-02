@@ -2,6 +2,7 @@ package com.alisa.controller;
 
 import com.alisa.model.TagDocument;
 import com.alisa.service.TagDocumentService;
+import com.alisa.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +16,32 @@ public class TagDocumentController {
     private TagDocumentService tagdocumentService;
 
     @GetMapping("/getAll")
-    public List<TagDocument> getAll() {
-        return tagdocumentService.getAll();
+    public Result<List<TagDocument>> getAll() {
+        var data = tagdocumentService.getAll();
+        return new Result<>(data);
     }
 
     @GetMapping("/{id}")
-    public TagDocument getById(@PathVariable String id) {
-        return tagdocumentService.getById(id);
+    public Result<TagDocument> getById(@PathVariable String id) {
+        var data = tagdocumentService.getById(id);
+        return new Result<>(data);
     }
 
     @PostMapping("/upsert")
-    public void upsert(@RequestBody TagDocument tagdocument) {
-        tagdocumentService.upsert(tagdocument);
+    public Result<Integer> upsert(@RequestBody TagDocument tagdocument) {
+        var count = tagdocumentService.upsert(tagdocument);
+        return new Result<Integer>(count);
     }
 
     @PostMapping("/batch-upsert")
-    public void batchUpsert(@RequestBody List<TagDocument> list) {
-        tagdocumentService.batchUpsert(list);
+    public Result<Integer> batchUpsert(@RequestBody List<TagDocument> list) {
+        var count = tagdocumentService.batchUpsert(list);
+        return new Result<>(count);
     }
 
     @DeleteMapping("/batch-delete")
-    public void batchDelete(@RequestBody List<String> ids) {
-        tagdocumentService.batchDelete(ids);
+    public Result<Integer> batchDelete(@RequestBody List<String> ids) {
+        var count = tagdocumentService.batchDelete(ids);
+        return new Result<>(count);
     }
 }

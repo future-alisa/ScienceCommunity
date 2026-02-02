@@ -25,31 +25,31 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void create(Message model) {
-        messageMapper.insert(model);
+    public int create(Message model) {
+        return messageMapper.insert(model);
     }
 
     @Override
-    public void update(Message model) {
-        messageMapper.updateByPrimaryKey(model);
+    public int update(Message model) {
+        return messageMapper.updateByPrimaryKey(model);
     }
 
     @Override
-    public void delete(String id) {
-        messageMapper.deleteByPrimaryKey(id);
+    public int delete(String id) {
+        return messageMapper.deleteByPrimaryKey(id);
     }
     @Override
-    public void upsert(Message model) {
-        messageMapper.upsert(model);
-    }
-
-    @Override
-    public void batchUpsert(List<Message> list) {
-        messageMapper.batchUpsert(list);
+    public int upsert(Message model) {
+        return messageMapper.upsert(model);
     }
 
     @Override
-    public void batchDelete(List<String> ids) {
-        messageMapper.batchDelete(ids);
+    public int batchUpsert(List<Message> list) {
+        return messageMapper.batchUpsert(list);
+    }
+
+    @Override
+    public int batchDelete(List<String> ids) {
+        return messageMapper.batchDelete(ids);
     }
 }
