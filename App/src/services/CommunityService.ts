@@ -18,7 +18,7 @@ const CommunityService = {
   },
   getCommunityById(id: string) {
     console.log(`Fetching community with ID: ${id}`);
-    return api.get(`/communities/${id}`);
+    return api.get<Community>(`${Constants.API_COMMUNITY_GET_ID}/${id}`);
   },
   getCommunityByTag(tag: string) {
     console.log(`Fetching community with tag: ${tag}`);
