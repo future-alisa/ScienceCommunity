@@ -2,6 +2,8 @@ package com.alisa.mapper;
 
 import com.alisa.dto.CommunityFilter;
 import com.alisa.model.Community;
+import com.alisa.vo.CommunityVo;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -35,4 +37,6 @@ public interface CommunityMapper {
     int batchUpsert(@Param("list") List<Community> list);
 
     int batchDelete(@Param("list") List<String> list);
+
+    List<CommunityVo> selectCommunityWithTag(String tagName);
 }

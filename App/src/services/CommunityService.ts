@@ -6,6 +6,16 @@ const CommunityService = {
     console.log("Fetching all communities");
     return api.get<Array<Community>>(Constants.API_COMMUNITY_GET_ALL);
   },
+  getCommunitiesWithTag(tagName: string) {
+    console.log("Fetching all communities with tag: ", tagName);
+
+    if (!tagName) {
+      return api.get<Array<Community>>(Constants.API_COMMUNITY_GET_ALL);
+    }
+    return api.get<Array<Community>>(
+      `${Constants.API_COMMUNITY_GET_ALL_BY_TAG}/${tagName}`
+    );
+  },
   getCommunityById(id: string) {
     console.log(`Fetching community with ID: ${id}`);
     return api.get(`/communities/${id}`);

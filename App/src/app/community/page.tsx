@@ -5,26 +5,16 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/theme/ThemeContext";
 import { SearchOutlined } from "@ant-design/icons";
 import { CardGrid } from "@/components/card-grid";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CommunityService from "@/services/CommunityService";
+import { Community } from "@/model/Community";
 
 export default function Page() {
   const router = useRouter();
-  const initData = [
-    {
-      title: "数学社区",
-      id: "1",
-      description: "description1",
-    },
-    {
-      title: "计算机社区",
-      id: "2",
-      description: "description2",
-    },
-  ];
-  const [data, setData] = useState(initData);
-  const { theme } = useTheme();
 
+  const [rawData, setRawData] = useState<Community[]>([]);
+  const { theme } = useTheme();
+  const [tagName, setTagName] = useState<string>("");
   const handleCardClick = (cardId: string) => {
     router.push(`/community/${cardId}`);
   };
@@ -32,29 +22,37 @@ export default function Page() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await CommunityService.getCommunities();
-        const newData = data.map((value) => {
-          return {
-            title: value.communityName,
-            id: value.communityId,
-            description: value.communityDescription,
-            imageUrl: value.communityImageUrl,
-          };
-        });
-        setData(newData);
-        console.log(newData);
+        const data = await CommunityService.getCommunitiesWithTag(tagName);
+        setRawData(data);
+        console.log(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
     fetchData();
-  }, []);
+  }, [tagName]);
+
+  const filterData = useMemo(() => {
+    const newData = rawData.map((value) => {
+      return {
+        title: value.communityName,
+        id: value.communityId,
+        description: value.communityDescription,
+        imageUrl: value.communityImageUrl,
+        tag: value.communityTag,
+      };
+    });
+    return newData;
+  }, [rawData]);
+
   function handleChange(
     value: string,
     optio?:
       | { value: string; label: string }
       | { value: string; label: string }[]
-  ): void {}
+  ): void {
+    setTagName(value);
+  }
 
   return (
     <main
@@ -79,7 +77,7 @@ export default function Page() {
             ]}
           />
           <Select
-            defaultValue="1"
+            defaultValue=""
             className={styles.filterSelect}
             style={{
               backgroundColor: theme.backgroundColor,
@@ -87,9 +85,9 @@ export default function Page() {
             }}
             onChange={handleChange}
             options={[
-              { value: "1", label: "数学" },
-              { value: "2", label: "英语" },
-              { value: "3", label: "物理" },
+              { value: "", label: "所有" },
+              { value: "数学", label: "数学" },
+              { value: "物理", label: "物理" },
             ]}
           />
         </div>
@@ -109,7 +107,7 @@ export default function Page() {
         </div>
       </div>
 
-      <CardGrid data={data} handleCardClick={handleCardClick} />
+      <CardGrid data={filterData} handleCardClick={handleCardClick} />
     </main>
   );
 }

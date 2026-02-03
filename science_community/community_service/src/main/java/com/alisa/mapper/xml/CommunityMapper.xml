@@ -8,6 +8,15 @@
     <result column="community_url" jdbcType="VARCHAR" property="communityUrl" />
     <result column="community_image_url" jdbcType="VARCHAR" property="communityImageUrl" />
   </resultMap>
+  <resultMap id="CommunityVoResultMap" type="com.alisa.vo.CommunityVo">
+    <id column="community_id" jdbcType="CHAR" property="communityId" />
+    <result column="community_name" jdbcType="VARCHAR" property="communityName" />
+    <result column="community_description" jdbcType="VARCHAR" property="communityDescription" />
+    <result column="community_url" jdbcType="VARCHAR" property="communityUrl" />
+    <result column="community_image_url" jdbcType="VARCHAR" property="communityImageUrl" />
+    <result column="tag_name" jdbcType="VARCHAR" property="communityTag" />
+  </resultMap>
+
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -226,4 +235,21 @@
       #{id}
     </foreach>
   </delete>
+  <select id="selectCommunityWithTag" resultMap="CommunityVoResultMap">
+    SELECT 
+        c.community_id, 
+        c.community_name, 
+        c.community_description, 
+        c.community_url, 
+        c.community_image_url,
+        tc.tag_id
+    FROM tb_community c
+    LEFT JOIN tb_tag_community tc ON c.community_id = tc.community_id
+    LEFT JOIN tb_tag t ON tc.tag_id = t.tag_id
+    <where>
+        <if test="tagName != null and tagName != ''">
+            AND t.tag_name = #{tagName}
+        </if>
+    </where>
+  </select>
 </mapper>

@@ -3,6 +3,8 @@ package com.alisa.controller;
 import com.alisa.model.Community;
 import com.alisa.service.CommunityService;
 import com.alisa.util.Result;
+import com.alisa.vo.CommunityVo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,12 @@ public class CommunityController {
     @GetMapping("/getAll")
     public Result<List<Community>> getAll() {
         var data = communityService.getAll();
+        return new Result<>(data);
+    }
+
+    @GetMapping("/getAllByTag/{tagName}")
+    public Result<List<CommunityVo>> getAllWithTag(@PathVariable String tagName) {
+        var data = communityService.getAllWithTag(tagName);
         return new Result<>(data);
     }
 

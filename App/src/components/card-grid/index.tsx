@@ -13,6 +13,7 @@ type MyCard = {
   title: string;
   description: string;
   imageUrl?: string;
+  tag?: string;
 };
 
 const CardGrid = ({ data, handleCardClick }: CardGridProps) => {
