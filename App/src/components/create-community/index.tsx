@@ -1,7 +1,21 @@
 "use client";
-import React, { useState } from "react";
-import { Upload, Button, Form, Input, message, Avatar, Tag } from "antd";
-import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Upload,
+  Button,
+  Form,
+  Input,
+  message,
+  Avatar,
+  Tag,
+  InputRef,
+  Flex,
+} from "antd";
+import {
+  PlusOutlined,
+  UploadOutlined,
+  UserAddOutlined,
+} from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 import styles from "./create-community.module.css";
 import CommunityService from "@/services/CommunityService";
@@ -17,12 +31,22 @@ interface Member {
   email: string;
 }
 
+interface Tag {
+  id: string;
+  name: string;
+}
+
 const CreateCommunityForm = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [inviteInputVisible, setInviteInputVisible] = useState(false);
   const [inviteInputValue, setInviteInputValue] = useState("");
+
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [inputVisible, setInputVisible] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const inputRef = useRef<InputRef>(null);
 
   const handleUploadChange = ({ fileList }: { fileList: UploadFile[] }) => {
     setFileList(fileList);
@@ -51,29 +75,66 @@ const CreateCommunityForm = () => {
 
   const onFinish = async (values: any) => {
     try {
-      let communityUrl = "";
+      let communityImageUrl = "";
 
       if (fileList.length > 0 && fileList[0].originFileObj) {
         const file = fileList[0].originFileObj as File;
 
-        communityUrl = await s3.upload(file);
+        communityImageUrl = await s3.upload(file);
 
         message.success("图片上传成功");
-        console.log("Uploaded image URL:", communityUrl);
+        console.log("Uploaded image URL:", communityImageUrl);
       }
       const community: Community = {
         communityId: IdUtils.uuid32(),
         communityName: values.name,
         communityDescription: values.description,
-        communityUrl: communityUrl,
-        communityImageUrl: communityUrl,
+        communityUrl: "",
+        communityImageUrl: communityImageUrl,
+        communityTag: values.tag,
       };
-      // 顺手传给 Java 后端
+
       await CommunityService.upsertCommunity(community);
     } catch (error) {
       message.error("操作失败");
     }
   };
+
+  const handleClose = (removedTag: string) => {
+    const newTags = tags.filter((tag) => tag.name !== removedTag);
+    console.log(newTags);
+    setTags(newTags);
+  };
+
+  const showInput = () => {
+    setInputVisible(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleInputConfirm = () => {
+    const trimmedValue = inputValue.trim();
+    // 检查是否存在同名标签
+    const isDuplicate = tags.some((tag) => tag.name === trimmedValue);
+
+    if (trimmedValue && !isDuplicate) {
+      const newTag: Tag = {
+        id: IdUtils.uuid32(),
+        name: trimmedValue,
+      };
+      setTags([...tags, newTag]);
+    }
+    setInputVisible(false);
+    setInputValue("");
+  };
+
+  useEffect(() => {
+    if (inputVisible) {
+      inputRef.current?.focus();
+    }
+  }, [inputVisible]);
 
   return (
     <div className={styles.pageWrapper}>
@@ -107,6 +168,37 @@ const CreateCommunityForm = () => {
               showCount
               maxLength={500}
             />
+          </Form.Item>
+
+          {/* 社区标签 */}
+          <Form.Item name="tag" label="社区标签">
+            <Flex gap="4px 0" wrap="wrap" align="center">
+              {tags.map((tag) => (
+                <Tag key={tag.id} closable onClose={() => handleClose(tag.id)}>
+                  {tag.name}
+                </Tag>
+              ))}
+
+              {inputVisible ? (
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  size="small"
+                  style={{ width: 100 }}
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleInputConfirm}
+                  onPressEnter={handleInputConfirm}
+                />
+              ) : (
+                <Tag
+                  onClick={showInput}
+                  style={{ borderStyle: "dashed", background: "#fff" }}
+                >
+                  <PlusOutlined /> New Tag
+                </Tag>
+              )}
+            </Flex>
           </Form.Item>
 
           {/* 社区图片 */}

@@ -9,9 +9,10 @@ import {
   EditOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
-import { usePathname } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import styles from "./user-nav.module.css";
 import { UserDispatchContext } from "@/context/UserContext";
+import { CommunityRouteParams } from "@/model/MyRouteParams";
 
 interface NavItem {
   id: string;
@@ -27,6 +28,7 @@ interface PopupNavProps {
 
 const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
+  const { communityId } = useParams<CommunityRouteParams>();
   const dispatch = useContext(UserDispatchContext);
   const navItems: NavItem[] = [
     {
@@ -57,7 +59,7 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
       id: "community-settings",
       label: "我的社区",
       icon: <TeamOutlined />,
-      path: "/my-community/settings",
+      path: `/community/${communityId}/settings`,
     },
     {
       id: "settings",
@@ -82,7 +84,12 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
         if (!dispatch) return;
         dispatch({
           type: "Logout",
-          user: { name: "", token: "", state: "Offline" },
+          user: {
+            name: "",
+            token: "",
+            state: "Offline",
+            communityId: "",
+          },
         });
         break;
 

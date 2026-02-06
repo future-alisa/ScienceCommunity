@@ -4,7 +4,9 @@ import { User } from "@/model/User";
 
 const UserService = {
   getUserProfile: async (username: string) => {
-    const result = await userApi.get(`/users/${username}/profile`);
+    const result = await userApi.get(constants.API_USER_PROFILE, {
+      username: username,
+    });
     console.log("Fetched user profile:", result);
     return result;
   },

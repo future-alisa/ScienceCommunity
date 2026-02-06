@@ -11,6 +11,7 @@ import {
 
 export interface UserContextType {
   name: string;
+  email: string;
   communityId: string;
   token: string;
   state: UserState;
@@ -28,6 +29,7 @@ const initUserContext: UserContextType = {
   communityId: "",
   token: "",
   state: "Offline",
+  email: "",
 };
 const UserContext = createContext<UserContextType>(initUserContext);
 const UserDispatchContext = createContext<Dispatch<UserAction> | null>(null);
@@ -41,12 +43,12 @@ const reducer = (
         ...state,
         name: action.user.name,
         token: action.user.token,
+        email: action.user.email,
         state: "Online",
       };
     case "Logout":
       return {
         ...state,
-        name: "",
         token: "",
         state: "Offline",
       };
@@ -64,7 +66,11 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const saveUserInfo = async () => {
-      await StorageService.saveAuth(userContext.token, userContext.name);
+      await StorageService.saveAuth(
+        userContext.token,
+        userContext.name,
+        userContext.email
+      );
     };
 
     switch (userContext.state) {
@@ -90,6 +96,7 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
             communityId: "01290873b68b4806aefd79eeace6c38f",
             token: auth.token,
             state: "Online",
+            email: "",
           },
         });
       }

@@ -2,6 +2,7 @@ export default {
   API_USER_LOGIN: "/api/v1/user/signin",
   API_USER_LOGOUT: "/user/logout",
   API_USER_SIGNUP: "/api/v1/user/signup",
+  API_USER_PROFILE: "/api/v1/user/profile",
 
   /* --- Community 模块 --- */
   API_COMMUNITY_GET_ALL: "/community/getAll",
