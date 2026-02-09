@@ -1,5 +1,6 @@
 package com.alisa.service.serviceImpl;
 
+import com.alisa.dto.DocumentFilter;
 import com.alisa.mapper.DocumentMapper;
 import com.alisa.model.Document;
 import com.alisa.service.DocumentService;
@@ -17,6 +18,15 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public List<Document> getAll() {
         return documentMapper.selectByExample(null);
+    }
+
+    @Override
+    public List<Document> getAllByComunityId(String communityId, String typeId) {
+        DocumentFilter filter = new DocumentFilter();
+        filter.createCriteria()
+                .andDocumentCommunityIdEqualTo(communityId)
+                .andDocumentCategoryIdEqualTo(typeId);
+        return documentMapper.selectByExample(filter);
     }
 
     @Override
@@ -38,6 +48,7 @@ public class DocumentServiceImpl implements DocumentService {
     public int delete(String id) {
         return documentMapper.deleteByPrimaryKey(id);
     }
+
     @Override
     public int upsert(Document model) {
         return documentMapper.upsert(model);

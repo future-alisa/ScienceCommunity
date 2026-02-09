@@ -8,34 +8,23 @@ const DocumentService = {
     return await api.get<Document>(`/document/${id}`);
   },
 
-  getDocumentByBasisType: async (basisId: string) => {
-    // Implementation to fetch a document by its ID
-    console.log(`Fetching document with BASIS ID: ${basisId}`);
-    const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
-    return data;
-  },
-
-  getDocumentByCaseType: async (caseId: string) => {
-    // Implementation to fetch a document by its ID
-    console.log(`Fetching document with CASE ID: ${caseId}`);
-    const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
-    return data;
-  },
-
-  getDocumentByPostType: async (postId: string) => {
-    // Implementation to fetch a document by its ID
-    console.log(`Fetching document with POST ID: ${postId}`);
-    const data = await api.get<Document[]>(Constants.API_DOCUMENT_GET_ALL);
+  getDocumentByTypeAndCommunity: async (
+    communityId: string,
+    typeId: string
+  ) => {
+    console.log(`Fetching document with type ID: ${typeId}`);
+    const data = await api.get<Document[]>(
+      Constants.API_DOCUMENT_GET_ALL_TYPE_ID,
+      { communityId: communityId, typeId: typeId }
+    );
     return data;
   },
 
   createDocument: async (data: any) => {
-    // Implementation to create a new document
     console.log("Creating a new document with data:", data);
   },
 
   upsertDocument: async (data: Document) => {
-    // Implementation to update an existing document
     console.log(
       `Updating document with ID: ${data.documentId} with data:`,
       data

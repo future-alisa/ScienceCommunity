@@ -5,11 +5,20 @@ import java.util.List;
 
 public interface DocumentService {
     List<Document> getAll();
+
+    List<Document> getAllByComunityId(String communityId, String typeId);
+
     Document getById(String id);
+
     int create(Document model);
+
     int update(Document model);
+
     int delete(String id);
+
     int upsert(Document model);
+
     int batchUpsert(List<Document> list);
+
     int batchDelete(List<String> ids);
 }

@@ -42,6 +42,7 @@ export default {
 
   /* --- Document 模块 --- */
   API_DOCUMENT_GET_ALL: "/document/getAll",
+  API_DOCUMENT_GET_ALL_TYPE_ID: "/document/getAllByCommunityId",
   API_DOCUMENT_GET_ID: "/document/{id}",
   API_DOCUMENT_UPSERT: "/document/upsert",
   API_DOCUMENT_BATCH_UPSERT: "/document/batch-upsert",

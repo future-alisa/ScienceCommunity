@@ -24,6 +24,12 @@ public class DocumentController {
         return new Result<List<Document>>(data);
     }
 
+    @GetMapping("/getAllByCommunityId")
+    public Result<List<Document>> getAllByComunityId(String communityId, String typeId) {
+        var data = documentService.getAllByComunityId(communityId, typeId);
+        return new Result<List<Document>>(data);
+    }
+
     @GetMapping("/{id}")
     public Result<Document> getById(@PathVariable String id) {
         var data = documentService.getById(id);

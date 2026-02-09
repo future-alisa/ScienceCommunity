@@ -16,7 +16,10 @@ export default function Page() {
   const communityId = params?.communityId;
   useEffect(() => {
     const fetchData = async () => {
-      const res = await DocumentService.getDocumentByBasisType(postId);
+      const res = await DocumentService.getDocumentByTypeAndCommunity(
+        communityId,
+        postId
+      );
       setRawData(res);
     };
     fetchData();
