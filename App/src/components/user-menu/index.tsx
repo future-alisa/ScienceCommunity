@@ -59,7 +59,7 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
       id: "community-settings",
       label: "我的社区",
       icon: <TeamOutlined />,
-      path: `/community/${communityId}/settings`,
+      path: `/community/settings`,
     },
     {
       id: "settings",
@@ -89,6 +89,7 @@ const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
             token: "",
             state: "Offline",
             communityId: "",
+            email: "",
           },
         });
         break;

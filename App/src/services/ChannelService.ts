@@ -3,7 +3,10 @@ const ChannelService = {
     // Implementation to get a channel by its ID
     console.log(`Fetching channel with ID: ${id}`);
   },
-
+  getChannelMembers: (id: string) => {
+    // Implementation to get a channel by its ID
+    console.log(`Fetching channel members with ID: ${id}`);
+  },
   createChannel: (name: string, members: string[]) => {
     // Implementation to create a new channel
     console.log(

@@ -2,6 +2,8 @@ package com.alisa.mapper;
 
 import com.alisa.dto.CommunityUserFilter;
 import com.alisa.model.CommunityUser;
+import com.alisa.vo.CommunityUserVo;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +21,8 @@ public interface CommunityUserMapper {
     int insertSelective(CommunityUser row);
 
     List<CommunityUser> selectByExample(CommunityUserFilter example);
+
+    List<CommunityUserVo> selectCommunityUser(String communityId);
 
     CommunityUser selectByPrimaryKey(String communityUserId);
 

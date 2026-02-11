@@ -6,6 +6,7 @@ export default {
 
   /* --- Community 模块 --- */
   API_COMMUNITY_GET_ALL: "/community/getAll",
+  API_COMMUNITY_GET_ALL_BY_USER: "/community/getAllByUser",
   API_COMMUNITY_GET_ALL_BY_TAG: "/community/getAllByTag",
   API_COMMUNITY_GET_ID: "/community",
   API_COMMUNITY_UPSERT: "/community/upsert",

@@ -22,6 +22,8 @@ public interface CommunityMapper {
 
     List<Community> selectByExample(CommunityFilter example);
 
+    List<Community> selectByUser(String userId);
+
     Community selectByPrimaryKey(String communityId);
 
     int updateByExampleSelective(@Param("row") Community row, @Param("example") CommunityFilter example);

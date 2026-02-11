@@ -5,7 +5,7 @@ public class ChannelUser {
 
     private String channelId;
 
-    private String userId;
+    private String communityUserId;
 
     public String getChannelUserId() {
         return channelUserId;
@@ -23,11 +23,11 @@ public class ChannelUser {
         this.channelId = channelId;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getCommunityUserId() {
+        return communityUserId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setCommunityUserId(String communityUserId) {
+        this.communityUserId = communityUserId;
     }
 }

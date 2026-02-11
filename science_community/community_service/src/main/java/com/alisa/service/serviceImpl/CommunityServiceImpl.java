@@ -1,5 +1,6 @@
 package com.alisa.service.serviceImpl;
 
+import com.alisa.dto.CommunityFilter;
 import com.alisa.mapper.CommunityMapper;
 import com.alisa.model.Community;
 import com.alisa.service.CommunityService;
@@ -19,6 +20,11 @@ public class CommunityServiceImpl implements CommunityService {
     @Override
     public List<Community> getAll() {
         return communityMapper.selectByExample(null);
+    }
+
+    @Override
+    public List<Community> getAllByUser(String userId) {
+        return communityMapper.selectByUser(userId);
     }
 
     @Override

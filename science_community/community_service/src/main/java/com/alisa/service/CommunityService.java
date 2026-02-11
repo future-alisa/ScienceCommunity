@@ -8,6 +8,8 @@ import java.util.List;
 public interface CommunityService {
     List<Community> getAll();
 
+    List<Community> getAllByUser(String userId);
+
     Community getById(String id);
 
     int create(Community model);

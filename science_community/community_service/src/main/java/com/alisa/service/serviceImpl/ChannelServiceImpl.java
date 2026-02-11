@@ -1,5 +1,6 @@
 package com.alisa.service.serviceImpl;
 
+import com.alisa.dto.ChannelFilter;
 import com.alisa.mapper.ChannelMapper;
 import com.alisa.model.Channel;
 import com.alisa.service.ChannelService;
@@ -17,6 +18,13 @@ public class ChannelServiceImpl implements ChannelService {
     @Override
     public List<Channel> getAll() {
         return channelMapper.selectByExample(null);
+    }
+
+    @Override
+    public List<Channel> getAllByCommunityId(String communityId) {
+        ChannelFilter filter = new ChannelFilter();
+        filter.createCriteria().andChannelCommunityIdEqualTo(communityId);
+        return channelMapper.selectByExample(filter);
     }
 
     @Override
@@ -38,6 +46,7 @@ public class ChannelServiceImpl implements ChannelService {
     public int delete(String id) {
         return channelMapper.deleteByPrimaryKey(id);
     }
+
     @Override
     public int upsert(Channel model) {
         return channelMapper.upsert(model);

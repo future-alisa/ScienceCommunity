@@ -5,6 +5,15 @@
     <id column="community_user_id" jdbcType="CHAR" property="communityUserId" />
     <result column="community_id" jdbcType="CHAR" property="communityId" />
     <result column="user_id" jdbcType="CHAR" property="userId" />
+    <result column="community_role_id" jdbcType="CHAR" property="communityRoleId" />
+  </resultMap>
+  <resultMap id="ExBaseResultMap" type="com.alisa.vo.CommunityUserVo">
+    <id column="community_user_id" jdbcType="CHAR" property="id" />
+    <result column="community_id" jdbcType="CHAR" property="communityId" />
+    <result column="community_role_id" jdbcType="CHAR" property="roleId" />
+    <result column="user_name" jdbcType="CHAR" property="name" />
+    <result column="user_email" jdbcType="CHAR" property="email" />
+    <result column="community_role_name" jdbcType="CHAR" property="role" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -65,7 +74,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    community_user_id, community_id, user_id
+    community_user_id, community_id, user_id, community_role_id
   </sql>
   <select id="selectByExample" parameterType="com.alisa.dto.CommunityUserFilter" resultMap="BaseResultMap">
     select
@@ -98,10 +107,10 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.alisa.model.CommunityUser">
-    insert into tb_community_user (community_user_id, community_id, user_id
-      )
-    values (#{communityUserId,jdbcType=CHAR}, #{communityId,jdbcType=CHAR}, #{userId,jdbcType=CHAR}
-      )
+    insert into tb_community_user (community_user_id, community_id, user_id, 
+      community_role_id)
+    values (#{communityUserId,jdbcType=CHAR}, #{communityId,jdbcType=CHAR}, #{userId,jdbcType=CHAR}, 
+      #{communityRoleId,jdbcType=CHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.alisa.model.CommunityUser">
     insert into tb_community_user
@@ -115,6 +124,9 @@
       <if test="userId != null">
         user_id,
       </if>
+      <if test="communityRoleId != null">
+        community_role_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="communityUserId != null">
@@ -125,6 +137,9 @@
       </if>
       <if test="userId != null">
         #{userId,jdbcType=CHAR},
+      </if>
+      <if test="communityRoleId != null">
+        #{communityRoleId,jdbcType=CHAR},
       </if>
     </trim>
   </insert>
@@ -146,6 +161,9 @@
       <if test="row.userId != null">
         user_id = #{row.userId,jdbcType=CHAR},
       </if>
+      <if test="row.communityRoleId != null">
+        community_role_id = #{row.communityRoleId,jdbcType=CHAR},
+      </if>
     </set>
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -155,7 +173,8 @@
     update tb_community_user
     set community_user_id = #{row.communityUserId,jdbcType=CHAR},
       community_id = #{row.communityId,jdbcType=CHAR},
-      user_id = #{row.userId,jdbcType=CHAR}
+      user_id = #{row.userId,jdbcType=CHAR},
+      community_role_id = #{row.communityRoleId,jdbcType=CHAR}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -169,26 +188,30 @@
       <if test="userId != null">
         user_id = #{userId,jdbcType=CHAR},
       </if>
+      <if test="communityRoleId != null">
+        community_role_id = #{communityRoleId,jdbcType=CHAR},
+      </if>
     </set>
     where community_user_id = #{communityUserId,jdbcType=CHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.alisa.model.CommunityUser">
     update tb_community_user
     set community_id = #{communityId,jdbcType=CHAR},
-      user_id = #{userId,jdbcType=CHAR}
+      user_id = #{userId,jdbcType=CHAR},
+      community_role_id = #{communityRoleId,jdbcType=CHAR}
     where community_user_id = #{communityUserId,jdbcType=CHAR}
   </update>
   <insert id="batchUpsert" parameterType="java.util.List">
-    insert into tb_community_user (community_user_id, community_id, user_id) values 
+    insert into tb_community_user (community_user_id, community_id, user_id, community_role_id) values 
     <foreach collection="list" item="item" separator=",">
-      (#{item.communityUserId,jdbcType=CHAR}, #{item.communityId,jdbcType=CHAR}, #{item.userId,jdbcType=CHAR})
+      (#{item.communityUserId,jdbcType=CHAR}, #{item.communityId,jdbcType=CHAR}, #{item.userId,jdbcType=CHAR}, #{item.communityRoleId,jdbcType=CHAR})
     </foreach>
-    on duplicate key update community_id = values(community_id), user_id = values(user_id)
+    on duplicate key update community_id = values(community_id), user_id = values(user_id), community_role_id = values(community_role_id)
   </insert>
   <insert id="upsert" parameterType="com.alisa.model.CommunityUser">
-    insert into tb_community_user (community_user_id, community_id, user_id) values 
-    (#{communityUserId,jdbcType=CHAR}, #{communityId,jdbcType=CHAR}, #{userId,jdbcType=CHAR})
-    on duplicate key update community_id = values(community_id), user_id = values(user_id)
+    insert into tb_community_user (community_user_id, community_id, user_id, community_role_id) values 
+    (#{communityUserId,jdbcType=CHAR}, #{communityId,jdbcType=CHAR}, #{userId,jdbcType=CHAR}, #{communityRoleId,jdbcType=CHAR})
+    on duplicate key update community_id = values(community_id), user_id = values(user_id), community_role_id = values(community_role_id)
   </insert>
   <delete id="batchDelete" parameterType="java.util.List">
     delete from tb_community_user where community_user_id in 
@@ -196,4 +219,21 @@
       #{id}
     </foreach>
   </delete>
+  <select id="selectCommunityUser" resultMap="ExBaseResultMap">
+    SELECT 
+      CU.community_id, 
+      CU.community_user_id, 
+      U.user_name,    
+      U.user_email,   
+      CU.community_role_id,
+      CR.community_role_name 
+  FROM 
+      db_community.tb_community_user AS CU
+  INNER JOIN 
+      db_user.tb_user AS U ON CU.user_id = U.user_id
+  inner join
+      db_community.tb_community_role as CR on CU.community_role_id = CR.community_role_id 
+  WHERE 
+      CU.community_id = #{communityId};
+  </select>
 </mapper>

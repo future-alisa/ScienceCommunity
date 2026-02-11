@@ -21,6 +21,12 @@ public class ChannelController {
         return new Result<>(data);
     }
 
+    @GetMapping("/getAllByCommunityId")
+    public Result<List<Channel>> getAllByCommunityId(String communityId) {
+        var data = channelService.getAllByCommunityId(communityId);
+        return new Result<>(data);
+    }
+
     @GetMapping("/{id}")
     public Result<Channel> getById(@PathVariable String id) {
         var data = channelService.getById(id);

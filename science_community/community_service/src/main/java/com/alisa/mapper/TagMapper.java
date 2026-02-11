@@ -12,7 +12,7 @@ public interface TagMapper {
 
     int deleteByExample(TagFilter example);
 
-    int deleteByPrimaryKey(String tabId);
+    int deleteByPrimaryKey(String tagId);
 
     int insert(Tag row);
 
@@ -20,7 +20,7 @@ public interface TagMapper {
 
     List<Tag> selectByExample(TagFilter example);
 
-    Tag selectByPrimaryKey(String tabId);
+    Tag selectByPrimaryKey(String tagId);
 
     int updateByExampleSelective(@Param("row") Tag row, @Param("example") TagFilter example);
 

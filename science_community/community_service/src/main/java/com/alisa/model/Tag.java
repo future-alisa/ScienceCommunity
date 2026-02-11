@@ -1,18 +1,18 @@
 package com.alisa.model;
 
 public class Tag {
-    private String tabId;
+    private String tagId;
 
     private String tagName;
 
     private String tagOwnerId;
 
-    public String getTabId() {
-        return tabId;
+    public String getTagId() {
+        return tagId;
     }
 
-    public void setTabId(String tabId) {
-        this.tabId = tabId;
+    public void setTagId(String tagId) {
+        this.tagId = tagId;
     }
 
     public String getTagName() {

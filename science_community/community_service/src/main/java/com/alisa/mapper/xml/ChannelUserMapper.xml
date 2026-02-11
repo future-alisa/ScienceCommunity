@@ -4,7 +4,15 @@
   <resultMap id="BaseResultMap" type="com.alisa.model.ChannelUser">
     <id column="channel_user_id" jdbcType="CHAR" property="channelUserId" />
     <result column="channel_id" jdbcType="CHAR" property="channelId" />
-    <result column="user_id" jdbcType="CHAR" property="userId" />
+    <result column="community_user_id" jdbcType="CHAR" property="communityUserId" />
+  </resultMap>
+  <resultMap id="ExBaseResultMap" type="com.alisa.vo.ChannelUserVo">
+    <id column="channel_user_id" jdbcType="CHAR" property="id" />
+    <result column="channel_id" jdbcType="CHAR" property="channelId" />
+    <result column="community_role_id" jdbcType="CHAR" property="roleId" />
+    <result column="user_name" jdbcType="CHAR" property="name" />
+    <result column="user_email" jdbcType="CHAR" property="email" />
+    <result column="community_role_name" jdbcType="CHAR" property="role" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -65,7 +73,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    channel_user_id, channel_id, user_id
+    channel_user_id, channel_id, community_user_id
   </sql>
   <select id="selectByExample" parameterType="com.alisa.dto.ChannelUserFilter" resultMap="BaseResultMap">
     select
@@ -98,9 +106,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.alisa.model.ChannelUser">
-    insert into tb_channel_user (channel_user_id, channel_id, user_id
+    insert into tb_channel_user (channel_user_id, channel_id, community_user_id
       )
-    values (#{channelUserId,jdbcType=CHAR}, #{channelId,jdbcType=CHAR}, #{userId,jdbcType=CHAR}
+    values (#{channelUserId,jdbcType=CHAR}, #{channelId,jdbcType=CHAR}, #{communityUserId,jdbcType=CHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.alisa.model.ChannelUser">
@@ -112,8 +120,8 @@
       <if test="channelId != null">
         channel_id,
       </if>
-      <if test="userId != null">
-        user_id,
+      <if test="communityUserId != null">
+        community_user_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -123,8 +131,8 @@
       <if test="channelId != null">
         #{channelId,jdbcType=CHAR},
       </if>
-      <if test="userId != null">
-        #{userId,jdbcType=CHAR},
+      <if test="communityUserId != null">
+        #{communityUserId,jdbcType=CHAR},
       </if>
     </trim>
   </insert>
@@ -143,8 +151,8 @@
       <if test="row.channelId != null">
         channel_id = #{row.channelId,jdbcType=CHAR},
       </if>
-      <if test="row.userId != null">
-        user_id = #{row.userId,jdbcType=CHAR},
+      <if test="row.communityUserId != null">
+        community_user_id = #{row.communityUserId,jdbcType=CHAR},
       </if>
     </set>
     <if test="example != null">
@@ -155,7 +163,7 @@
     update tb_channel_user
     set channel_user_id = #{row.channelUserId,jdbcType=CHAR},
       channel_id = #{row.channelId,jdbcType=CHAR},
-      user_id = #{row.userId,jdbcType=CHAR}
+      community_user_id = #{row.communityUserId,jdbcType=CHAR}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -166,8 +174,8 @@
       <if test="channelId != null">
         channel_id = #{channelId,jdbcType=CHAR},
       </if>
-      <if test="userId != null">
-        user_id = #{userId,jdbcType=CHAR},
+      <if test="communityUserId != null">
+        community_user_id = #{communityUserId,jdbcType=CHAR},
       </if>
     </set>
     where channel_user_id = #{channelUserId,jdbcType=CHAR}
@@ -175,20 +183,20 @@
   <update id="updateByPrimaryKey" parameterType="com.alisa.model.ChannelUser">
     update tb_channel_user
     set channel_id = #{channelId,jdbcType=CHAR},
-      user_id = #{userId,jdbcType=CHAR}
+      community_user_id = #{communityUserId,jdbcType=CHAR}
     where channel_user_id = #{channelUserId,jdbcType=CHAR}
   </update>
   <insert id="batchUpsert" parameterType="java.util.List">
-    insert into tb_channel_user (channel_user_id, channel_id, user_id) values 
+    insert into tb_channel_user (channel_user_id, channel_id, community_user_id) values 
     <foreach collection="list" item="item" separator=",">
-      (#{item.channelUserId,jdbcType=CHAR}, #{item.channelId,jdbcType=CHAR}, #{item.userId,jdbcType=CHAR})
+      (#{item.channelUserId,jdbcType=CHAR}, #{item.channelId,jdbcType=CHAR}, #{item.communityUserId,jdbcType=CHAR})
     </foreach>
-    on duplicate key update channel_id = values(channel_id), user_id = values(user_id)
+    on duplicate key update channel_id = values(channel_id), community_user_id = values(community_user_id)
   </insert>
   <insert id="upsert" parameterType="com.alisa.model.ChannelUser">
-    insert into tb_channel_user (channel_user_id, channel_id, user_id) values 
-    (#{channelUserId,jdbcType=CHAR}, #{channelId,jdbcType=CHAR}, #{userId,jdbcType=CHAR})
-    on duplicate key update channel_id = values(channel_id), user_id = values(user_id)
+    insert into tb_channel_user (channel_user_id, channel_id, community_user_id) values 
+    (#{channelUserId,jdbcType=CHAR}, #{channelId,jdbcType=CHAR}, #{communityUserId,jdbcType=CHAR})
+    on duplicate key update channel_id = values(channel_id), community_user_id = values(community_user_id)
   </insert>
   <delete id="batchDelete" parameterType="java.util.List">
     delete from tb_channel_user where channel_user_id in 
@@ -196,4 +204,25 @@
       #{id}
     </foreach>
   </delete>
+  <select id="selectByChannelId" resultMap="ExBaseResultMap">
+  SELECT 
+	  TCU.channel_user_id,
+    TCU.channel_id ,
+    CU.community_id, 
+    CU.community_user_id , 
+    U.user_name,    
+    U.user_email,   
+    CU.community_role_id,
+    CR.community_role_name 
+FROM 
+    db_community.tb_community_user AS CU
+inner join
+    db_community.tb_community_role as CR on CU.community_role_id = CR.community_role_id  
+inner join 
+	db_community.tb_channel_user as TCU on CU.community_user_id = TCU.community_user_id 
+INNER JOIN 
+    db_user.tb_user AS U ON CU.user_id = U.user_id
+WHERE 
+    TCU.channel_id  = #{channelId};
+  </select>
 </mapper>

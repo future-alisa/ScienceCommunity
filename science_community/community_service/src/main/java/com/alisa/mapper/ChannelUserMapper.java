@@ -2,6 +2,8 @@ package com.alisa.mapper;
 
 import com.alisa.dto.ChannelUserFilter;
 import com.alisa.model.ChannelUser;
+import com.alisa.vo.ChannelUserVo;
+
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,6 +21,8 @@ public interface ChannelUserMapper {
     int insertSelective(ChannelUser row);
 
     List<ChannelUser> selectByExample(ChannelUserFilter example);
+
+    List<ChannelUserVo> selectByChannelId(String channelId);
 
     ChannelUser selectByPrimaryKey(String channelUserId);
 

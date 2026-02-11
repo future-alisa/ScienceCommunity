@@ -1,16 +1,15 @@
 "use client";
 import { MyEditor } from "@/components/richtext-editor";
-import { Button, Input, message, Modal, Radio } from "antd";
-import { useContext, useState } from "react";
+import { Button, Input, message, Modal, Radio, Select } from "antd";
+import { useEffect, useState } from "react";
 import { Descendant } from "slate";
-import { UserContext } from "@/context/UserContext";
 
 import styles from "./publish.module.css"; // 引入 CSS Module
 import DocumentService from "@/services/DocumentService";
+import { Community } from "@/model/Community";
+import CommunityService from "@/services/CommunityService";
 
 export default function Page() {
-  const userContext = useContext(UserContext);
-
   const baseId = "3284c1f1a8104b8796b4d70277b4947a";
   const caseId = "1a5b4c52169d4228a5b1da149511e717";
   const postId = "129f2c1efc9d4e8a821d202bec89f288";
@@ -45,7 +44,7 @@ export default function Page() {
     },
     { type: "heading", level: 2, children: [{ text: "主要特点" }] },
     {
-      type: "list",
+      type: "bulleted-list",
       children: [
         { type: "list-item", children: [{ text: "灵活的文档模型" }] },
         { type: "list-item", children: [{ text: "丰富的插件系统" }] },
@@ -62,6 +61,8 @@ export default function Page() {
     },
     { type: "block-quote", children: [{ text: "A wise quote." }] },
   ]);
+  const [selectedCommunityId, setSelectedCommunityId] = useState<string>();
+  const [communities, setCommunities] = useState<Community[]>([]);
 
   const onChange = (value: Descendant[]) => setValue(value);
 
@@ -69,7 +70,7 @@ export default function Page() {
     await DocumentService.upsertDocument({
       documentId: "",
       documentCategoryId: typeId,
-      documentCommunityId: userContext.communityId,
+      documentCommunityId: selectedCommunityId || "",
       documentAuthorId: "",
 
       documentName: title || "未命名文档",
@@ -108,6 +109,20 @@ export default function Page() {
       onOk: () => publish(tempDescription),
     });
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      const mockData: Community[] =
+        await CommunityService.getCommunitiesByUser();
+      console.log("xxx", mockData);
+      setCommunities(mockData);
+
+      if (mockData.length > 0) {
+        setSelectedCommunityId(mockData[0].communityId);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -139,9 +154,23 @@ export default function Page() {
               { value: postId, label: "推文" },
             ]}
           />
-          <Button type="primary" onClick={handleBtnP}>
-            发布
-          </Button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span>发布至：</span>
+            <Select
+              placeholder="请选择目标社区"
+              style={{ width: 200 }}
+              value={selectedCommunityId}
+              onChange={(value) => setSelectedCommunityId(value)}
+              options={communities.map((c) => ({
+                value: c.communityId,
+                label: c.communityName,
+              }))}
+            />
+            <Button type="primary" onClick={handleBtnP}>
+              发布
+            </Button>
+          </div>
         </div>
       </div>
     </div>

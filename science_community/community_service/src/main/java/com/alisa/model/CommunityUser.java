@@ -7,6 +7,8 @@ public class CommunityUser {
 
     private String userId;
 
+    private String communityRoleId;
+
     public String getCommunityUserId() {
         return communityUserId;
     }
@@ -29,5 +31,13 @@ public class CommunityUser {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getCommunityRoleId() {
+        return communityRoleId;
+    }
+
+    public void setCommunityRoleId(String communityRoleId) {
+        this.communityRoleId = communityRoleId;
     }
 }

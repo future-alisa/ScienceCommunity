@@ -3,6 +3,8 @@ package com.alisa.controller;
 import com.alisa.model.ChannelUser;
 import com.alisa.service.ChannelUserService;
 import com.alisa.util.Result;
+import com.alisa.vo.ChannelUserVo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,12 @@ public class ChannelUserController {
     @GetMapping("/getAll")
     public Result<List<ChannelUser>> getAll() {
         var data = channeluserService.getAll();
+        return new Result<>(data);
+    }
+
+    @GetMapping("/getAllByChannelId")
+    public Result<List<ChannelUserVo>> getAllByChannelId(String channelId) {
+        var data = channeluserService.getAllByChannelId(channelId);
         return new Result<>(data);
     }
 

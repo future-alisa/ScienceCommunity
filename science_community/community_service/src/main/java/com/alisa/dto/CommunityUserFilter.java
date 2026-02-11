@@ -313,6 +313,76 @@ public final class CommunityUserFilter {
             addCriterion("user_id not between", value1, value2, "userId");
             return (Criteria) this;
         }
+
+        public Criteria andUserRoleIdIsNull() {
+            addCriterion("user_role_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdIsNotNull() {
+            addCriterion("user_role_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdEqualTo(String value) {
+            addCriterion("user_role_id =", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdNotEqualTo(String value) {
+            addCriterion("user_role_id <>", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdGreaterThan(String value) {
+            addCriterion("user_role_id >", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdGreaterThanOrEqualTo(String value) {
+            addCriterion("user_role_id >=", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdLessThan(String value) {
+            addCriterion("user_role_id <", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdLessThanOrEqualTo(String value) {
+            addCriterion("user_role_id <=", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdLike(String value) {
+            addCriterion("user_role_id like", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdNotLike(String value) {
+            addCriterion("user_role_id not like", value, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdIn(List<String> values) {
+            addCriterion("user_role_id in", values, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdNotIn(List<String> values) {
+            addCriterion("user_role_id not in", values, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdBetween(String value1, String value2) {
+            addCriterion("user_role_id between", value1, value2, "userRoleId");
+            return (Criteria) this;
+        }
+
+        public Criteria andUserRoleIdNotBetween(String value1, String value2) {
+            addCriterion("user_role_id not between", value1, value2, "userRoleId");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -252,4 +252,15 @@
         </if>
     </where>
   </select>
+  <select id="selectByUser" resultMap="BaseResultMap">
+    select
+      tbc.community_id, 
+      tbc.community_name, 
+      tbc.community_description, 
+      tbc.community_url, 
+      tbc.community_image_url
+    from tb_community tbc
+    INNER JOIN tb_community_user tbcu ON tbc.community_id = tbcu.community_id
+    and tbcu.user_id = #{userId}
+  </select>
 </mapper>

@@ -3,6 +3,8 @@ package com.alisa.service.serviceImpl;
 import com.alisa.mapper.CommunityUserMapper;
 import com.alisa.model.CommunityUser;
 import com.alisa.service.CommunityUserService;
+import com.alisa.vo.CommunityUserVo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,11 @@ public class CommunityUserServiceImpl implements CommunityUserService {
     @Override
     public List<CommunityUser> getAll() {
         return communityuserMapper.selectByExample(null);
+    }
+
+    @Override
+    public List<CommunityUserVo> getAllByCommunityId(String communityId) {
+        return communityuserMapper.selectCommunityUser(communityId);
     }
 
     @Override
@@ -38,6 +45,7 @@ public class CommunityUserServiceImpl implements CommunityUserService {
     public int delete(String id) {
         return communityuserMapper.deleteByPrimaryKey(id);
     }
+
     @Override
     public int upsert(CommunityUser model) {
         return communityuserMapper.upsert(model);

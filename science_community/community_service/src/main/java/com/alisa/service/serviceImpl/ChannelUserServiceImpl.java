@@ -3,6 +3,8 @@ package com.alisa.service.serviceImpl;
 import com.alisa.mapper.ChannelUserMapper;
 import com.alisa.model.ChannelUser;
 import com.alisa.service.ChannelUserService;
+import com.alisa.vo.ChannelUserVo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,11 @@ public class ChannelUserServiceImpl implements ChannelUserService {
     @Override
     public List<ChannelUser> getAll() {
         return channeluserMapper.selectByExample(null);
+    }
+
+    @Override
+    public List<ChannelUserVo> getAllByChannelId(String channelId) {
+        return channeluserMapper.selectByChannelId(channelId);
     }
 
     @Override
@@ -38,6 +45,7 @@ public class ChannelUserServiceImpl implements ChannelUserService {
     public int delete(String id) {
         return channeluserMapper.deleteByPrimaryKey(id);
     }
+
     @Override
     public int upsert(ChannelUser model) {
         return channeluserMapper.upsert(model);

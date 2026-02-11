@@ -174,6 +174,76 @@ public final class ChannelFilter {
             return (Criteria) this;
         }
 
+        public Criteria andChannelCommunityIdIsNull() {
+            addCriterion("channel_community_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdIsNotNull() {
+            addCriterion("channel_community_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdEqualTo(String value) {
+            addCriterion("channel_community_id =", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdNotEqualTo(String value) {
+            addCriterion("channel_community_id <>", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdGreaterThan(String value) {
+            addCriterion("channel_community_id >", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdGreaterThanOrEqualTo(String value) {
+            addCriterion("channel_community_id >=", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdLessThan(String value) {
+            addCriterion("channel_community_id <", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdLessThanOrEqualTo(String value) {
+            addCriterion("channel_community_id <=", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdLike(String value) {
+            addCriterion("channel_community_id like", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdNotLike(String value) {
+            addCriterion("channel_community_id not like", value, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdIn(List<String> values) {
+            addCriterion("channel_community_id in", values, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdNotIn(List<String> values) {
+            addCriterion("channel_community_id not in", values, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdBetween(String value1, String value2) {
+            addCriterion("channel_community_id between", value1, value2, "channelCommunityId");
+            return (Criteria) this;
+        }
+
+        public Criteria andChannelCommunityIdNotBetween(String value1, String value2) {
+            addCriterion("channel_community_id not between", value1, value2, "channelCommunityId");
+            return (Criteria) this;
+        }
+
         public Criteria andChannelNameIsNull() {
             addCriterion("channel_name is null");
             return (Criteria) this;
@@ -244,73 +314,73 @@ public final class ChannelFilter {
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdIsNull() {
-            addCriterion("channel_community_id is null");
+        public Criteria andChannelDescriptionIsNull() {
+            addCriterion("channel_description is null");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdIsNotNull() {
-            addCriterion("channel_community_id is not null");
+        public Criteria andChannelDescriptionIsNotNull() {
+            addCriterion("channel_description is not null");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdEqualTo(String value) {
-            addCriterion("channel_community_id =", value, "channelCommunityId");
+        public Criteria andChannelDescriptionEqualTo(String value) {
+            addCriterion("channel_description =", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdNotEqualTo(String value) {
-            addCriterion("channel_community_id <>", value, "channelCommunityId");
+        public Criteria andChannelDescriptionNotEqualTo(String value) {
+            addCriterion("channel_description <>", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdGreaterThan(String value) {
-            addCriterion("channel_community_id >", value, "channelCommunityId");
+        public Criteria andChannelDescriptionGreaterThan(String value) {
+            addCriterion("channel_description >", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdGreaterThanOrEqualTo(String value) {
-            addCriterion("channel_community_id >=", value, "channelCommunityId");
+        public Criteria andChannelDescriptionGreaterThanOrEqualTo(String value) {
+            addCriterion("channel_description >=", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdLessThan(String value) {
-            addCriterion("channel_community_id <", value, "channelCommunityId");
+        public Criteria andChannelDescriptionLessThan(String value) {
+            addCriterion("channel_description <", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdLessThanOrEqualTo(String value) {
-            addCriterion("channel_community_id <=", value, "channelCommunityId");
+        public Criteria andChannelDescriptionLessThanOrEqualTo(String value) {
+            addCriterion("channel_description <=", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdLike(String value) {
-            addCriterion("channel_community_id like", value, "channelCommunityId");
+        public Criteria andChannelDescriptionLike(String value) {
+            addCriterion("channel_description like", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdNotLike(String value) {
-            addCriterion("channel_community_id not like", value, "channelCommunityId");
+        public Criteria andChannelDescriptionNotLike(String value) {
+            addCriterion("channel_description not like", value, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdIn(List<String> values) {
-            addCriterion("channel_community_id in", values, "channelCommunityId");
+        public Criteria andChannelDescriptionIn(List<String> values) {
+            addCriterion("channel_description in", values, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdNotIn(List<String> values) {
-            addCriterion("channel_community_id not in", values, "channelCommunityId");
+        public Criteria andChannelDescriptionNotIn(List<String> values) {
+            addCriterion("channel_description not in", values, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdBetween(String value1, String value2) {
-            addCriterion("channel_community_id between", value1, value2, "channelCommunityId");
+        public Criteria andChannelDescriptionBetween(String value1, String value2) {
+            addCriterion("channel_description between", value1, value2, "channelDescription");
             return (Criteria) this;
         }
 
-        public Criteria andChannelCommunityIdNotBetween(String value1, String value2) {
-            addCriterion("channel_community_id not between", value1, value2, "channelCommunityId");
+        public Criteria andChannelDescriptionNotBetween(String value1, String value2) {
+            addCriterion("channel_description not between", value1, value2, "channelDescription");
             return (Criteria) this;
         }
     }
