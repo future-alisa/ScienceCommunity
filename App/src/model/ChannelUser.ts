@@ -12,3 +12,12 @@ export interface ChannelUser {
    */
   userId: string;
 }
+
+export interface ChannelUserVo {
+  id: string;
+  channelId: string;
+  roleId: string;
+  name: string;
+  emali: string;
+  role: string;
+}

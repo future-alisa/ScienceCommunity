@@ -21,11 +21,28 @@ import CommunityService from "@/services/CommunityService";
 import { Community } from "@/model/Community";
 import { CommunityUserVo } from "@/model/CommunityUser";
 import { Channel } from "@/model/Channel";
+import ChannelService from "@/services/ChannelService";
+import { ChannelUserVo } from "@/model/ChannelUser";
 
 const { Title, Text } = Typography;
 const { Sider, Content } = Layout;
 
-const columns: TableProps<CommunityUserVo>["columns"] = [
+const communityColumns: TableProps<CommunityUserVo>["columns"] = [
+  { title: "姓名", dataIndex: "name", key: "name" },
+  { title: "邮箱", dataIndex: "email", key: "email" },
+  { title: "角色", dataIndex: "role", key: "role" },
+  {
+    title: "操作",
+    key: "action",
+    render: (_, record) => (
+      <Space size="middle">
+        <a>删除</a>
+      </Space>
+    ),
+  },
+];
+
+const channelColumns: TableProps<ChannelUserVo>["columns"] = [
   { title: "姓名", dataIndex: "name", key: "name" },
   { title: "邮箱", dataIndex: "email", key: "email" },
   { title: "角色", dataIndex: "role", key: "role" },
@@ -44,11 +61,13 @@ export default function Page() {
   const [communities, setCommunities] = useState<Community[]>([]);
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>();
   const [communityMembers, setCommunityMembers] = useState<CommunityUserVo[]>();
-  const [channelMembers, setChannelMembers] = useState<CommunityUserVo[]>([]);
+  const [channelMembers, setChannelMembers] = useState<ChannelUserVo[]>([]);
   const [channels, setChannels] = useState<Channel[]>();
 
   async function handleChange(value: string) {
     console.log("选中频道:", value);
+    const data = await ChannelService.getChannelMembers(value);
+    setChannelMembers(data);
   }
 
   async function handleCommunityChange(value: string) {
@@ -120,7 +139,7 @@ export default function Page() {
             </Title>
             <div className={styles.settingItem}>
               <Table
-                columns={columns}
+                columns={communityColumns}
                 dataSource={communityMembers || []}
                 pagination={false}
                 rowKey="id"
@@ -154,7 +173,7 @@ export default function Page() {
             </Space>
             <div className={styles.settingItem}>
               <Table
-                columns={columns}
+                columns={channelColumns}
                 dataSource={channelMembers}
                 pagination={false}
                 rowKey="id"

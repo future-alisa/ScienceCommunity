@@ -1,11 +1,17 @@
+import { ChannelUserVo } from "@/model/ChannelUser";
+import { api } from "./ApiService";
+
 const ChannelService = {
   getChannelById: (id: string) => {
     // Implementation to get a channel by its ID
     console.log(`Fetching channel with ID: ${id}`);
   },
-  getChannelMembers: (id: string) => {
+  getChannelMembers: (channelId: string) => {
     // Implementation to get a channel by its ID
-    console.log(`Fetching channel members with ID: ${id}`);
+    console.log(`Fetching channel members with ID: ${channelId}`);
+    return api.get<ChannelUserVo[]>("/channeluser/getAllByChannelId", {
+      channelId: channelId,
+    });
   },
   createChannel: (name: string, members: string[]) => {
     // Implementation to create a new channel
