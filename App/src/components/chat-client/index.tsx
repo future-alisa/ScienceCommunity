@@ -1,4 +1,5 @@
 import { Client, IMessage, StompSubscription } from "@stomp/stompjs";
+import { api } from "../../services/ApiService";
 import SockJS from "sockjs-client";
 
 type MessageType =
@@ -20,7 +21,7 @@ function MessageFactory(
   type: MessageType,
   from: string,
   to: string,
-  content: string
+  content: string,
 ): ChatMessage {
   return {
     type: type,
@@ -38,7 +39,7 @@ interface ConnectOptions {
 }
 
 class ChatClient {
-  private client: Client;
+  private client!: Client;
   private username: string = "";
   private connected: boolean = false;
 
@@ -56,53 +57,76 @@ class ChatClient {
 
   constructor() {
     console.log("聊天服务器地址：", process.env.NEXT_PUBLIC_CHAT_URL);
-    this.client = new Client({
-      webSocketFactory: () => new SockJS(process.env.NEXT_PUBLIC_CHAT_URL!),
-      reconnectDelay: 5000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
+    // this.client = new Client({
+    //   webSocketFactory: () => new SockJS(process.env.NEXT_PUBLIC_CHAT_URL!),
+    //   reconnectDelay: 5000,
+    //   heartbeatIncoming: 4000,
+    //   heartbeatOutgoing: 4000,
+    // });
 
-    this.client.onStompError = (frame) => {
-      console.error("Broker reported error: " + frame.headers["message"]);
-      console.error("Additional details: " + frame.body);
-    };
+    // this.client.onStompError = (frame) => {
+    //   console.error("Broker reported error: " + frame.headers["message"]);
+    //   console.error("Additional details: " + frame.body);
+    // };
   }
 
   // 连接服务器
   public connect(username: string, options?: ConnectOptions): void {
     this.username = username;
-    this.client.connectHeaders = {
-      username: this.username,
-    };
 
-    this.client.onConnect = (frame) => {
-      this.connected = true;
-      console.log("Connected: " + frame.headers["user-name"]);
-      this.setupDefaultSubscriptions();
-      options?.onConnected?.();
-    };
+    const token = api.getToken();
+    console.log("token: ", token);
+    if (token) {
+      const baseChatUrl = process.env.NEXT_PUBLIC_CHAT_URL!;
+      const separator = baseChatUrl.includes("?") ? "&" : "?";
+      const urlWithToken = `${baseChatUrl}${separator}token=${encodeURIComponent(token)}`;
+      this.client = new Client({
+        webSocketFactory: () => new SockJS(urlWithToken),
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+      });
 
-    this.client.onDisconnect = () => {
-      this.connected = false;
-      console.log("Disconnected");
-    };
+      this.client.connectHeaders = {
+        username: this.username,
+      };
 
-    if (options?.onChannelMessage) {
-      this.channelMessageHandlers.add(options.onChannelMessage);
+      this.client.onConnect = (frame) => {
+        this.connected = true;
+        console.log("Connected: " + frame.headers["user-name"]);
+        this.setupDefaultSubscriptions();
+        options?.onConnected?.();
+      };
+
+      this.client.onDisconnect = () => {
+        this.connected = false;
+        console.log("Disconnected");
+      };
+
+      this.client.onStompError = (frame) => {
+        console.error("Broker reported error: " + frame.headers["message"]);
+        console.error("Additional details: " + frame.body);
+      };
+
+      if (options?.onChannelMessage) {
+        this.channelMessageHandlers.add(options.onChannelMessage);
+      }
+      if (options?.onPrivateMessage) {
+        this.privateMessageHandlers.add(options.onPrivateMessage);
+      }
+      if (options?.onPublicMessage) {
+        this.publicMessageHandlers.add(options.onPublicMessage);
+      }
+
+      this.client.activate();
     }
-    if (options?.onPrivateMessage) {
-      this.privateMessageHandlers.add(options.onPrivateMessage);
-    }
-    if (options?.onPublicMessage) {
-      this.publicMessageHandlers.add(options.onPublicMessage);
-    }
-
-    this.client.activate();
   }
 
   // 断开连接
   public async disconnect(): Promise<void> {
+    if (!this.client) {
+      return;
+    }
     this.channelMessageHandlers.clear();
     this.privateMessageHandlers.clear();
     this.publicMessageHandlers.clear();
@@ -122,7 +146,7 @@ class ChatClient {
       "PUBLIC",
       this.username,
       "",
-      content
+      content,
     );
 
     this.sendMessage("/app/chat.sendMessage", message);
@@ -136,7 +160,7 @@ class ChatClient {
       "PRIVATE",
       this.username,
       receiver,
-      content
+      content,
     );
 
     this.sendMessage("/app/chat.private", message);
@@ -148,7 +172,7 @@ class ChatClient {
       "CHANNEL",
       this.username,
       channelId,
-      content
+      content,
     );
     this.sendMessage(`/app/channel/${channelId}/send`, message);
   }
@@ -159,7 +183,7 @@ class ChatClient {
       "JOIN",
       this.username,
       channelId,
-      "Join channel"
+      "Join channel",
     );
 
     this.subscribeToChannel(channelId);
@@ -207,7 +231,7 @@ class ChatClient {
   private subscribe(destination: string) {
     const sub = this.client.subscribe(
       destination,
-      this.handleReceiveMessage.bind(this)
+      this.handleReceiveMessage.bind(this),
     );
     this.subscriptions.push(sub);
     return sub;
@@ -262,7 +286,7 @@ class ChatClient {
       "LEAVE",
       this.username,
       "",
-      "Leave channel"
+      "Leave channel",
     );
 
     this.client.publish({
@@ -278,7 +302,7 @@ class ChatClient {
       "JOIN",
       this.username,
       "",
-      `${this.username} joined`
+      `${this.username} joined`,
     );
 
     this.client.publish({
@@ -292,7 +316,7 @@ class ChatClient {
       "LEAVE",
       this.username,
       "",
-      `${this.username} leaved`
+      `${this.username} leaved`,
     );
     this.client.publish({
       destination: "/app/chat.removeUser",
