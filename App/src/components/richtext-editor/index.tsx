@@ -21,8 +21,9 @@ interface MyEditorProps {
   initialValue: Descendant[];
   onChange?: (value: Descendant[]) => void;
   placeholder?: string;
+  readOnly?: boolean;
 }
-const MyEditor = ({ initialValue, onChange }: MyEditorProps) => {
+const MyEditor = ({ initialValue, onChange, readOnly = false }: MyEditorProps) => {
   const [editor] = useState(() => withReact(createEditor()));
 
   return (
@@ -31,16 +32,16 @@ const MyEditor = ({ initialValue, onChange }: MyEditorProps) => {
       editor={editor}
       initialValue={initialValue}
     >
-      <Space style={{ marginBottom: 8 }}>
+      {!readOnly && <Space style={{ marginBottom: 8 }}>
         <Toolbar editor={editor} />
-      </Space>
+      </Space>}
       <div style={{ flex: 1, overflowY: "auto" }}>
         <Editable
-          readOnly={false}
+          readOnly={readOnly}
           renderElement={RenderElement}
           renderLeaf={RenderLeaf}
           spellCheck
-          autoFocus
+          autoFocus={!readOnly}
           style={{ padding: "8px", minHeight: "100%" }}
         />
       </div>

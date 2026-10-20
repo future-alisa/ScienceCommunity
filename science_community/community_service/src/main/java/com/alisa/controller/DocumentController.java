@@ -1,10 +1,8 @@
 package com.alisa.controller;
 
 import com.alisa.model.Document;
-import com.alisa.model.UserContext;
 import com.alisa.service.DocumentService;
 import com.alisa.util.Result;
-import com.alisa.util.UUIDTool;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,11 +36,19 @@ public class DocumentController {
 
     @PostMapping("/upsert")
     public Result<Integer> upsert(@RequestBody Document document) {
-        var userContext = UserContext.get();
-        document.setDocumentAuthorId(userContext.getUserId());
-        document.setDocumentId(UUIDTool.getUUID());
         var count = documentService.upsert(document);
         return new Result<Integer>(count);
+    }
+
+    @PostMapping("/save")
+    public Result<Document> save(@RequestBody Document document) {
+        documentService.upsert(document);
+        return new Result<>(document);
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<Integer> delete(@PathVariable String id) {
+        return new Result<>(documentService.delete(id));
     }
 
     @PostMapping("/batch-upsert")

@@ -1,43 +1,23 @@
+import { Channel, ChannelAccess, ChannelHistory, ChannelMessage } from "@/model/Channel";
 import { ChannelUserVo } from "@/model/ChannelUser";
 import { api } from "./ApiService";
 
+const path = (id: string) => `/channel/${encodeURIComponent(id)}`;
+export const notifyChannelsChanged = (communityId: string) => window.dispatchEvent(new CustomEvent("channels-changed", { detail: communityId }));
 const ChannelService = {
-  getChannelById: (id: string) => {
-    // Implementation to get a channel by its ID
-    console.log(`Fetching channel with ID: ${id}`);
-  },
-  getChannelMembers: (channelId: string) => {
-    // Implementation to get a channel by its ID
-    console.log(`Fetching channel members with ID: ${channelId}`);
-    return api.get<ChannelUserVo[]>("/channeluser/getAllByChannelId", {
-      channelId: channelId,
-    });
-  },
-  createChannel: (name: string, members: string[]) => {
-    // Implementation to create a new channel
-    console.log(
-      `Creating channel: ${name} with members: ${members.join(", ")}`
-    );
-  },
-
-  deleteChannel: (id: string) => {
-    // Implementation to delete a channel by its ID
-    console.log(`Deleting channel with ID: ${id}`);
-  },
-
-  addMemberToChannel: (channelId: string, memberId: string) => {
-    // Implementation to add a member to a channel
-    console.log(
-      `Adding member with ID: ${memberId} to channel with ID: ${channelId}`
-    );
-  },
-
-  removeMemberFromChannel: (channelId: string, memberId: string) => {
-    // Implementation to remove a member from a channel
-    console.log(
-      `Removing member with ID: ${memberId} from channel with ID: ${channelId}`
-    );
-  },
+  getChannelById: (id: string) => api.get<Channel>(path(id)),
+  getChannelMembers: (channelId: string) => api.get<ChannelUserVo[]>("/channeluser/getAllByChannelId", { channelId }),
+  createChannel: (communityId: string, name: string, description: string) => api.post<Channel>("/channel/save", {
+    channelId: "", channelCommunityId: communityId, channelName: name, channelDescription: description,
+  }),
+  saveChannel: (channel: Channel) => api.post<Channel>("/channel/save", channel),
+  deleteChannel: (id: string) => api.delete<number>(path(id)),
+  access: (id: string) => api.get<ChannelAccess>(`${path(id)}/access`),
+  join: (id: string) => api.post<number>(`${path(id)}/join`),
+  leave: (id: string) => api.post<number>(`${path(id)}/leave`),
+  history: (id: string, cursor?: { before?: string; after?: string }) => api.get<ChannelHistory>(`${path(id)}/messages`, cursor),
+  send: (id: string, content: string, clientMessageId: string) => api.post<ChannelMessage>(`${path(id)}/messages`, { content, clientMessageId }),
+  addMemberToChannel: (channelId: string, communityUserId: string) => api.post<number>("/channeluser/upsert", { channelId, communityUserId }),
+  removeMemberFromChannel: (_channelId: string, memberId: string) => api.delete<number>(`/channeluser/${encodeURIComponent(memberId)}`),
 };
-
 export default ChannelService;

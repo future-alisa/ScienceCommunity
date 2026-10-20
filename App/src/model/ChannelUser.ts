@@ -10,14 +10,15 @@ export interface ChannelUser {
   /**
    * []
    */
-  userId: string;
+  communityUserId: string;
 }
 
 export interface ChannelUserVo {
+  communityUserId: string;
   id: string;
   channelId: string;
   roleId: string;
   name: string;
-  emali: string;
+  email: string;
   role: string;
 }

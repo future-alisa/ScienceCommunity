@@ -1,7 +1,6 @@
 "use client";
 import styles from "./base.module.css";
-import { useTheme } from "@/theme/ThemeContext";
-import { Card } from "antd";
+import { Card, Tag } from "antd";
 
 type CardGridProps = {
   data: MyCard[];
@@ -17,29 +16,40 @@ type MyCard = {
 };
 
 const CardGrid = ({ data, handleCardClick }: CardGridProps) => {
-  const { theme } = useTheme();
   const { Meta } = Card;
 
   return (
     <div
       className={styles.page}
-      style={{ backgroundColor: theme.backgroundColor, color: theme.color }}
     >
       <div className={styles.grid}>
-        {data.map((item, index) => (
+        {data.map((item) => (
           <Card
             className={styles.card}
-            key={index}
+            key={item.id}
+            tabIndex={0}
+            role="link"
+            aria-label={item.title}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") handleCardClick(item.id);
+            }}
             hoverable
             cover={
               <img
-                alt="没有找到图片资源"
+                alt={item.title}
+                loading="lazy"
+                onError={(event) => {
+                  if (!event.currentTarget.src.endsWith("/community-thumbnail.png")) {
+                    event.currentTarget.src = "/community-thumbnail.png";
+                  }
+                }}
                 src={item.imageUrl || "/community-thumbnail.png"}
               />
             }
             onClick={() => handleCardClick(item.id)}
           >
             <Meta title={item.title} description={item.description} />
+            {item.tag && <Tag style={{ marginTop: 12 }}>{item.tag}</Tag>}
           </Card>
         ))}
       </div>

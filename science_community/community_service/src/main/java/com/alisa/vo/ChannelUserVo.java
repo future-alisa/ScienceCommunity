@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ChannelUserVo {
+    private String communityUserId;
     private String id;
     private String roleId;
     private String channelId;

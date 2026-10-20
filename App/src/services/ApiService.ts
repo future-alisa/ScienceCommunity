@@ -7,6 +7,13 @@ interface ApiConfig {
   headers?: Record<string, string>;
 }
 
+export class ApiError extends Error {
+  constructor(message: string, public readonly status: number) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 interface RequestOptions<T = any> {
   url: string;
   method?: RequestMethod;
@@ -71,22 +78,25 @@ export class ApiService {
       requestHeaders["Authorization"] = `Bearer ${this.getToken()}`;
     }
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const response = await fetch(fullUrl, {
         method,
         headers: requestHeaders,
         body: data ? JSON.stringify(data) : undefined,
+        signal: controller.signal,
       });
 
       if (!response.ok) {
         if (response.status === 401) {
           this.setToken(null);
         }
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const failure = await response.json().catch(() => null);
+        throw new ApiError(failure?.message || `请求失败（${response.status}）`, response.status);
       }
 
       const result = await response.json();
-      console.log("Response Body:", result);
       if (result && typeof result === "object" && "code" in result) {
         const { code, message, data } = result as ApiResponse<R>;
         if (code === 200) {
@@ -98,8 +108,11 @@ export class ApiService {
 
       return result as R;
     } catch (error) {
+      if (controller.signal.aborted) throw new ApiError("请求超时，请重试", 408);
       console.error("API request failed:", error);
       throw error;
+    } finally {
+      clearTimeout(timeout);
     }
   }
 

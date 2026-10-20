@@ -6,6 +6,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/channel-messages.sql
   application:
     name: community-service
   config:

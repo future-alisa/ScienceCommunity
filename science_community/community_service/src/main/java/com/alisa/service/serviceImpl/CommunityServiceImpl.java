@@ -1,6 +1,5 @@
 package com.alisa.service.serviceImpl;
 
-import com.alisa.dto.CommunityFilter;
 import com.alisa.mapper.CommunityMapper;
 import com.alisa.model.Community;
 import com.alisa.service.CommunityService;
@@ -12,7 +11,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@org.springframework.transaction.annotation.Transactional
 public class CommunityServiceImpl implements CommunityService {
+
+    @Autowired private com.alisa.service.CommunityAccessService access;
+    @Autowired private com.alisa.mapper.CommunityUserMapper members;
+    @Autowired private com.alisa.mapper.ChannelMapper channels;
+    @Autowired private com.alisa.mapper.DocumentMapper documents;
+    @Autowired private com.alisa.mapper.ManagementMapper management;
 
     @Autowired
     private CommunityMapper communityMapper;
@@ -34,32 +40,61 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public int create(Community model) {
-        return communityMapper.insert(model);
+        return upsert(model);
     }
 
     @Override
     public int update(Community model) {
-        return communityMapper.updateByPrimaryKey(model);
+        return upsert(model);
     }
 
     @Override
     public int delete(String id) {
+        access.lock(id);
+        var owner = access.requireMember(id);
+        if (!"owner".equals(access.role(owner))) throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN, "只有拥有者可以删除社区");
+        var channelFilter = new com.alisa.dto.ChannelFilter();
+        channelFilter.createCriteria().andChannelCommunityIdEqualTo(id);
+        var documentFilter = new com.alisa.dto.DocumentFilter();
+        documentFilter.createCriteria().andDocumentCommunityIdEqualTo(id);
+        var memberFilter = new com.alisa.dto.CommunityUserFilter();
+        memberFilter.createCriteria().andCommunityIdEqualTo(id);
+        if (channels.countByExample(channelFilter) > 0 || documents.countByExample(documentFilter) > 0 || members.countByExample(memberFilter) > 1)
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT, "请先清理社区的频道、文档和其他成员");
+        management.deleteMemberChannels(owner.getCommunityUserId());
+        management.deleteCommunityTags(id);
+        members.deleteByPrimaryKey(owner.getCommunityUserId());
         return communityMapper.deleteByPrimaryKey(id);
     }
 
     @Override
     public int upsert(Community model) {
-        return communityMapper.upsert(model);
+        String userId = access.userId();
+        if (model.getCommunityId() == null || model.getCommunityId().isBlank()) model.setCommunityId(com.alisa.util.UUIDTool.getUUID());
+        if (communityMapper.selectByPrimaryKey(model.getCommunityId()) != null) {
+            access.lock(model.getCommunityId());
+            access.requireManager(model.getCommunityId());
+            return communityMapper.updateByPrimaryKey(model);
+        }
+        int count = communityMapper.insert(model);
+        var owner = new com.alisa.model.CommunityUser();
+        owner.setCommunityUserId(com.alisa.util.UUIDTool.getUUID());
+        owner.setCommunityId(model.getCommunityId());
+        owner.setUserId(userId);
+        owner.setCommunityRoleId(access.roleId("owner"));
+        members.insert(owner);
+        return count;
     }
 
     @Override
     public int batchUpsert(List<Community> list) {
-        return communityMapper.batchUpsert(list);
+        return list.stream().mapToInt(this::upsert).sum();
     }
 
     @Override
     public int batchDelete(List<String> ids) {
-        return communityMapper.batchDelete(ids);
+        if (ids == null || ids.isEmpty()) throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "请选择社区");
+        return ids.stream().mapToInt(this::delete).sum();
     }
 
     @Override

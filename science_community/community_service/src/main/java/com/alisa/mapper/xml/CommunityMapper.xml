@@ -242,7 +242,7 @@
         c.community_description, 
         c.community_url, 
         c.community_image_url,
-        tc.tag_id
+        t.tag_name
     FROM tb_community c
     LEFT JOIN tb_tag_community tc ON c.community_id = tc.community_id
     LEFT JOIN tb_tag t ON tc.tag_id = t.tag_id

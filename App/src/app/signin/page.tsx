@@ -1,92 +1,44 @@
 "use client";
 import { useRouter } from "next/navigation";
-import styles from "./signin.module.css";
+import Link from "next/link";
+import styles from "../auth.module.css";
 import { useContext, useState } from "react";
-import { useTheme } from "@/theme/ThemeContext";
 import { UserDispatchContext } from "@/context/UserContext";
-import { Button, Input } from "antd";
+import { Alert, Button, Input } from "antd";
 import UserService from "@/services/UserService";
 export default function Page() {
-  const route = useRouter();
+  const router = useRouter();
   const dispatch = useContext(UserDispatchContext);
-  const [userName, setUserName] = useState("test");
-  const [password, setPassword] = useState("test");
-  const login = async () => {
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  async function login(event: React.FormEvent) {
+    event.preventDefault();
+    if (loading) return;
+    setLoading(true); setError("");
     try {
-      const data = await UserService.login({
-        username: userName,
-        password: password,
-        email: "",
-      });
-
-      if (data) {
-        dispatch!({
-          type: "Login",
-          user: {
-            name: userName,
-            token: data,
-            state: "Online",
-          },
-        });
-        route.push("/community");
-      } else {
-        alert("用户名或者密码错误");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const { theme } = useTheme();
-  return (
-    <div className={styles.page}>
-      <div className={styles.left_container}>
-        <p className={styles.title}>欢迎来到科学社区</p>
-      </div>
-      <div className={styles.right_container}>
-        <div className={styles.form_container}>
-          <Input
-            placeholder="用户名"
-            className={styles.input_field}
-            style={{
-              backgroundColor: theme.backgroundColor,
-              color: theme.color,
-              marginBottom: 16,
-            }}
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-          />
-          <Input.Password
-            placeholder="密码"
-            className={styles.input_field}
-            style={{
-              backgroundColor: theme.backgroundColor,
-              color: theme.color,
-              marginBottom: 24,
-            }}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <div className={styles.button_container}>
-            <Button
-              type="primary"
-              className={styles.login_button}
-              style={{
-                backgroundColor: theme.primaryColor,
-                color: theme.color,
-                width: "100%",
-                height: 40,
-                marginBottom: 16,
-              }}
-              onClick={() => login()}
-            >
-              登录
-            </Button>
-            <a href="/signup" className={styles.signup_link}>
-              注册
-            </a>
-          </div>
-        </div>
-      </div>
+      const token = await UserService.login({ username: userName, password, email: "" });
+      if (!token) throw new Error("用户名或密码错误");
+      dispatch?.({ type: "Login", user: { name: userName, email: "", communityId: "", token, state: "Online" } });
+      router.push("/community");
+    } catch (error) { setError(error instanceof Error ? error.message : "登录失败，请重试"); }
+    finally { setLoading(false); }
+  }
+  return <div className={styles.page}>
+    <div className={styles.left_container}>
+      <span className={styles.eyebrow}>SCIENCE COMMUNITY</span>
+      <h1 className={styles.title}>让好奇心，<br />找到同路人。</h1>
+      <p className={styles.intro}>从一本书、一个问题开始。探索感兴趣的学科，与志同道合的人一起学习。</p>
+      <div className={styles.note}>理论 · 案例 · 文章 · 讨论</div>
     </div>
-  );
+    <div className={styles.right_container}><form className={styles.form_container} onSubmit={login}>
+      <h2 className={styles.formTitle}>欢迎回来</h2><p className={styles.formSubtitle}>登录科学社区，继续你的探索。</p>
+      {error && <Alert className={styles.error} type="error" showIcon message={error} />}
+      <label className={styles.field}><span>用户名</span><Input className={styles.input_field} placeholder="输入用户名" autoComplete="username" required value={userName} onChange={(event) => setUserName(event.target.value)} /></label>
+      <label className={styles.field}><span>密码</span><Input.Password className={styles.input_field} placeholder="输入密码" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+      <div className={styles.button_container}><Button type="primary" htmlType="submit" className={styles.submit} loading={loading}>登录</Button></div>
+      <p className={styles.switch}>还没有账号？<Link href="/signup">创建账号</Link></p>
+    </form></div>
+  </div>;
 }

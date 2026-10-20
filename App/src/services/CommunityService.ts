@@ -19,7 +19,7 @@ const CommunityService = {
       return api.get<Array<Community>>(Constants.API_COMMUNITY_GET_ALL);
     }
     return api.get<Array<Community>>(
-      `${Constants.API_COMMUNITY_GET_ALL_BY_TAG}/${tagName}`
+      `${Constants.API_COMMUNITY_GET_ALL_BY_TAG}/${encodeURIComponent(tagName)}`
     );
   },
   getCommunityById(id: string) {

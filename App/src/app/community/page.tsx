@@ -1,5 +1,5 @@
 "use client";
-import { Input, Select } from "antd";
+import { Alert, Button, Empty, Input, Select, Spin } from "antd";
 import styles from "./community.module.css";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/theme/ThemeContext";
@@ -11,103 +11,59 @@ import { Community } from "@/model/Community";
 
 export default function Page() {
   const router = useRouter();
-
-  const [rawData, setRawData] = useState<Community[]>([]);
   const { theme } = useTheme();
-  const [tagName, setTagName] = useState<string>("");
-  const handleCardClick = (cardId: string) => {
-    router.push(`/community/${cardId}`);
-  };
-
+  const [rawData, setRawData] = useState<Community[]>([]);
+  const [tagName, setTagName] = useState("");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("default");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await CommunityService.getCommunitiesWithTag(tagName);
-        setRawData(data);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [tagName]);
-
-  const filterData = useMemo(() => {
-    const newData = rawData.map((value) => {
-      return {
-        title: value.communityName,
-        id: value.communityId,
-        description: value.communityDescription,
-        imageUrl: value.communityImageUrl,
-        tag: value.communityTag,
-      };
-    });
-    return newData;
-  }, [rawData]);
-
-  function handleChange(
-    value: string,
-    optio?:
-      | { value: string; label: string }
-      | { value: string; label: string }[]
-  ): void {
-    setTagName(value);
-  }
-
+    let active = true;
+    setLoading(true);
+    setError(false);
+    CommunityService.getCommunitiesWithTag(tagName)
+      .then((data) => { if (active) setRawData(data); })
+      .catch(() => { if (active) setError(true); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [tagName, attempt]);
+  const cards = useMemo(() => {
+    const keyword = query.trim().toLocaleLowerCase();
+    const communities = Array.from(new Map(rawData.map((item) => [item.communityId, item])).values());
+    const filtered = communities.filter((item) =>
+      [item.communityName, item.communityDescription, item.communityTag]
+        .some((value) => value?.toLocaleLowerCase().includes(keyword))
+    );
+    if (sort === "name") filtered.sort((a, b) => a.communityName.localeCompare(b.communityName, "zh-CN"));
+    return filtered.map((item) => ({
+      id: item.communityId, title: item.communityName,
+      description: item.communityDescription, imageUrl: item.communityImageUrl,
+      tag: item.communityTag,
+    }));
+  }, [rawData, query, sort]);
   return (
-    <main
-      className={styles.page}
-      style={{ backgroundColor: theme.backgroundColor }}
-    >
+    <main className={styles.page} style={{ backgroundColor: theme.backgroundColor, color: theme.color }}>
+      <h1>发现学科社区</h1>
+      <p>找到感兴趣的学科，阅读理论与案例，分享文章，参与主题讨论。</p>
       <div className={styles.toolbar}>
-        {/* 筛选条件 - 左侧 */}
         <div className={styles.filterGroup}>
-          <Select
-            defaultValue="1"
-            className={styles.filterSelect}
-            style={{
-              backgroundColor: theme.backgroundColor,
-              color: theme.color || "#fff",
-            }}
-            onChange={handleChange}
-            options={[
-              { value: "1", label: "最近更新" },
-              { value: "2", label: "访问次数" },
-              { value: "3", label: "用户数量" },
-            ]}
-          />
-          <Select
-            defaultValue=""
-            className={styles.filterSelect}
-            style={{
-              backgroundColor: theme.backgroundColor,
-              color: theme.color || "#fff",
-            }}
-            onChange={handleChange}
-            options={[
-              { value: "", label: "所有" },
-              { value: "数学", label: "数学" },
-              { value: "物理", label: "物理" },
-            ]}
-          />
+          <Select aria-label="社区排序" value={sort} className={styles.filterSelect}
+            onChange={setSort} options={[{ value: "default", label: "默认排序" }, { value: "name", label: "名称排序" }]} />
+          <Select aria-label="学科筛选" value={tagName} className={styles.filterSelect}
+            onChange={setTagName} options={["", "数学", "物理", "化学", "生物", "计算机"].map((value) => ({ value, label: value || "所有学科" }))} />
         </div>
-
-        {/* 搜索框 - 右侧 */}
         <div className={styles.searchContainer}>
-          <Input
-            placeholder="搜索社区..."
-            prefix={<SearchOutlined />}
-            style={{
-              width: 300,
-              backgroundColor: theme.backgroundColor || theme.backgroundColor,
-              color: theme.color,
-              borderColor: theme.borderColor,
-            }}
-          />
+          <Input aria-label="搜索社区" placeholder="搜索社区名称、简介或学科" prefix={<SearchOutlined />}
+            allowClear value={query} onChange={(event) => setQuery(event.target.value)} />
         </div>
       </div>
-
-      <CardGrid data={filterData} handleCardClick={handleCardClick} />
+      {loading ? <Spin tip="正在加载社区"><div style={{ minHeight: 160 }} /></Spin>
+        : error ? <Alert type="error" showIcon message="社区加载失败，请重试"
+          action={<Button onClick={() => setAttempt((value) => value + 1)}>重试</Button>} />
+        : cards.length ? <><p aria-live="polite">找到 {cards.length} 个社区</p><CardGrid data={cards} handleCardClick={(id) => router.push(`/community/${id}`)} /></>
+        : <Empty description={query || tagName ? "没有匹配的社区，试试其他关键词或学科" : "暂无社区"} />}
     </main>
   );
 }

@@ -9,6 +9,7 @@
   </resultMap>
   <resultMap id="ExBaseResultMap" type="com.alisa.vo.CommunityUserVo">
     <id column="community_user_id" jdbcType="CHAR" property="id" />
+    <result column="user_id" jdbcType="CHAR" property="userId" />
     <result column="community_id" jdbcType="CHAR" property="communityId" />
     <result column="community_role_id" jdbcType="CHAR" property="roleId" />
     <result column="user_name" jdbcType="CHAR" property="name" />
@@ -222,6 +223,7 @@
   <select id="selectCommunityUser" resultMap="ExBaseResultMap">
     SELECT 
       CU.community_id, 
+      CU.user_id,
       CU.community_user_id, 
       U.user_name,    
       U.user_email,   

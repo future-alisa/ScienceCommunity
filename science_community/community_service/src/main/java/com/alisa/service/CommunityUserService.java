@@ -6,6 +6,7 @@ import com.alisa.vo.CommunityUserVo;
 import java.util.List;
 
 public interface CommunityUserService {
+    int join(String communityId);
     List<CommunityUser> getAll();
 
     CommunityUser getById(String id);

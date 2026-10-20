@@ -244,6 +244,11 @@ public final class ChannelUserFilter {
             return (Criteria) this;
         }
 
+        public Criteria andCommunityUserIdEqualTo(String value) {
+            addCriterion("community_user_id =", value, "communityUserId");
+            return (Criteria) this;
+        }
+
         public Criteria andUserIdIsNull() {
             addCriterion("user_id is null");
             return (Criteria) this;

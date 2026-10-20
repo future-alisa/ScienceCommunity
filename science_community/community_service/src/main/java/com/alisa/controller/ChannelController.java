@@ -15,6 +15,17 @@ public class ChannelController {
     @Autowired
     private ChannelService channelService;
 
+    @PostMapping("/save")
+    public Result<Channel> save(@RequestBody Channel channel) {
+        channelService.upsert(channel);
+        return new Result<>(channel);
+    }
+
+    @DeleteMapping("/{id}")
+    public Result<Integer> delete(@PathVariable String id) {
+        return new Result<>(channelService.delete(id));
+    }
+
     @GetMapping("/getAll")
     public Result<List<Channel>> getAll() {
         var data = channelService.getAll();

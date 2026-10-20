@@ -1,155 +1,38 @@
 "use client";
 import React, { useContext, useState } from "react";
 import Link from "next/link";
-import {
-  HomeOutlined,
-  UserOutlined,
-  SettingOutlined,
-  TeamOutlined,
-  EditOutlined,
-  CloseOutlined,
-} from "@ant-design/icons";
-import { useParams, usePathname } from "next/navigation";
+import { Drawer } from "antd";
+import { HomeOutlined, UserOutlined, SettingOutlined, TeamOutlined, EditOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
+import { usePathname } from "next/navigation";
 import styles from "./user-nav.module.css";
-import { UserDispatchContext } from "@/context/UserContext";
-import { CommunityRouteParams } from "@/model/MyRouteParams";
+import { UserDispatchContext, UserContext } from "@/context/UserContext";
 
-interface NavItem {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-  path: string;
-}
-
-interface PopupNavProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const PopupNav: React.FC<PopupNavProps> = ({ isOpen, onClose }) => {
+const PopupNav = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const pathname = usePathname();
-  const { communityId } = useParams<CommunityRouteParams>();
   const dispatch = useContext(UserDispatchContext);
-  const navItems: NavItem[] = [
-    {
-      id: "home",
-      label: "首页",
-      icon: <HomeOutlined />,
-      path: "/",
-    },
-    {
-      id: "profile",
-      label: "个人中心",
-      icon: <UserOutlined />,
-      path: "/user-profile",
-    },
-    {
-      id: "favorites",
-      label: "发布",
-      icon: <EditOutlined />,
-      path: "/publish",
-    },
-    {
-      id: "create",
-      label: "创建社区",
-      icon: <TeamOutlined />,
-      path: "/community/create",
-    },
-    {
-      id: "community-settings",
-      label: "我的社区",
-      icon: <TeamOutlined />,
-      path: `/community/settings`,
-    },
-    {
-      id: "settings",
-      label: "设置",
-      icon: <SettingOutlined />,
-      path: "/settings",
-    },
-    {
-      id: "logout",
-      label: "退出登录",
-      icon: <SettingOutlined />,
-      path: "/",
-    },
+  const user = useContext(UserContext);
+  const items = [
+    { id: "home", label: "首页", icon: <HomeOutlined />, path: "/" },
+    { id: "profile", label: "个人中心", icon: <UserOutlined />, path: "/user-profile" },
+    { id: "publish", label: "发布文章", icon: <EditOutlined />, path: "/publish" },
+    { id: "create", label: "创建社区", icon: <PlusOutlined />, path: "/community/create" },
+    { id: "communities", label: "我的社区", icon: <TeamOutlined />, path: "/community/settings" },
+    { id: "settings", label: "设置", icon: <SettingOutlined />, path: "/settings" },
+    { id: "logout", label: "退出登录", icon: <LogoutOutlined />, path: "/" },
   ];
-
-  const activeId = navItems.find((item) => pathname === item.path)?.id || "";
-
-  const handleItemClick = (id: string) => {
-    switch (id) {
-      case "logout":
-        console.log("退出登录");
-        if (!dispatch) return;
-        dispatch({
-          type: "Logout",
-          user: {
-            name: "",
-            token: "",
-            state: "Offline",
-            communityId: "",
-            email: "",
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
-    onClose();
-  };
-
-  return (
-    <>
-      {/* Overlay */}
-      {isOpen && <div className={styles.overlay} onClick={onClose} />}
-
-      {/* Navigation menu */}
-      <div className={`${styles.navWrapper} ${isOpen ? styles.open : ""}`}>
-        <div className={styles.navContainer}>
-          <button className={styles.closeButton} onClick={onClose}>
-            <CloseOutlined />
-          </button>
-          <ul className={styles.navList}>
-            {navItems.map((item) => (
-              <li key={item.id}>
-                <Link
-                  href={item.path}
-                  className={`${styles.navItem} ${
-                    activeId === item.id ? styles.active : ""
-                  }`}
-                  onClick={() => handleItemClick(item.id)}
-                >
-                  <div className={styles.iconWrapper}>{item.icon}</div>
-                  <span className={styles.label}>{item.label}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </>
-  );
+  return <Drawer title="个人空间" placement="right" width={300} open={isOpen} onClose={onClose} styles={{ body: { padding: 20 } }}>
+    <p className={styles.greeting}>{user.name || "欢迎回来"}<span>学习、分享，保持好奇。</span></p>
+    <nav aria-label="个人导航"><ul className={styles.navList}>{items.map((item) => <li key={item.id} className={item.id === "logout" ? styles.logout : undefined}>
+      <Link href={item.path} className={`${styles.navItem} ${pathname === item.path && item.id !== "logout" ? styles.active : ""}`}
+        onClick={() => {
+          if (item.id === "logout") dispatch?.({ type: "Logout", user: { name: "", token: "", state: "Offline", communityId: "", email: "" } });
+          onClose();
+        }}><span className={styles.iconWrapper}>{item.icon}</span>{item.label}</Link>
+    </li>)}</ul></nav>
+  </Drawer>;
 };
-
 export default PopupNav;
-
-const useLoginTriggerMenu = () => {
+export const useLoginTriggerMenu = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const openMenu = () => setIsMenuOpen(true);
-  const closeMenu = () => setIsMenuOpen(false);
-  const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
-  };
-
-  return {
-    isMenuOpen,
-    openMenu,
-    closeMenu,
-    toggleMenu,
-  };
+  return { isMenuOpen, openMenu: () => setIsMenuOpen(true), closeMenu: () => setIsMenuOpen(false), toggleMenu: () => setIsMenuOpen((value) => !value) };
 };
-
-export { useLoginTriggerMenu };

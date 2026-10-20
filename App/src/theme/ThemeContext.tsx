@@ -19,20 +19,20 @@ type ThemeProviderProps = {
 
 export const LightTheme: ThemeContextType = {
   name: "Light",
-  backgroundColor: "#ffffff",
-  primaryColor: "#2563EB",
-  color: "#333333",
-  borderColor: "E0E0E0",
-  errorColor: "red",
+  backgroundColor: "#f7f8fa",
+  primaryColor: "#36644e",
+  color: "#252d32",
+  borderColor: "#e5e9ec",
+  errorColor: "#c85450",
 };
 
 export const DarkTheme: ThemeContextType = {
   name: "Dark",
-  backgroundColor: "#141414",
-  primaryColor: "#177ddc",
-  color: "#e0e0e0",
-  borderColor: "303030",
-  errorColor: "red",
+  backgroundColor: "#15191c",
+  primaryColor: "#74ad8c",
+  color: "#e4e9e6",
+  borderColor: "#303a40",
+  errorColor: "#df8179",
 };
 
 const ThemeContext = createContext<ThemeProviderProps | undefined>(undefined);

@@ -13,6 +13,7 @@ type MessageType =
 interface ChatMessage {
   type: MessageType;
   from: string;
+  sender?: string;
   to: string;
   content: string;
 }
@@ -75,7 +76,6 @@ class ChatClient {
     this.username = username;
 
     const token = api.getToken();
-    console.log("token: ", token);
     if (token) {
       const baseChatUrl = process.env.NEXT_PUBLIC_CHAT_URL!;
       const separator = baseChatUrl.includes("?") ? "&" : "?";
@@ -92,6 +92,8 @@ class ChatClient {
       };
 
       this.client.onConnect = (frame) => {
+        this.channelSubscriptions.clear();
+        this.subscriptions = [];
         this.connected = true;
         console.log("Connected: " + frame.headers["user-name"]);
         this.setupDefaultSubscriptions();
@@ -124,6 +126,8 @@ class ChatClient {
 
   // 断开连接
   public async disconnect(): Promise<void> {
+    this.connected = false;
+    this.channelSubscriptions.clear();
     if (!this.client) {
       return;
     }

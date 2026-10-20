@@ -8,6 +8,7 @@
   </resultMap>
   <resultMap id="ExBaseResultMap" type="com.alisa.vo.ChannelUserVo">
     <id column="channel_user_id" jdbcType="CHAR" property="id" />
+    <result column="community_user_id" jdbcType="CHAR" property="communityUserId" />
     <result column="channel_id" jdbcType="CHAR" property="channelId" />
     <result column="community_role_id" jdbcType="CHAR" property="roleId" />
     <result column="user_name" jdbcType="CHAR" property="name" />

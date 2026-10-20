@@ -40,7 +40,7 @@ const ActionButton = ({
     }}
     style={{
       cursor: "pointer",
-      color: active ? "#1890ff" : "rgba(0,0,0,0.65)",
+      color: active ? "var(--accent)" : "var(--muted)",
       fontSize: "16px",
       display: "flex",
       alignItems: "center",
@@ -48,7 +48,7 @@ const ActionButton = ({
       width: "28px",
       height: "28px",
       borderRadius: "4px",
-      background: active ? "#e6f7ff" : "transparent",
+      background: active ? "var(--accent-soft)" : "transparent",
       fontWeight: active ? "bold" : "normal",
       transition: "all 0.3s",
     }}
@@ -66,7 +66,7 @@ const Toolbar = ({ editor: propsEditor }: ToolbarProps) => {
       style={{
         width: "1px",
         height: "18px",
-        background: "#ddd",
+        background: "var(--line)",
         margin: "0 4px",
       }}
     />

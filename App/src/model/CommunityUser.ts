@@ -14,6 +14,7 @@ export interface CommunityUser {
 }
 
 export interface CommunityUserVo {
+  userId: string;
   id: string;
   roleId: string;
   communityId: string;

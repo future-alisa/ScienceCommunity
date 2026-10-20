@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class CommunityUserVo {
+    private String userId;
     private String id;
     private String roleId;
     private String communityId;

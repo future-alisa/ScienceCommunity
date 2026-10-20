@@ -17,6 +17,11 @@ public class ChannelUserController {
     @Autowired
     private ChannelUserService channeluserService;
 
+    @DeleteMapping("/{id}")
+    public Result<Integer> remove(@PathVariable String id) {
+        return new Result<>(channeluserService.delete(id));
+    }
+
     @GetMapping("/getAll")
     public Result<List<ChannelUser>> getAll() {
         var data = channeluserService.getAll();

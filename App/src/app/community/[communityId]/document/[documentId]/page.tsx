@@ -1,77 +1,59 @@
 "use client";
-import { api } from "@/services/ApiService";
+import { Alert, Button, Popconfirm, Space, Spin, message } from "antd";
+import Link from "next/link";
 import { MyEditor } from "@/components/richtext-editor";
 import { useEffect, useState } from "react";
 import { Descendant } from "slate";
 import { DocumentRouteParams } from "@/model/MyRouteParams";
-import { useParams } from "next/navigation";
+import { Document } from "@/model/Document";
+import { useParams, useRouter } from "next/navigation";
 import DocumentService from "@/services/DocumentService";
+import MemberService from "@/services/MemberService";
+import { parseDocument } from "@/util/DocumentContent";
 
 export default function Page() {
-  const { documentId } = useParams<DocumentRouteParams>();
-  const [value, setValue] = useState<Descendant[]>([
-    {
-      type: "paragraph",
-      children: [{ text: "欢迎来到 SlateJS 世界！这是一个简单的示例文章。" }],
-    },
-  ]);
-  const onChange = (value: Descendant[]) => {
-    setValue(value);
-  };
-
-  const [isLoading, setIsLoading] = useState(true);
-
+  const { communityId, documentId } = useParams<DocumentRouteParams>();
+  const router = useRouter();
+  const [document, setDocument] = useState<Document>();
+  const [value, setValue] = useState<Descendant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [canEdit, setCanEdit] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [revision, setRevision] = useState(0);
   useEffect(() => {
-    console.log(documentId);
-    const parseSlateJson = function (jsonString: string): Descendant[] {
-      try {
-        const parsed = JSON.parse(jsonString);
-        // 验证是否是有效的 Slate 格式
-        if (Array.isArray(parsed)) {
-          return parsed as Descendant[];
-        }
-        throw new Error("Invalid Slate format");
-      } catch (e) {
-        console.error("Failed to parse Slate content:", e);
-        // 返回一个默认的错误状态
-        return [
-          {
-            type: "paragraph",
-            children: [{ text: "内容解析失败" }],
-          },
-        ];
-      }
-    };
-
-    const fethData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await DocumentService.getDocumentById(documentId);
-        setValue(parseSlateJson(data.documentContent));
-        console.log(data);
-      } catch (error) {
-        setValue([
-          {
-            type: "paragraph",
-            children: [{ text: "加载失败" }],
-          },
-        ]);
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fethData();
-  }, [documentId]);
-
+    let active = true;
+    setLoading(true); setError(""); setCanEdit(false); setDocument(undefined);
+    Promise.all([DocumentService.getDocumentById(documentId), MemberService.access(communityId)]).then(([document, access]) => {
+      if (!active) return;
+      if (document.documentCommunityId !== communityId) throw new Error("文档不属于当前社区");
+      const content = parseDocument(document.documentContent);
+      setDocument(document); setValue(content);
+      setCanEdit(access.userId === document.documentAuthorId || access.role === "owner" || access.role === "admin");
+    }).catch((error) => { if (active) setError(error instanceof Error ? error.message : "文档加载失败"); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [communityId, documentId, revision]);
+  async function remove() {
+    setBusy(true);
+    try {
+      await DocumentService.deleteDocument(documentId);
+      message.success("文档已删除");
+      router.push(`/community/${communityId}/documents`);
+    } catch (error) { message.error(error instanceof Error ? error.message : "删除失败"); }
+    finally { setBusy(false); }
+  }
+  if (loading) return <Spin />;
+  if (error) return <Alert type="error" showIcon message={error} action={<Button onClick={() => setRevision((value) => value + 1)}>重试</Button>} />;
   return (
-    <div>
-      {isLoading ? (
-        <div>加载文档中...</div>
-      ) : (
-        <MyEditor key={documentId} initialValue={value} onChange={onChange} />
-      )}
-    </div>
+    <article>
+      <h1>{document?.documentName}</h1>
+      <p>{document?.documentDescription}</p>
+      {canEdit && <Space style={{ marginBottom: 16 }}>
+        <Link href={`/community/${communityId}/document/${documentId}/edit`}>编辑文档</Link>
+        <Popconfirm title="确定删除这篇文档？" description="删除后无法恢复。" onConfirm={remove} disabled={busy}><Button danger loading={busy}>删除</Button></Popconfirm>
+      </Space>}
+      <MyEditor key={`${documentId}-${revision}`} initialValue={value} readOnly />
+    </article>
   );
 }

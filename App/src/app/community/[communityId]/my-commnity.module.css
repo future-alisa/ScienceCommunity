@@ -1,41 +1,23 @@
-.page {
-  display: flex;
-  flex: 1;
-}
-.sidebar {
-  flex: 0 0 200px;
-  padding: 20px;
-  background-color: gray;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar h2 {
-  margin-top: 0;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar ul li {
-  margin: 10px 0;
-}
-
-.sidebar ul li a {
-  text-decoration: none;
-}
-
-.sidebar ul li a:hover {
-  text-decoration: underline;
-}
-
-.secondMenu {
-  padding-left: 20px;
-}
-
-.contentContainer {
-  flex: 1;
-  align-items: center;
-  padding: 20px;
+.page { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; flex: 1; align-items: start; }
+.sidebar { position: sticky; top: 108px; padding: 24px 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.sidebar h2 { margin: 0 12px 18px; font-size: 12px; font-weight: 500; color: var(--muted); letter-spacing: .12em; }
+.sidebar ul { list-style: none; padding: 0; margin: 0; }
+.sidebar li { margin: 4px 0; }
+.sidebar a { display: block; padding: 9px 12px; border-radius: 7px; color: var(--muted); font-size: 13px; transition: color .18s, background .18s; }
+.sidebar a:hover { color: var(--text); background: var(--surface-soft); }
+.sidebar a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); font-weight: 500; }
+.secondMenu { padding-left: 14px; }
+.secondMenu a { font-size: 12px; }
+.contentContainer { min-width: 0; padding: 32px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-height: 65vh; }
+.contentContainer > section > p, .contentContainer > section > h1 + p { color: var(--muted); }
+.contentContainer a { color: var(--accent); }
+.contentContainer > section > .ant-space { margin-top: 12px; }
+@media (max-width: 820px) {
+  .page { grid-template-columns: 1fr; gap: 18px; }
+  .sidebar { position: static; padding: 14px; }
+  .sidebar h2 { margin-bottom: 10px; }
+  .sidebar > ul { display: flex; flex-wrap: wrap; gap: 4px; }
+  .sidebar > ul > li { margin: 0; }
+  .sidebar > ul > li > ul { display: none; }
+  .contentContainer { padding: 22px 18px; }
 }

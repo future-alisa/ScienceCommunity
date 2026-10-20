@@ -5,6 +5,7 @@
     <id column="channel_id" jdbcType="CHAR" property="channelId" />
     <result column="channel_name" jdbcType="VARCHAR" property="channelName" />
     <result column="channel_community_id" jdbcType="VARCHAR" property="channelCommunityId" />
+    <result column="channel_description" jdbcType="VARCHAR" property="channelDescription" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -65,7 +66,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    channel_id, channel_name, channel_community_id
+    channel_id, channel_name, channel_community_id, channel_description
   </sql>
   <select id="selectByExample" parameterType="com.alisa.dto.ChannelFilter" resultMap="BaseResultMap">
     select
@@ -98,9 +99,9 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.alisa.model.Channel">
-    insert into tb_channel (channel_id, channel_name, channel_community_id
+    insert into tb_channel (channel_id, channel_name, channel_community_id, channel_description
       )
-    values (#{channelId,jdbcType=CHAR}, #{channelName,jdbcType=VARCHAR}, #{channelCommunityId,jdbcType=VARCHAR}
+    values (#{channelId,jdbcType=CHAR}, #{channelName,jdbcType=VARCHAR}, #{channelCommunityId,jdbcType=VARCHAR}, #{channelDescription,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.alisa.model.Channel">
@@ -115,6 +116,9 @@
       <if test="channelCommunityId != null">
         channel_community_id,
       </if>
+      <if test="channelDescription != null">
+        channel_description,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="channelId != null">
@@ -125,6 +129,9 @@
       </if>
       <if test="channelCommunityId != null">
         #{channelCommunityId,jdbcType=VARCHAR},
+      </if>
+      <if test="channelDescription != null">
+        #{channelDescription,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -146,6 +153,9 @@
       <if test="row.channelCommunityId != null">
         channel_community_id = #{row.channelCommunityId,jdbcType=VARCHAR},
       </if>
+      <if test="row.channelDescription != null">
+        channel_description = #{row.channelDescription,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -155,7 +165,8 @@
     update tb_channel
     set channel_id = #{row.channelId,jdbcType=CHAR},
       channel_name = #{row.channelName,jdbcType=VARCHAR},
-      channel_community_id = #{row.channelCommunityId,jdbcType=VARCHAR}
+      channel_community_id = #{row.channelCommunityId,jdbcType=VARCHAR},
+      channel_description = #{row.channelDescription,jdbcType=VARCHAR}
     <if test="example != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -169,26 +180,30 @@
       <if test="channelCommunityId != null">
         channel_community_id = #{channelCommunityId,jdbcType=VARCHAR},
       </if>
+      <if test="channelDescription != null">
+        channel_description = #{channelDescription,jdbcType=VARCHAR},
+      </if>
     </set>
     where channel_id = #{channelId,jdbcType=CHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.alisa.model.Channel">
     update tb_channel
     set channel_name = #{channelName,jdbcType=VARCHAR},
-      channel_community_id = #{channelCommunityId,jdbcType=VARCHAR}
+      channel_community_id = #{channelCommunityId,jdbcType=VARCHAR},
+      channel_description = #{channelDescription,jdbcType=VARCHAR}
     where channel_id = #{channelId,jdbcType=CHAR}
   </update>
   <insert id="batchUpsert" parameterType="java.util.List">
-    insert into tb_channel (channel_id, channel_name, channel_community_id) values 
+    insert into tb_channel (channel_id, channel_name, channel_community_id, channel_description) values
     <foreach collection="list" item="item" separator=",">
-      (#{item.channelId,jdbcType=CHAR}, #{item.channelName,jdbcType=VARCHAR}, #{item.channelCommunityId,jdbcType=VARCHAR})
+      (#{item.channelId,jdbcType=CHAR}, #{item.channelName,jdbcType=VARCHAR}, #{item.channelCommunityId,jdbcType=VARCHAR}, #{item.channelDescription,jdbcType=VARCHAR})
     </foreach>
-    on duplicate key update channel_name = values(channel_name), channel_community_id = values(channel_community_id)
+    on duplicate key update channel_name = values(channel_name), channel_community_id = values(channel_community_id), channel_description = values(channel_description)
   </insert>
   <insert id="upsert" parameterType="com.alisa.model.Channel">
-    insert into tb_channel (channel_id, channel_name, channel_community_id) values 
-    (#{channelId,jdbcType=CHAR}, #{channelName,jdbcType=VARCHAR}, #{channelCommunityId,jdbcType=VARCHAR})
-    on duplicate key update channel_name = values(channel_name), channel_community_id = values(channel_community_id)
+    insert into tb_channel (channel_id, channel_name, channel_community_id, channel_description) values
+    (#{channelId,jdbcType=CHAR}, #{channelName,jdbcType=VARCHAR}, #{channelCommunityId,jdbcType=VARCHAR}, #{channelDescription,jdbcType=VARCHAR})
+    on duplicate key update channel_name = values(channel_name), channel_community_id = values(channel_community_id), channel_description = values(channel_description)
   </insert>
   <delete id="batchDelete" parameterType="java.util.List">
     delete from tb_channel where channel_id in 

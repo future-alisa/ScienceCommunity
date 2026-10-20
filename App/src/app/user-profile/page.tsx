@@ -73,10 +73,10 @@ const UserProfilePage: React.FC = () => {
     <Flex
       justify="center"
       align="center"
-      style={{ minHeight: "100vh", background: "#f5f5f5" }}
+      style={{ width: "100%", padding: "12px 0", background: "transparent" }}
     >
       <Card
-        style={{ width: 450, borderRadius: 12 }}
+        style={{ width: "100%", maxWidth: 640, borderRadius: 12 }}
         title="个人资料"
         extra={
           <Space>
@@ -188,7 +188,7 @@ const EditableRow: React.FC<EditableRowProps> = ({
             {icon && (
               <span style={{ color: "#8c8c8c", display: "flex" }}>{icon}</span>
             )}
-            <Text style={{ color: "rgba(0, 0, 0, 0.88)" }}>
+            <Text style={{ color: "var(--text)" }}>
               {value || "未设置"}
             </Text>
           </Space>

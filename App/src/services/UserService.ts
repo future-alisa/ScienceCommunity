@@ -17,7 +17,6 @@ const UserService = {
       {},
       true
     );
-    console.log("Login result:", result);
     api.setToken(result);
     return result;
   },

@@ -1,46 +1,10 @@
-/* base.module.css */
-.page {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding: 20px; /* 增加页面内边距 */
-  align-items: center;
-}
-
-.grid {
-  display: grid;
-  gap: 20px; /* 关键：设置网格项之间的间距 */
-  padding: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* 自适应列宽 */
-  width: 100%;
-  max-width: var(--max-width);
-}
-
-.card {
-  padding: 1rem 1.2rem;
-  border-radius: var(--border-radius);
-  background: rgba(var(--card-rgb), 0);
-  border: 1px solid rgba(var(--card-border-rgb), 0);
-  transition: background 200ms, border 200ms;
-  width: 100%; /* 确保卡片宽度填满网格单元格 */
-  height: 100%; /* 统一卡片高度 */
-}
-
-.card span {
-  display: inline-block;
-  transition: transform 200ms;
-}
-
-.card h2 {
-  font-weight: 600;
-  margin-bottom: 0.7rem;
-}
-
-.card p {
-  margin: 0;
-  opacity: 0.6;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  max-width: 30ch;
-  text-wrap: balance;
-}
+.page { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); width: 100%; }
+.card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; height: 100%; transition: border-color .2s, transform .2s, box-shadow .2s; }
+.card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(25, 43, 33, .05); }
+.card :global(.ant-card-cover) { overflow: hidden; margin: 0; border-bottom: 1px solid var(--line); }
+.card :global(.ant-card-cover img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--surface-soft); border-radius: 0; }
+.card :global(.ant-card-body) { padding: 22px; }
+.card :global(.ant-card-meta-title) { font-weight: 600; font-size: 16px; color: var(--text); margin-bottom: 10px; }
+.card :global(.ant-card-meta-description) { color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.card :global(.ant-tag) { border: 0; background: var(--accent-soft); color: var(--accent); font-size: 11px; border-radius: 4px; }

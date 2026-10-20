@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./chat-room.module.css";
-import { useTheme } from "@/theme/ThemeContext";
 type ChatRoomProps = {
   name?: string;
   ownerId: string;
@@ -62,7 +61,6 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, send }) => {
 
 const ChatInput = ({ handleSubmit }: any) => {
   const [message, setMessage] = useState("");
-  const { theme } = useTheme();
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -77,11 +75,11 @@ const ChatInput = ({ handleSubmit }: any) => {
     <div className={styles.chat_input_container}>
       <textarea
         className={styles.chat_input}
-        style={{ backgroundColor: theme.backgroundColor, color: theme.color }}
         value={message}
         onChange={(value) => setMessage(value.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type a message..."
+        placeholder="分享你的想法，Shift + Enter 换行"
+        aria-label="消息内容"
       />
       <div className={styles.send_container}>
         <button

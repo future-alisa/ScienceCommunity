@@ -1,78 +1,24 @@
-.nav_container {
-  display: flex;
-}
-
-.nav_left {
-  flex: 1;
-}
-.nav_middle {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.nav_right {
-  flex: 1;
-  display: flex;
-  flex-direction: row-reverse;
-}
-
-/* 基础链接样式 */
-.nav_link {
-  margin: 10px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  padding: 0.5rem 0;
-  position: relative;
-}
-
-/* 普通链接的悬浮效果 */
-.nav_link:not(.signin_button):hover {
-  opacity: 0.8;
-  transform: translateY(-1px);
-}
-
-/* 激活状态的基础样式 */
-.nav_link.active {
-  font-weight: 600;
-}
-
-/* 普通链接的下划线动画 */
-.nav_link:not(.signin_button)::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: currentColor;
-  transition: width 0.3s ease;
-}
-
-.nav_link.active:not(.signin_button)::after {
-  width: 100%;
-}
-
-/* 登录按钮激活状态 */
-.active_button {
-  font-weight: 600;
-}
-
-/* 登录按钮基础样式 */
-.avatar {
-  margin: 16px;
-}
-
-/* 登录按钮悬浮效果 */
-.avatar:hover {
-  border-radius: 1.5em;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 登录按钮点击效果 */
-.avatar:active {
-  transform: translateY(0);
-  box-shadow: none;
+.header { position: sticky; top: 0; z-index: 50; background: var(--surface); border-bottom: 1px solid var(--line); }
+.nav_container { max-width: var(--max-width); margin: 0 auto; min-height: 76px; padding: 12px 32px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.brand { display: flex; align-items: center; gap: 11px; font-size: 15px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+.brand small { display: block; font-size: 10px; letter-spacing: .06em; font-weight: 400; color: var(--muted); }
+.brandMark { display: grid; place-items: center; width: 34px; height: 36px; background: var(--text); color: var(--surface); font-family: Georgia, serif; font-size: 24px; border-radius: 8px; }
+.nav_middle { display: flex; align-items: center; gap: 8px; }
+.nav_link { padding: 8px 16px; border-radius: 7px; color: var(--muted); font-size: 14px; transition: color .18s, background .18s; }
+.nav_link:hover { color: var(--text); background: var(--surface-soft); }
+.nav_link.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.nav_right { display: flex; justify-content: flex-end; min-width: 142px; }
+.accountButton { display: flex; align-items: center; gap: 10px; padding: 4px 8px; border: 0; background: transparent; color: var(--text); cursor: pointer; border-radius: 8px; }
+.accountButton:hover { background: var(--surface-soft); }
+.avatar { background: var(--accent-soft); color: var(--accent); }
+.accountName { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.signin { padding: 7px 15px; border: 1px solid var(--line); border-radius: 7px; font-size: 13px; }
+.signin span { margin-left: 10px; color: var(--muted); }
+.signin:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 720px) {
+  .nav_container { padding: 12px 16px; gap: 12px; min-height: 68px; flex-wrap: wrap; }
+  .nav_middle { order: 3; flex: 1 0 100%; justify-content: center; gap: 6px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .nav_link { padding: 6px 18px; }
+  .nav_right { min-width: 0; }
+  .accountName { display: none; }
 }
