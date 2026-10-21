@@ -16,7 +16,6 @@ export const StorageService = {
     localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(USERNAME_KEY, username);
     localStorage.setItem(USEREMAIL_KEY, email);
-    console.log("保存用户信息到本地存储", { token, username, email });
   },
 
   clearAuth: () => {
@@ -41,7 +40,6 @@ export const StorageService = {
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const username = localStorage.getItem(USERNAME_KEY) || "";
     const email = localStorage.getItem(USEREMAIL_KEY) || "";
-    console.log("读取本地存储的用户信息", { token, username, email });
 
     if (token) {
       return {

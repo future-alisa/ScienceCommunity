@@ -6,6 +6,7 @@ import { HomeOutlined, UserOutlined, SettingOutlined, TeamOutlined, EditOutlined
 import { usePathname } from "next/navigation";
 import styles from "./user-nav.module.css";
 import { UserDispatchContext, UserContext } from "@/context/UserContext";
+import { api, userApi } from "@/services/ApiService";
 
 const PopupNav = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const pathname = usePathname();
@@ -25,7 +26,11 @@ const PopupNav = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
     <nav aria-label="个人导航"><ul className={styles.navList}>{items.map((item) => <li key={item.id} className={item.id === "logout" ? styles.logout : undefined}>
       <Link href={item.path} className={`${styles.navItem} ${pathname === item.path && item.id !== "logout" ? styles.active : ""}`}
         onClick={() => {
-          if (item.id === "logout") dispatch?.({ type: "Logout", user: { name: "", token: "", state: "Offline", communityId: "", email: "" } });
+          if (item.id === "logout") {
+            api.setToken(null);
+            userApi.setToken(null);
+            dispatch?.({ type: "Logout", user: { name: "", token: "", state: "Offline", communityId: "", email: "" } });
+          }
           onClose();
         }}><span className={styles.iconWrapper}>{item.icon}</span>{item.label}</Link>
     </li>)}</ul></nav>

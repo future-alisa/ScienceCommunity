@@ -9,6 +9,7 @@ export default function Page() {
   const router = useRouter();
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   async function signup(event: React.FormEvent) {
@@ -16,7 +17,7 @@ export default function Page() {
     if (loading) return;
     setLoading(true); setError("");
     try {
-      const result = await UserService.signup({ username: userName, password, email: "" });
+      const result = await UserService.signup({ username: userName, password, email });
       if (result !== true) throw new Error("注册失败，请重试");
       router.push("/signin");
     } catch (error) { setError(error instanceof Error ? error.message : "注册失败，请重试"); }
@@ -33,6 +34,7 @@ export default function Page() {
       <h2 className={styles.formTitle}>创建账号</h2><p className={styles.formSubtitle}>开始你的学科探索之旅。</p>
       {error && <Alert className={styles.error} type="error" showIcon message={error} />}
       <label className={styles.field}><span>用户名</span><Input className={styles.input_field} autoComplete="username" required placeholder="设置用户名" value={userName} onChange={(event) => setUserName(event.target.value)} /></label>
+      <label className={styles.field}><span>邮箱</span><Input className={styles.input_field} type="email" autoComplete="email" required placeholder="输入邮箱地址" value={email} onChange={(event) => setEmail(event.target.value)} /></label>
       <label className={styles.field}><span>密码</span><Input.Password className={styles.input_field} autoComplete="new-password" required placeholder="设置密码" value={password} onChange={(event) => setPassword(event.target.value)} /></label>
       <div className={styles.button_container}><Button type="primary" htmlType="submit" className={styles.submit} loading={loading}>创建账号</Button></div>
       <p className={styles.switch}>已有账号？<Link href="/signin">返回登录</Link></p>

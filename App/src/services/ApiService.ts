@@ -38,6 +38,7 @@ export class ApiService {
 
   public setToken(token: string | null): void {
     this.token = token;
+    if (typeof localStorage === "undefined") return;
 
     if (token) {
       localStorage.setItem("auth_token", token);
@@ -47,7 +48,8 @@ export class ApiService {
   }
 
   public getToken(): string | null {
-    return this.token || localStorage.getItem("auth_token");
+    // Read the shared store first so logout/account switches affect every client.
+    return typeof localStorage === "undefined" ? this.token : localStorage.getItem("auth_token");
   }
 
   private async request<R = any, T = any>(

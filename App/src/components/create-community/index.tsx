@@ -22,6 +22,8 @@ import CommunityService from "@/services/CommunityService";
 import { s3 } from "@/services/S3Service";
 import { Community } from "@/model/Community";
 import { IdUtils } from "@/util/IdUtil";
+import { useRouter } from "next/navigation";
+import MemberService from "@/services/MemberService";
 
 const { TextArea } = Input;
 
@@ -37,6 +39,9 @@ interface Tag {
 }
 
 const CreateCommunityForm = () => {
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
@@ -53,15 +58,20 @@ const CreateCommunityForm = () => {
   };
 
   const handleInvite = () => {
-    if (!inviteInputValue) {
-      message.warning("请输入成员邮箱");
+    const email = inviteInputValue.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      message.warning("请输入有效的成员邮箱");
+      return;
+    }
+    if (members.some((member) => member.email.toLowerCase() === email.toLowerCase())) {
+      message.warning("该成员已在列表中");
       return;
     }
 
     const newMember = {
       id: `member-${Date.now()}`,
-      name: inviteInputValue.split("@")[0],
-      email: inviteInputValue,
+      name: email.split("@")[0],
+      email,
     };
 
     setMembers([...members, newMember]);
@@ -74,6 +84,9 @@ const CreateCommunityForm = () => {
   };
 
   const onFinish = async (values: any) => {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
     try {
       let communityImageUrl = "";
 
@@ -95,8 +108,25 @@ const CreateCommunityForm = () => {
       };
 
       await CommunityService.upsertCommunity(community);
+      const failed: string[] = [];
+      if (members.length) {
+        try {
+          const role = (await MemberService.roles()).find((item) => item.name === "member");
+          if (!role) throw new Error("成员角色未配置");
+          for (const member of members) {
+            try { await MemberService.add(community.communityId, member.email, role.id); }
+            catch { failed.push(member.email); }
+          }
+        } catch { failed.push(...members.map((member) => member.email)); }
+      }
+      if (failed.length) message.warning(`社区已创建，以下成员添加失败，请在我的社区中重试：${failed.join("、")}`, 8);
+      else message.success("社区创建成功");
+      router.push(`/community/settings?communityId=${community.communityId}`);
     } catch (error) {
-      message.error("操作失败");
+      message.error(error instanceof Error ? error.message : "操作失败");
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
   };
 
@@ -145,6 +175,7 @@ const CreateCommunityForm = () => {
           form={form}
           layout="vertical"
           onFinish={onFinish}
+          disabled={submitting}
           className={styles.form}
         >
           {/* 社区名称 */}
@@ -276,6 +307,7 @@ const CreateCommunityForm = () => {
               htmlType="submit"
               size="large"
               className={styles.submitButton}
+              loading={submitting}
             >
               创建社区
             </Button>

@@ -32,12 +32,12 @@ const CommunityService = {
   },
   upsertCommunity(data: Community) {
     console.log("Creating a new community with data:", data);
-    return api.post<boolean>(Constants.API_COMMUNITY_UPSERT, data);
+    return api.post<number>(Constants.API_COMMUNITY_UPSERT, data);
   },
 
   deleteCommunity(id: string) {
     console.log(`Deleting community with ID: ${id}`);
-    return api.delete(`/communities/${id}`);
+    return api.delete<number>(Constants.API_COMMUNITY_BATCH_DELETE, [id]);
   },
   getCommunityMembers(communityId: string) {
     console.log(`Get community members with ID: ${communityId}`);

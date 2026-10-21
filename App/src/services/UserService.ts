@@ -1,4 +1,4 @@
-import { api, userApi } from "@/services/ApiService";
+import { api, userApi, ApiError } from "@/services/ApiService";
 import constants from "@/config/Constants";
 import { User } from "@/model/User";
 
@@ -11,12 +11,22 @@ const UserService = {
     return result;
   },
   login: async ({ username, password }: User) => {
-    const result = await userApi.post<string>(
+    if (!username.trim() || !password.trim()) throw new Error("请输入用户名和密码");
+    let result: string;
+    try {
+      result = await userApi.post<string>(
       constants.API_USER_LOGIN,
-      { username, password },
+      { username: username.trim(), password },
       {},
       true
     );
+    } catch (error) {
+      if (error instanceof ApiError && error.status >= 500) {
+        throw new ApiError("用户服务登录异常，请确认账号已注册；临时测试账号可能已清理。若已有账号仍无法登录，请检查用户服务日志。", error.status);
+      }
+      throw error;
+    }
+    if (typeof result !== "string" || !result.trim()) throw new Error("用户名或密码错误");
     api.setToken(result);
     return result;
   },
@@ -25,10 +35,13 @@ const UserService = {
     console.log("Logout result:", result);
     return result;
   },
-  signup: async ({ username, password }: User) => {
+  signup: async ({ username, password, email }: User) => {
+    if (!username.trim() || !email.trim() || !password.trim()) {
+      throw new Error("请填写用户名、邮箱和密码");
+    }
     const result = await userApi.post<boolean>(
       constants.API_USER_SIGNUP,
-      { username, password },
+      { username: username.trim(), password, email: email.trim() },
       {},
       true
     );
