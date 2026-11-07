@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: science-registry-internal-check
+  namespace: science-community
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      containers:
+      - name: check
+        image: curlimages/curl:8.17.0
+        command:
+        - sh
+        - -c
+        - for u in http://registry.kind.internal:5000/v2/ https://registry.kind.internal:5000/v2/
+          http://registry.registry.svc.cluster.local:5000/v2/; do echo "$u"; curl
+          --noproxy "*" --max-time 8 -sS -i "$u" || true; done
