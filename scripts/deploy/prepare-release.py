@@ -4,7 +4,7 @@ root=Path.cwd(); ns='science-community'; registry='alisa-registry.cpolar.top'
 def meta(n):return {'name':n,'namespace':ns}
 resources=[{'apiVersion':'v1','kind':'Namespace','metadata':{'name':ns}}]
 for name,typ in [('science-config','Opaque'),('science-registry','kubernetes.io/dockerconfigjson')]:
- resources.append({'apiVersion':'v1','kind':'Secret','metadata':{**meta(name),'annotations':{'argocd.argoproj.io/sync-options':'Prune=false,Delete=false'}},'type':typ,'data':{}})
+ resources.append({'apiVersion':'v1','kind':'Secret','metadata':{**meta(name),'annotations':{'argocd.argoproj.io/sync-options':'Prune=false,Delete=false'}},'type':typ,'data':({'.dockerconfigjson':base64.b64encode(b'{"auths":{}}').decode()} if typ=='kubernetes.io/dockerconfigjson' else {})})
 for name,port,path in [('community',9091,'/community/community/getAll'),('transfer',9092,'/api/users/online'),('web',3000,'/science')]:
  label={'app.kubernetes.io/name':'science-'+name}
  c={'name':name,'image':registry+'/science-'+name+':release-20261107','ports':[{'name':'http','containerPort':port}], 'env':[{'name':'HOST','valueFrom':{'fieldRef':{'fieldPath':'status.podIP'}}}], 'resources':{'requests':{'cpu':'100m','memory':'256Mi'},'limits':{'cpu':'2','memory':'1Gi'}},'startupProbe':{'httpGet':{'path':path,'port':'http'},'failureThreshold':90,'periodSeconds':5},'readinessProbe':{'httpGet':{'path':path,'port':'http'},'periodSeconds':10}}
