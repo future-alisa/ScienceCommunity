@@ -185,7 +185,7 @@ spec:
       - name: science-registry
       containers:
       - name: web
-        image: registry.kind.internal:5000/science-web:release-20261107
+        image: registry.kind.internal:5000/science-web:release-20261107@sha256:a1e2eb672fa0064022bc748c4c21c6da1567a2fe0b3f7a4b8c9ef4ddc3a636a1
         ports:
         - name: http
           containerPort: 3000
