@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: science-web-build-git-20261107
+  name: science-web-build-git-20261107-2
   namespace: science-community
 spec:
   backoffLimit: 0
@@ -45,6 +45,9 @@ spec:
         - --build-arg=NEXT_PUBLIC_USER_API_BASE_URL=https://alisa.vip.cpolar.cn/alisa-gateway
         - --build-arg=NEXT_PUBLIC_CHAT_URL=https://alisa.vip.cpolar.cn/science-chat/ws
         - --build-arg=COMMUNITY_API_PROXY_TARGET=http://community:9091/community
+        - --build-arg=HTTP_PROXY=http://192.168.1.112:4067
+        - --build-arg=HTTPS_PROXY=http://192.168.1.112:4067
+        - --build-arg=NO_PROXY=registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
         volumeMounts:
         - name: workspace
           mountPath: /workspace
@@ -58,6 +61,13 @@ spec:
           limits:
             cpu: '2'
             memory: 2Gi
+        env:
+        - name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        - name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - name: NO_PROXY
+          value: registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
       volumes:
       - name: workspace
         emptyDir:
