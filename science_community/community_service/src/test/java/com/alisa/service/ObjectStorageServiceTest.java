@@ -99,4 +99,24 @@ class ObjectStorageServiceTest {
         doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN)).when(access).requireMember(anyString());
         assertEquals(403, assertThrows(ResponseStatusException.class, () -> service.readUrl(url)).getStatusCode().value());
     }
+    @Test void browserProxyUsesPublicPathWhileSigningWithTheInternalEndpoint() {
+        var access = mock(CommunityAccessService.class);
+        var env = new MockEnvironment().withProperty("S3_ENDPOINT", "https://s3.internal.example")
+            .withProperty("S3_BUCKET", "test-bucket").withProperty("S3_REGION", "us-east-1")
+            .withProperty("S3_ACCESS_KEY_ID", "server-key").withProperty("S3_SECRET_ACCESS_KEY", "server-secret")
+            .withProperty("S3_PUBLIC_URL", "https://old.example/test-bucket/")
+            .withProperty("S3_DOWNLOAD_PROXY_URL", "https://files.example/s3/");
+        String key = "attachments/" + "a".repeat(32) + "/" + "b".repeat(32) + ".webp";
+        String savedUrl = "https://old.example/test-bucket/" + key;
+        var service = new ObjectStorageService(access, env);
+        var signed = java.net.URI.create(service.readUrl(savedUrl).get("url"));
+        assertEquals("files.example", signed.getHost());
+        assertEquals("/s3/test-bucket/" + key, signed.getRawPath());
+        assertTrue(signed.getRawQuery().contains("X-Amz-Signature="));
+        assertTrue(signed.getRawQuery().contains("X-Amz-SignedHeaders=host"));
+        verify(access).requireMember("a".repeat(32));
+        assertThrows(ResponseStatusException.class, () -> service.readUrl("https://files.example/s3/test-bucket/" + key));
+        env.setProperty("S3_DOWNLOAD_PROXY_URL", "https://files.example/s3?unexpected=value");
+        assertEquals(503, assertThrows(ResponseStatusException.class, () -> service.readUrl(savedUrl)).getStatusCode().value());
+    }
 }

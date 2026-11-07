@@ -69,3 +69,16 @@ mvn -o -pl community_service -am test -B -ntp
 前端不再安装 AWS SDK，不再使用 Next.js API route；S3 凭证仅在 Java 社区服务配置。新增 ObjectStorageServiceTest 覆盖身份、社区权限、大小、格式、缺失配置、签名写入请求、读取签名及非法键。前端 node scripts/test-storage.cjs 验证 Java multipart 调用契约。
 
 SeaweedFS 保持 enableAuth=true。不要把 S3 管理员密钥放入前端变量；后续可给应用配置仅 app-storage 桶读写权限的独立账号。现有管理员凭证仅写入被 Git 忽略的 Java .env，没有写入模板或文档。
+
+## 目标环境通过 Caddy 子路径读取附件
+
+直连部署不设置 `S3_TUNNEL_URL`，浏览器继续使用由 `S3_ENDPOINT` 签发的链接。设置 `S3_TUNNEL_URL` 后，Java 上传和浏览器下载都走公网隧道；`S3_ENDPOINT` 仅用于计算签名，Java 不会连接这个地址。公网代理必须去掉 `/s3` 前缀、恢复签名使用的内网 Host，并保持签名查询参数不变。旧的 `S3_DOWNLOAD_PROXY_URL` 仍可用于后端能直连内网、只有浏览器需要代理的环境。
+
+```dotenv
+S3_ENDPOINT=https://s3.alisa.local
+S3_TUNNEL_URL=https://alisa.vip.cpolar.cn/s3
+S3_PUBLIC_URL=https://s3.docker.local/app-storage/
+S3_BUCKET=app-storage
+```
+
+这个示例中的 `S3_PUBLIC_URL` 是旧数据库里保存的附件标识前缀。保持它与旧记录一致，就不必批量改写正文和封面地址；浏览器实际加载的是后端签发的公网链接。目标 Java 服务需要能访问公网隧道、信任公网证书，并配置目标桶对应的 S3 凭据。仅改变签名地址不会恢复尚未迁移的对象。

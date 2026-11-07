@@ -9,14 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
 @Service
 public class ObjectStorageService {
+    private static final HttpClient TUNNEL_HTTP = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
     private final CommunityAccessService access;
     private final Environment env;
     private final Set<String> allowed = Set.of("image/png", "image/jpeg", "image/gif", "image/webp", "image/avif",
@@ -55,10 +61,27 @@ public class ObjectStorageService {
         try (var stream = file.getInputStream(); var client = MinioClient.builder().endpoint(endpoint)
             .region(env.getProperty("S3_REGION", "us-east-1")).credentials(keyId, secret).build()) {
             client.setTimeout(15000, 60000, 60000);
-            client.putObject(PutObjectArgs.builder().bucket(bucket).object(key).stream(stream, file.getSize(), -1).contentType(type)
-                .headers(Map.of("Content-Disposition", (type.startsWith("image/") || type.equals("application/pdf") ? "inline" : "attachment")
-                    + "; filename*=UTF-8''" + URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20"))).build());
+            String disposition = (type.startsWith("image/") || type.equals("application/pdf") ? "inline" : "attachment")
+                + "; filename*=UTF-8''" + URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
+            String tunnel = proxyUrl(env.getProperty("S3_TUNNEL_URL"));
+            if (tunnel == null) {
+                client.putObject(PutObjectArgs.builder().bucket(bucket).object(key).stream(stream, file.getSize(), -1).contentType(type)
+                    .headers(Map.of("Content-Disposition", disposition)).build());
+            } else {
+                String signed = client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(bucket).object(key)
+                    .method(Method.PUT).expiry(120).build());
+                var body = HttpRequest.BodyPublishers.fromPublisher(HttpRequest.BodyPublishers.ofInputStream(() -> stream), file.getSize());
+                var request = HttpRequest.newBuilder(URI.create(throughProxy(tunnel, signed))).timeout(Duration.ofSeconds(90))
+                    .header("Content-Type", type).header("Content-Disposition", disposition).PUT(body).build();
+                int status = TUNNEL_HTTP.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
+                if (status < 200 || status >= 300) throw failure(HttpStatus.SERVICE_UNAVAILABLE, "S3 隧道拒绝上传");
+            }
             return Map.of("url", publicUrl.replaceAll("/+$", "") + "/" + key, "name", name, "type", type, "size", file.getSize());
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw failure(HttpStatus.SERVICE_UNAVAILABLE, "附件上传已中断");
+        } catch (ResponseStatusException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw failure(HttpStatus.SERVICE_UNAVAILABLE, "附件上传失败，请检查对象存储连接和写入权限");
         }
@@ -84,11 +107,34 @@ public class ObjectStorageService {
         try (var client = MinioClient.builder().endpoint(setting("S3_ENDPOINT"))
                 .region(env.getProperty("S3_REGION", "us-east-1")).credentials(setting("S3_ACCESS_KEY_ID"), setting("S3_SECRET_ACCESS_KEY")).build()) {
             var result = new java.util.LinkedHashMap<String, String>();
-            for (var entry : keys.entrySet()) result.put(entry.getKey(), client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(setting("S3_BUCKET"))
-                .object(entry.getValue()).method(Method.GET).expiry(600).build()));
+            String proxy = proxyUrl(env.getProperty("S3_TUNNEL_URL"));
+            if (proxy == null) proxy = proxyUrl(env.getProperty("S3_DOWNLOAD_PROXY_URL"));
+            for (var entry : keys.entrySet()) {
+                String signed = client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().bucket(setting("S3_BUCKET"))
+                    .object(entry.getValue()).method(Method.GET).expiry(600).build());
+                if (proxy != null) signed = throughProxy(proxy, signed);
+                result.put(entry.getKey(), signed);
+            }
             return result;
         } catch (ResponseStatusException ex) { throw ex; }
         catch (Exception ex) { throw failure(HttpStatus.SERVICE_UNAVAILABLE, "无法获取附件访问地址"); }
+    }
+    private static String throughProxy(String proxy, String signed) {
+        URI upstream = URI.create(signed);
+        // The proxy must strip its prefix and restore the signing Host before reaching S3.
+        return proxy + upstream.getRawPath() + "?" + upstream.getRawQuery();
+    }
+    private String proxyUrl(String configured) {
+        if (configured == null || configured.isBlank()) return null;
+        try {
+            URI uri = URI.create(configured.strip());
+            if (!"https".equalsIgnoreCase(uri.getScheme()) || uri.getHost() == null || uri.getRawUserInfo() != null
+                || uri.getRawQuery() != null || uri.getRawFragment() != null
+                || !uri.getRawPath().matches("(?:/[A-Za-z0-9_-]+)*/?")) throw new IllegalArgumentException();
+            return uri.toASCIIString().replaceAll("/+$", "");
+        } catch (IllegalArgumentException invalid) {
+            throw failure(HttpStatus.SERVICE_UNAVAILABLE, "S3 公网代理地址无效，请检查服务端配置");
+        }
     }
     private String setting(String name) {
         String value = env.getProperty(name);
