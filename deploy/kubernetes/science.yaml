@@ -43,7 +43,7 @@ spec:
       - name: science-registry
       containers:
       - name: community
-        image: alisa-registry.cpolar.top/science-community:release-20261107@sha256:ca595e2efb1ecf23f840ed45d54ce80a2b338ca096a48e9581df5d385832a276
+        image: registry.kind.internal:5000/science-community:release-20261107@sha256:ca595e2efb1ecf23f840ed45d54ce80a2b338ca096a48e9581df5d385832a276
         ports:
         - name: http
           containerPort: 9091
@@ -112,7 +112,7 @@ spec:
       - name: science-registry
       containers:
       - name: transfer
-        image: alisa-registry.cpolar.top/science-transfer:release-20261107@sha256:47e28fb428e44f2dd68491ada5b28d72fbdf1a5801da56c9e9056f6dddc8a30d
+        image: registry.kind.internal:5000/science-transfer:release-20261107@sha256:47e28fb428e44f2dd68491ada5b28d72fbdf1a5801da56c9e9056f6dddc8a30d
         ports:
         - name: http
           containerPort: 9092
@@ -181,7 +181,7 @@ spec:
       - name: science-registry
       containers:
       - name: web
-        image: alisa-registry.cpolar.top/science-web:release-20261107
+        image: registry.kind.internal:5000/science-web:release-20261107
         ports:
         - name: http
           containerPort: 3000
