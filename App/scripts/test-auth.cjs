@@ -6,14 +6,15 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function environment(browser = true) {
+function environment(browser = true, fetchResponse) {
   const stored = new Map();
   const requests = [];
   const cache = new Map();
   const globals = {
-    process: { env: {} }, console, AbortController, setTimeout, clearTimeout, URLSearchParams,
+    process: { env: { NEXT_PUBLIC_USER_API_BASE_URL: 'https://identity.example/gateway' } }, console, AbortController, setTimeout, clearTimeout, URLSearchParams,
     fetch: async (url, options) => {
       requests.push({ url, ...options });
+      if (fetchResponse) return fetchResponse(url, options);
       return { ok: true, json: async () => ({ code: 200, data: true }) };
     },
   };
@@ -80,9 +81,31 @@ test('non-token login responses never authenticate the user', async () => {
     assert.equal(api.getToken(), null);
   }
 });
-test('login service errors explain the registration check while preserving HTTP status', async () => {
+test('login service errors report upstream failure without suggesting account deletion', async () => {
   const env = environment();
   const { userApi, ApiError } = env.load('services/ApiService');
   userApi.post = async () => { throw new ApiError('请求失败（500）', 500); };
-  await assert.rejects(env.load('services/UserService').default.login({ username: 'deleted-test', password: 'secret' }), error => error.status === 500 && /账号已注册/.test(error.message));
+  await assert.rejects(env.load('services/UserService').default.login({ username: 'deleted-test', password: 'secret' }), error => error.status === 500 && /暂时不可用/.test(error.message));
+});
+
+for (const initialToken of [null, 'previous-session']) {
+  test(`a delayed 401 from ${initialToken || 'an anonymous request'} cannot erase a new login`, async () => {
+    let complete;
+    const env = environment(true, () => new Promise(resolve => { complete = resolve; }));
+    const { api } = env.load('services/ApiService');
+    if (initialToken) api.setToken(initialToken);
+    const pending = api.get('/communityuser/access');
+    api.setToken('new-session');
+    complete({ ok: false, status: 401, json: async () => ({ message: '请先登录' }) });
+    await assert.rejects(pending, error => error.status === 401);
+    assert.equal(api.getToken(), 'new-session');
+  });
+}
+
+test('a 401 for the current authenticated session still invalidates its token', async () => {
+  const env = environment(true, async () => ({ ok: false, status: 401, json: async () => ({ message: '登录已失效' }) }));
+  const { api } = env.load('services/ApiService');
+  api.setToken('expired-session');
+  await assert.rejects(api.get('/communityuser/access'), error => error.status === 401);
+  assert.equal(api.getToken(), null);
 });

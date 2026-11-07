@@ -1,0 +1,268 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: science-community
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: science-config
+  namespace: science-community
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+type: Opaque
+data: {}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: science-registry
+  namespace: science-community
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+type: kubernetes.io/dockerconfigjson
+data: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: community
+  namespace: science-community
+spec:
+  replicas: 1
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/name: science-community
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: science-registry
+      containers:
+      - name: community
+        image: alisa-registry.cpolar.top/science-community:release-20261107
+        ports:
+        - name: http
+          containerPort: 9091
+        env:
+        - name: HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 1Gi
+        startupProbe:
+          httpGet:
+            path: /community/community/getAll
+            port: http
+          failureThreshold: 90
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /community/community/getAll
+            port: http
+          periodSeconds: 10
+        envFrom:
+        - secretRef:
+            name: science-config
+        command:
+        - java
+        args:
+        - -XX:MaxRAMPercentage=70
+        - -jar
+        - /app/science.jar
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: community
+  namespace: science-community
+spec:
+  selector:
+    app.kubernetes.io/name: science-community
+  ports:
+  - name: http
+    port: 9091
+    targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transfer
+  namespace: science-community
+spec:
+  replicas: 1
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/name: science-transfer
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: science-registry
+      containers:
+      - name: transfer
+        image: alisa-registry.cpolar.top/science-transfer:release-20261107
+        ports:
+        - name: http
+          containerPort: 9092
+        env:
+        - name: HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 1Gi
+        startupProbe:
+          httpGet:
+            path: /api/users/online
+            port: http
+          failureThreshold: 90
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /api/users/online
+            port: http
+          periodSeconds: 10
+        envFrom:
+        - secretRef:
+            name: science-config
+        command:
+        - java
+        args:
+        - -XX:MaxRAMPercentage=70
+        - -jar
+        - /app/science.jar
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transfer
+  namespace: science-community
+spec:
+  selector:
+    app.kubernetes.io/name: science-transfer
+  ports:
+  - name: http
+    port: 9092
+    targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: science-community
+spec:
+  replicas: 1
+  selector:
+    matchLabels: &id001
+      app.kubernetes.io/name: science-web
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      automountServiceAccountToken: false
+      imagePullSecrets:
+      - name: science-registry
+      containers:
+      - name: web
+        image: alisa-registry.cpolar.top/science-web:release-20261107
+        ports:
+        - name: http
+          containerPort: 3000
+        env:
+        - name: HOSTNAME
+          value: 0.0.0.0
+        - name: PORT
+          value: '3000'
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 1Gi
+        startupProbe:
+          httpGet:
+            path: /science
+            port: http
+          failureThreshold: 90
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /science
+            port: http
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: science-community
+spec:
+  selector:
+    app.kubernetes.io/name: science-web
+  ports:
+  - name: http
+    port: 3000
+    targetPort: http
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: science
+  namespace: science-community
+spec:
+  parentRefs:
+  - name: traefik-gateway
+    namespace: traefik
+  hostnames:
+  - alisa.vip.cpolar.cn
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /science
+    backendRefs:
+    - name: web
+      port: 3000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: science-chat
+  namespace: science-community
+spec:
+  parentRefs:
+  - name: traefik-gateway
+    namespace: traefik
+  hostnames:
+  - alisa.vip.cpolar.cn
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /science-chat
+    backendRefs:
+    - name: transfer
+      port: 9092
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /

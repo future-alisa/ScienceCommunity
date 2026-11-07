@@ -33,3 +33,6 @@ replay_pid*
 # Generated from the user-supplied reinforcement learning PDF
 /content/reinforcement-learning/pages/
 /content/reinforcement-learning/prepared-book.json
+
+# Local storage credentials
+/info

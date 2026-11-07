@@ -22,7 +22,7 @@ const UserService = {
     );
     } catch (error) {
       if (error instanceof ApiError && error.status >= 500) {
-        throw new ApiError("用户服务登录异常，请确认账号已注册；临时测试账号可能已清理。若已有账号仍无法登录，请检查用户服务日志。", error.status);
+        throw new ApiError("用户服务暂时不可用，请稍后重试。", error.status);
       }
       throw error;
     }

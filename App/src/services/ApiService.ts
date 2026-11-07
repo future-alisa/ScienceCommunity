@@ -5,6 +5,7 @@ type RequestMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 interface ApiConfig {
   baseUrl?: string;
   headers?: Record<string, string>;
+  requiredBaseUrl?: boolean;
 }
 
 export class ApiError extends Error {
@@ -27,9 +28,11 @@ export class ApiService {
   private baseUrl: string;
   private defaultHeaders: Record<string, string>;
   private token: string | null = null;
+  private requiredBaseUrl: boolean;
 
   constructor(config: ApiConfig = {}) {
-    this.baseUrl = config.baseUrl || "/api";
+    this.requiredBaseUrl = config.requiredBaseUrl ?? false;
+    this.baseUrl = (config.baseUrl || (this.requiredBaseUrl ? "" : "/api")).replace(/\/+$/, "");
     this.defaultHeaders = {
       "Content-Type": "application/json",
       ...config.headers,
@@ -55,6 +58,9 @@ export class ApiService {
   private async request<R = any, T = any>(
     options: RequestOptions<T>
   ): Promise<R> {
+    if (this.requiredBaseUrl && !this.baseUrl) {
+      throw new Error("请配置 NEXT_PUBLIC_USER_API_BASE_URL 用户服务地址");
+    }
     const {
       url,
       method = "GET",
@@ -76,8 +82,9 @@ export class ApiService {
       ...this.defaultHeaders,
       ...headers,
     };
-    if (!noAuth && this.getToken()) {
-      requestHeaders["Authorization"] = `Bearer ${this.getToken()}`;
+    const requestToken = noAuth ? null : this.getToken();
+    if (requestToken) {
+      requestHeaders["Authorization"] = `Bearer ${requestToken}`;
     }
 
     const controller = new AbortController();
@@ -91,7 +98,7 @@ export class ApiService {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
+        if (response.status === 401 && requestToken && this.getToken() === requestToken) {
           this.setToken(null);
         }
         const failure = await response.json().catch(() => null);
@@ -170,6 +177,7 @@ export const api = new ApiService({
 
 export const userApi = new ApiService({
   baseUrl: process.env.NEXT_PUBLIC_USER_API_BASE_URL,
+  requiredBaseUrl: true,
 });
 
 const savedToken =

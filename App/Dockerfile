@@ -1,0 +1,26 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_BASE_PATH
+ENV NEXT_PUBLIC_BASE_PATH=${NEXT_PUBLIC_BASE_PATH}
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ARG NEXT_PUBLIC_USER_API_BASE_URL
+ENV NEXT_PUBLIC_USER_API_BASE_URL=${NEXT_PUBLIC_USER_API_BASE_URL}
+ARG NEXT_PUBLIC_CHAT_URL
+ENV NEXT_PUBLIC_CHAT_URL=${NEXT_PUBLIC_CHAT_URL}
+ARG COMMUNITY_API_PROXY_TARGET
+ENV COMMUNITY_API_PROXY_TARGET=${COMMUNITY_API_PROXY_TARGET}
+RUN npm run build
+FROM node:22-alpine
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+COPY --from=build --chown=node:node /app/.next/standalone ./
+COPY --from=build --chown=node:node /app/.next/static ./.next/static
+COPY --from=build --chown=node:node /app/public ./public
+USER node
+EXPOSE 3000
+CMD ["node", "server.js"]
