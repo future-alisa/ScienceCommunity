@@ -10,7 +10,7 @@ import styles from "./style.module.css";
 export default function Navigator({ toggleMenu }: { toggleMenu: () => void }) {
   const pathname = usePathname();
   const user = useContext(UserContext);
-  const links = [{ href: "/", label: "首页" }, { href: "/community", label: "学科社区" }, { href: "/about", label: "关于" }];
+  const links = [{ href: "/", label: "首页" }, { href: "/community", label: "科学社区" }, { href: "/about", label: "关于" }];
   return <header className={styles.header}>
     <nav className={styles.nav_container} aria-label="主导航">
       <Link href="/" className={styles.brand} aria-label="科学社区首页"><span className={styles.brandMark}>S</span><span>科学社区<small>Science Community</small></span></Link>

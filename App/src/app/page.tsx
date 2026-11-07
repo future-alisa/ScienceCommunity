@@ -9,7 +9,7 @@ export default function Home() {
       <h1>在这里，<br />让知识彼此连接<span>。</span></h1>
       <p>找到你感兴趣的学科。读一本好书，分享一次发现，<br className={styles.desktopBreak} />和同路人一起，把问题想得更深一点。</p>
       <div className={styles.actions}>
-        <Link href="/community" className={styles.primary}>探索学科社区 <ArrowRightOutlined /></Link>
+        <Link href="/community" className={styles.primary}>探索科学社区 <ArrowRightOutlined /></Link>
         <Link href="/about" className={styles.secondary}>了解科学社区 <span aria-hidden="true">↗</span></Link>
       </div>
       <div className={styles.subjects}><span>数学</span><span>物理</span><span>计算机</span><span>更多学科，等待探索</span></div>

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import CommunityService from "@/services/CommunityService";
 import MemberService, { CommunityAccess } from "@/services/MemberService";
 import { Community } from "@/model/Community";
+import CoverImage from "@/components/cover-image";
 
 export default function Page() {
   const { communityId } = useParams<CommunityRouteParams>();
@@ -40,6 +41,7 @@ export default function Page() {
   if (loading) return <Spin />;
   if (error) return <Alert type="error" message={error} action={<Button onClick={() => setRevision((value) => value + 1)}>重试</Button>} />;
   return <section>
+    <CoverImage src={community?.communityImageUrl} title={community?.communityName || "科学社区"} description={community?.communityDescription} kind="community" style={{ maxHeight: 320, borderRadius: 16, marginBottom: 24 }} />
     <h1>{community?.communityName}</h1><p>{community?.communityDescription}</p>
     <Space wrap>
       {access?.membershipId ? <>

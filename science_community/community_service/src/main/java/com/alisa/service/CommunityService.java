@@ -15,6 +15,7 @@ public interface CommunityService {
     int create(Community model);
 
     int update(Community model);
+    int updateCover(String communityId, String url);
 
     int delete(String id);
 

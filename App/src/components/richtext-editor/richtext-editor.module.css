@@ -1,0 +1,16 @@
+.editor { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: clip; }
+.toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface-soft); position: sticky; top: 0; z-index: 2; }
+.toolbar button { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 32px; padding: 0 8px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; cursor: pointer; font: inherit; font-size: 14px; }
+.toolbar button:hover, .toolbar button[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
+.toolbar button:disabled { opacity: .35; cursor: default; }
+.toolbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.divider { height: 20px; width: 1px; background: var(--line); margin: 0 5px; }
+.insertTools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.content { min-height: 420px; padding: 32px 40px; outline: none; font-size: 16px; line-height: 1.9; overflow-wrap: anywhere; }
+.content p { margin: 0 0 1em; }
+.content h1, .content h2, .content h3 { line-height: 1.4; margin: 1.4em 0 .65em; font-weight: 600; }
+.content h1 { font-size: 28px; }.content h2 { font-size: 23px; }.content h3 { font-size: 19px; }
+.content blockquote { border-left: 3px solid var(--accent); margin: 1em 0; padding: 8px 20px; color: var(--muted); background: var(--surface-soft); }
+.content code { font-family: ui-monospace, monospace; padding: 2px 5px; border-radius: 4px; background: var(--surface-soft); font-size: .9em; }
+.readOnly { border: 0; background: transparent; }.readOnly .content { min-height: 0; padding: 20px 0; }
+@media (max-width: 640px) { .content { padding: 24px 18px; min-height: 320px; }.toolbar { padding: 8px; gap: 2px; }.divider { margin: 0 2px; } }

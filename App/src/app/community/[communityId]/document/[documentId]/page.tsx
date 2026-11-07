@@ -1,7 +1,7 @@
 "use client";
 import { Alert, Button, Popconfirm, Space, Spin, message } from "antd";
 import Link from "next/link";
-import { MyEditor } from "@/components/richtext-editor";
+import DocumentReader from "@/components/document-reader";
 import { useEffect, useState } from "react";
 import { Descendant } from "slate";
 import { DocumentRouteParams } from "@/model/MyRouteParams";
@@ -10,6 +10,7 @@ import { useParams, useRouter } from "next/navigation";
 import DocumentService from "@/services/DocumentService";
 import MemberService from "@/services/MemberService";
 import { parseDocument } from "@/util/DocumentContent";
+import CoverImage from "@/components/cover-image";
 
 export default function Page() {
   const { communityId, documentId } = useParams<DocumentRouteParams>();
@@ -47,13 +48,14 @@ export default function Page() {
   if (error) return <Alert type="error" showIcon message={error} action={<Button onClick={() => setRevision((value) => value + 1)}>重试</Button>} />;
   return (
     <article>
+      <CoverImage src={document?.documentThumbnailUrl} title={document?.documentName || "资料"} style={{ maxHeight: 360, borderRadius: 16, marginBottom: 24 }} />
       <h1>{document?.documentName}</h1>
       <p>{document?.documentDescription}</p>
       {canEdit && <Space style={{ marginBottom: 16 }}>
         <Link href={`/community/${communityId}/document/${documentId}/edit`}>编辑文档</Link>
         <Popconfirm title="确定删除这篇文档？" description="删除后无法恢复。" onConfirm={remove} disabled={busy}><Button danger loading={busy}>删除</Button></Popconfirm>
       </Space>}
-      <MyEditor key={`${documentId}-${revision}`} initialValue={value} readOnly />
+      <DocumentReader key={`${documentId}-${revision}`} value={value} />
     </article>
   );
 }

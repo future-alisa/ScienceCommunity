@@ -1,4 +1,4 @@
-import { Editor, Transforms, Element as SlateElement } from "slate";
+import { Editor, Transforms, Element as SlateElement, Range, Path } from "slate";
 import { BulletedListElement, NumberedListElement } from "../../../slate";
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
@@ -10,6 +10,7 @@ type BlockFormat =
   | "numbered-list"
   | "list-item"
   | "block-quote"
+  | "paragraph"
   | "left"
   | "center"
   | "right"
@@ -86,16 +87,12 @@ const isBlockActive = (
         // 1. 判断对齐 (align) 或普通类型 (type)
         const isBasicMatch = n[blockType as keyof SlateElement] === format;
 
-        // 2. 列表特殊逻辑：只要在 li 里，对应的 ul/ol 就算激活
-        const isListMatch =
-          LIST_TYPES.includes(format) && n.type === "list-item";
-
         // 3. 标题特殊逻辑：不但 type 要对，level 也要对
         if (format === "heading" && level !== undefined) {
           return n.type === "heading" && n.level === level;
         }
 
-        return isBasicMatch || isListMatch;
+        return isBasicMatch;
       },
     })
   );
@@ -108,4 +105,27 @@ const isMarkActive = (editor: Editor, format: MarkFormat) => {
   return marks ? marks[format] === true : false;
 };
 
-export { isBlockActive, isMarkActive, toggleBlock, toggleMark };
+// Return true when Enter is handled here; ordinary paragraphs use Slate's default.
+const handleDocumentEnter = (editor: Editor, exitCode = false): boolean => {
+  if (!editor.selection || !Range.isCollapsed(editor.selection)) return false;
+  const [entry] = Array.from(Editor.nodes(editor, { mode: "lowest", match: (node) =>
+    SlateElement.isElement(node) && ["list-item", "heading", "block-quote", "code-block"].includes(node.type) }));
+  if (!entry || !SlateElement.isElement(entry[0])) return false;
+  if (entry[0].type === "code-block") {
+    if (exitCode) Transforms.insertNodes(editor, { type: "paragraph", children: [{ text: "" }] }, { at: Path.next(entry[1]), select: true });
+    else editor.insertText("\n");
+    return true;
+  }
+  if (entry[0].type === "list-item") {
+    if (Editor.string(editor, entry[1]) !== "") return false;
+    const format = isBlockActive(editor, "numbered-list") ? "numbered-list" : "bulleted-list";
+    toggleBlock(editor, format);
+    return true;
+  }
+  Editor.withoutNormalizing(editor, () => {
+    editor.insertBreak();
+    Transforms.setNodes(editor, { type: "paragraph" });
+  });
+  return true;
+};
+export { isBlockActive, isMarkActive, toggleBlock, toggleMark, handleDocumentEnter };

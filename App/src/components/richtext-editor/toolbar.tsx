@@ -1,152 +1,25 @@
-import { Space } from "antd";
-import { Editor } from "slate";
 import { useSlate } from "slate-react";
-import {
-  AlignCenterOutlined,
-  AlignLeftOutlined,
-  AlignRightOutlined,
-  BoldOutlined,
-  ItalicOutlined,
-  OrderedListOutlined,
-  UnderlineOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
-import {
-  isMarkActive,
-  isBlockActive,
-  toggleBlock,
-  toggleMark,
-} from "./editor-action";
-
-interface ToolbarProps {
-  editor?: Editor;
+import { HistoryEditor } from "slate-history";
+import { BoldOutlined, ItalicOutlined, UnderlineOutlined, OrderedListOutlined, UnorderedListOutlined, AlignLeftOutlined, AlignCenterOutlined, AlignRightOutlined, UndoOutlined, RedoOutlined, CodeOutlined } from "@ant-design/icons";
+import { isBlockActive, isMarkActive, toggleBlock, toggleMark } from "./editor-action";
+import styles from "./richtext-editor.module.css";
+export default function Toolbar() {
+  const editor = useSlate();
+  const block = (label: string, format: Parameters<typeof toggleBlock>[1], children: React.ReactNode, level?: number) =>
+    <button type="button" title={label} aria-label={label} aria-pressed={isBlockActive(editor, format, ["left", "center", "right"].includes(format) ? "align" : "type", level)}
+      onMouseDown={(event) => event.preventDefault()} onClick={() => toggleBlock(editor, format, level)}>{children}</button>;
+  const mark = (label: string, format: Parameters<typeof toggleMark>[1], children: React.ReactNode) =>
+    <button type="button" title={label} aria-label={label} aria-pressed={isMarkActive(editor, format)} onMouseDown={(event) => event.preventDefault()} onClick={() => toggleMark(editor, format)}>{children}</button>;
+  return <div className={styles.toolbar} role="toolbar" aria-label="文档格式工具">
+    <button type="button" title="撤销（Ctrl / ⌘ Z）" aria-label="撤销" disabled={!editor.history.undos.length} onMouseDown={(e) => e.preventDefault()} onClick={() => HistoryEditor.undo(editor)}><UndoOutlined /></button>
+    <button type="button" title="重做（Ctrl / ⌘ Shift Z）" aria-label="重做" disabled={!editor.history.redos.length} onMouseDown={(e) => e.preventDefault()} onClick={() => HistoryEditor.redo(editor)}><RedoOutlined /></button>
+    <span className={styles.divider} />
+    {block("正文", "paragraph", "正文")}{[1, 2, 3].map((level) => <span key={level}>{block(`${level}级标题`, "heading", `H${level}`, level)}</span>)}
+    <span className={styles.divider} />
+    {mark("加粗（Ctrl / ⌘ B）", "bold", <BoldOutlined />)}{mark("斜体（Ctrl / ⌘ I）", "italic", <ItalicOutlined />)}{mark("下划线（Ctrl / ⌘ U）", "underline", <UnderlineOutlined />)}{mark("行内代码", "code", <CodeOutlined />)}
+    <span className={styles.divider} />
+    {block("引用", "block-quote", "❝")}{block("有序列表", "numbered-list", <OrderedListOutlined />)}{block("无序列表", "bulleted-list", <UnorderedListOutlined />)}
+    <span className={styles.divider} />
+    {block("左对齐", "left", <AlignLeftOutlined />)}{block("居中", "center", <AlignCenterOutlined />)}{block("右对齐", "right", <AlignRightOutlined />)}
+  </div>;
 }
-
-const ActionButton = ({
-  active,
-  onClick,
-  children,
-  icon: Icon,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children?: React.ReactNode;
-  icon?: any;
-}) => (
-  <div
-    onMouseDown={(e) => {
-      e.preventDefault();
-      onClick();
-    }}
-    style={{
-      cursor: "pointer",
-      color: active ? "var(--accent)" : "var(--muted)",
-      fontSize: "16px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      width: "28px",
-      height: "28px",
-      borderRadius: "4px",
-      background: active ? "var(--accent-soft)" : "transparent",
-      fontWeight: active ? "bold" : "normal",
-      transition: "all 0.3s",
-    }}
-  >
-    {Icon ? <Icon /> : children}
-  </div>
-);
-
-const Toolbar = ({ editor: propsEditor }: ToolbarProps) => {
-  const slateEditor = useSlate();
-  const editor = propsEditor || slateEditor;
-
-  const Divider = () => (
-    <div
-      style={{
-        width: "1px",
-        height: "18px",
-        background: "var(--line)",
-        margin: "0 4px",
-      }}
-    />
-  );
-
-  return (
-    <Space style={{ marginBottom: 8 }} wrap>
-      {/* 标题切换组*/}
-      <ActionButton
-        active={isBlockActive(editor, "heading", "type", 1)}
-        onClick={() => toggleBlock(editor, "heading", 1)}
-      >
-        H1
-      </ActionButton>
-      <ActionButton
-        active={isBlockActive(editor, "heading", "type", 2)}
-        onClick={() => toggleBlock(editor, "heading", 2)}
-      >
-        H2
-      </ActionButton>
-      <ActionButton
-        active={isBlockActive(editor, "heading", "type", 3)}
-        onClick={() => toggleBlock(editor, "heading", 3)}
-      >
-        H3
-      </ActionButton>
-
-      <Divider />
-
-      {/* 基础行内格式 */}
-      <ActionButton
-        active={isMarkActive(editor, "bold")}
-        onClick={() => toggleMark(editor, "bold")}
-        icon={BoldOutlined}
-      />
-      <ActionButton
-        active={isMarkActive(editor, "italic")}
-        onClick={() => toggleMark(editor, "italic")}
-        icon={ItalicOutlined}
-      />
-      <ActionButton
-        active={isMarkActive(editor, "underline")}
-        onClick={() => toggleMark(editor, "underline")}
-        icon={UnderlineOutlined}
-      />
-
-      <Divider />
-
-      {/* 列表格式 */}
-      <ActionButton
-        active={isBlockActive(editor, "numbered-list")}
-        onClick={() => toggleBlock(editor, "numbered-list")}
-        icon={OrderedListOutlined}
-      />
-      <ActionButton
-        active={isBlockActive(editor, "bulleted-list")}
-        onClick={() => toggleBlock(editor, "bulleted-list")}
-        icon={UnorderedListOutlined}
-      />
-
-      <Divider />
-
-      {/* 对齐格式 */}
-      <ActionButton
-        active={isBlockActive(editor, "left", "align")}
-        onClick={() => toggleBlock(editor, "left")}
-        icon={AlignLeftOutlined}
-      />
-      <ActionButton
-        active={isBlockActive(editor, "center", "align")}
-        onClick={() => toggleBlock(editor, "center")}
-        icon={AlignCenterOutlined}
-      />
-      <ActionButton
-        active={isBlockActive(editor, "right", "align")}
-        onClick={() => toggleBlock(editor, "right")}
-        icon={AlignRightOutlined}
-      />
-    </Space>
-  );
-};
-
-export default Toolbar;

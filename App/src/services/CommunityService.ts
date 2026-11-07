@@ -4,6 +4,9 @@ import { Community } from "@/model/Community";
 import { CommunityUserVo } from "@/model/CommunityUser";
 import { api } from "@/services/ApiService";
 const CommunityService = {
+  updateCover(id: string, url: string) {
+    return api.post<number>(`/community/${encodeURIComponent(id)}/cover`, { url });
+  },
   getCommunities() {
     console.log("Fetching all communities");
     return api.get<Array<Community>>(Constants.API_COMMUNITY_GET_ALL);

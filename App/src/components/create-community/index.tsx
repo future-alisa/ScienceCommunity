@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Upload,
   Button,
   Form,
   Input,
@@ -13,13 +12,11 @@ import {
 } from "antd";
 import {
   PlusOutlined,
-  UploadOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
-import type { UploadFile } from "antd/es/upload/interface";
 import styles from "./create-community.module.css";
 import CommunityService from "@/services/CommunityService";
-import { s3 } from "@/services/S3Service";
+import CoverPicker from "@/components/cover-picker";
 import { Community } from "@/model/Community";
 import { IdUtils } from "@/util/IdUtil";
 import { useRouter } from "next/navigation";
@@ -41,9 +38,10 @@ interface Tag {
 const CreateCommunityForm = () => {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const coverBusy = useRef(false);
   const submittingRef = useRef(false);
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [inviteInputVisible, setInviteInputVisible] = useState(false);
   const [inviteInputValue, setInviteInputValue] = useState("");
@@ -53,9 +51,6 @@ const CreateCommunityForm = () => {
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<InputRef>(null);
 
-  const handleUploadChange = ({ fileList }: { fileList: UploadFile[] }) => {
-    setFileList(fileList);
-  };
 
   const handleInvite = () => {
     const email = inviteInputValue.trim();
@@ -85,25 +80,16 @@ const CreateCommunityForm = () => {
 
   const onFinish = async (values: any) => {
     if (submittingRef.current) return;
+    if (coverBusy.current) { message.warning("请等待封面上传完成"); return; }
     submittingRef.current = true;
     setSubmitting(true);
     try {
-      let communityImageUrl = "";
-
-      if (fileList.length > 0 && fileList[0].originFileObj) {
-        const file = fileList[0].originFileObj as File;
-
-        communityImageUrl = await s3.upload(file);
-
-        message.success("图片上传成功");
-        console.log("Uploaded image URL:", communityImageUrl);
-      }
       const community: Community = {
         communityId: IdUtils.uuid32(),
         communityName: values.name,
         communityDescription: values.description,
         communityUrl: "",
-        communityImageUrl: communityImageUrl,
+        communityImageUrl: values.image || "",
         communityTag: values.tag,
       };
 
@@ -236,24 +222,9 @@ const CreateCommunityForm = () => {
           <Form.Item
             name="image"
             label="社区封面图片"
-            extra="建议尺寸 1200x600 像素，支持 JPG/PNG 格式"
+            extra="可选，社区创建后也可以在我的社区中更换。"
           >
-            <Upload
-              listType="picture-card"
-              fileList={fileList}
-              onChange={handleUploadChange}
-              beforeUpload={() => false}
-              accept="image/png,image/jpeg"
-              maxCount={1}
-              className={styles.uploadWrapper}
-            >
-              {fileList.length >= 1 ? null : (
-                <div className={styles.uploadPlaceholder}>
-                  <UploadOutlined style={{ fontSize: "24px" }} />
-                  <div style={{ marginTop: "0.5rem" }}>上传图片</div>
-                </div>
-              )}
-            </Upload>
+            <CoverPicker kind="community" disabled={submitting} onBusyChange={busy => { coverBusy.current=busy; setCoverUploading(busy); }} />
           </Form.Item>
 
           {/* 邀请成员 */}
@@ -308,6 +279,7 @@ const CreateCommunityForm = () => {
               size="large"
               className={styles.submitButton}
               loading={submitting}
+              disabled={coverUploading}
             >
               创建社区
             </Button>

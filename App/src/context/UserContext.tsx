@@ -83,7 +83,7 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
       default:
         break;
     }
-  }, [userContext.state]);
+  }, [isLoaded, userContext.state, userContext.token, userContext.name, userContext.email]);
 
   useEffect(() => {
     const loadUserInfo = async () => {
@@ -93,10 +93,10 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
           type: "Login",
           user: {
             name: auth.name,
-            communityId: "01290873b68b4806aefd79eeace6c38f",
+            communityId: auth.communityId,
             token: auth.token,
             state: "Online",
-            email: "",
+            email: auth.email,
           },
         });
       }

@@ -25,7 +25,8 @@ class DocumentServiceImplTest {
         ReflectionTestUtils.setField(service, "management", management);
         ReflectionTestUtils.setField(service, "access", access);
         ReflectionTestUtils.setField(service, "json", new ObjectMapper());
-        when(categories.selectByPrimaryKey("category")).thenReturn(new Category());
+        var category = new Category(); category.setCategoryName("base");
+        when(categories.selectByPrimaryKey("category")).thenReturn(category);
         when(access.userId()).thenReturn("author");
     }
     Document document(String id) {
@@ -96,5 +97,20 @@ class DocumentServiceImplTest {
         when(documents.selectByPrimaryKey("existing")).thenReturn(document("existing"));
         doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN)).when(access).requireMember("community");
         assertThrows(ResponseStatusException.class, () -> service.getById("existing"));
+    }
+    @Test void embeddingRequiresPermissionToReadTheReferencedCommunity() {
+        String targetId="0123456789abcdef0123456789abcdef";
+        var target=document(targetId);target.setDocumentCommunityId("private-community");
+        when(documents.selectByPrimaryKey(targetId)).thenReturn(target);
+        doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN)).when(access).requireMember("private-community");
+        var model=document("");model.setDocumentContent("[{\"type\":\"document-reference\",\"documentId\":\""+targetId+"\",\"name\":\"原文\",\"children\":[{\"text\":\"\"}]}]");
+        assertEquals(403,assertThrows(ResponseStatusException.class,()->service.upsert(model)).getStatusCode().value());
+        verify(documents,never()).insert(any());
+    }
+    @Test void documentCannotEmbedItself() {
+        String id="0123456789abcdef0123456789abcdef";
+        var model=document(id);model.setDocumentContent("[{\"type\":\"document-reference\",\"documentId\":\""+id+"\",\"name\":\"自身\",\"children\":[{\"text\":\"\"}]}]");
+        assertEquals(400,assertThrows(ResponseStatusException.class,()->service.upsert(model)).getStatusCode().value());
+        verify(documents,never()).updateByPrimaryKeyWithBLOBs(any());
     }
 }

@@ -27,7 +27,7 @@ export default function Page() {
     <div className={styles.left_container}>
       <span className={styles.eyebrow}>SCIENCE COMMUNITY</span>
       <h1 className={styles.title}>知识的边界，<br />由你向外延伸。</h1>
-      <p className={styles.intro}>加入感兴趣的学科社区，积累知识，分享发现，让每一次讨论都有所收获。</p>
+      <p className={styles.intro}>加入感兴趣的科学社区，积累知识，分享发现，让每一次讨论都有所收获。</p>
       <div className={styles.note}>保持好奇，自由探索。</div>
     </div>
     <div className={styles.right_container}><form className={styles.form_container} onSubmit={signup}>

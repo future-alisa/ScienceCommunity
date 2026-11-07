@@ -49,6 +49,11 @@ public class CommunityController {
         return new Result<Integer>(count);
     }
 
+    @PostMapping("/{id}/cover")
+    public Result<Integer> updateCover(@PathVariable String id, @RequestBody java.util.Map<String, String> body) {
+        return new Result<>(communityService.updateCover(id, body.get("url")));
+    }
+
     @PostMapping("/batch-upsert")
     public Result<Integer> batchUpsert(@RequestBody List<Community> list) {
         var count = communityService.batchUpsert(list);

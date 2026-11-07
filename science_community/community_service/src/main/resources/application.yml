@@ -6,6 +6,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 spring:
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 21MB
   sql:
     init:
       mode: always

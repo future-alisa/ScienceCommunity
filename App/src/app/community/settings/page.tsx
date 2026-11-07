@@ -10,6 +10,7 @@ import { CommunityUserVo } from "@/model/CommunityUser";
 import { ChannelUserVo } from "@/model/ChannelUser";
 import { Channel } from "@/model/Channel";
 import { DocumentLibrary } from "@/components/document-library";
+import CommunityCover from "@/components/community-cover";
 
 const roleLabels: Record<string, string> = { owner: "拥有者", admin: "管理员", member: "成员" };
 const errorText = (error: unknown) => error instanceof Error ? error.message : "操作失败，请重试";
@@ -105,6 +106,7 @@ function CommunityManagement() {
       </Space>
       {error && <Alert type="error" showIcon message={error} style={{ marginBottom: 16 }} />}
       {!communityId && !loading ? <Empty description="还没有加入社区" /> : communityId && <Tabs destroyInactiveTabPane items={[
+        ...(manager && communities.find(item => item.communityId === communityId) ? [{ key: "appearance", label: "社区封面", children: <CommunityCover key={`${communityId}-${revision}`} community={communities.find(item => item.communityId === communityId)!} onSaved={() => setRevision(value => value + 1)} /> }] : []),
         { key: "members", label: "社区成员", children: <>
           {manager && <Button type="primary" disabled={loading || busy} onClick={() => { form.resetFields(); setMemberModal(true); }}>添加成员</Button>}
           <Table<CommunityUserVo> rowKey="id" loading={loading} dataSource={members} scroll={{ x: 650 }} columns={[

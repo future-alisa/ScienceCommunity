@@ -1,43 +1,17 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import { s3Config } from "@/config/s3Config";
-import { IdUtils } from "@/util/IdUtil";
-
+import { api } from "./ApiService";
 class S3Service {
-  private client = new S3Client({
-    endpoint: s3Config.endpoint,
-    region: s3Config.region,
-    credentials: {
-      accessKeyId: s3Config.accessKeyId,
-      secretAccessKey: s3Config.secretAccessKey,
-    },
-    // Garage 必须使用 Path Style
-    forcePathStyle: true,
-  });
-
-  async upload(file: File): Promise<string> {
-    // 生成 32 位无横杠 UUID，完美适配 Java 后端
-    const fileName = `${IdUtils.uuid32()}.${file.name.split(".").pop()}`;
-
-    try {
-      const task = new Upload({
-        client: this.client,
-        params: {
-          Bucket: s3Config.bucket,
-          Key: fileName,
-          Body: file,
-          ContentType: file.type,
-        },
-      });
-      await task.done();
-
-      // 返回 Nginx 代理后的永久展示 URL
-      return `${s3Config.viewEndpoint}${fileName}`;
-    } catch (error) {
-      console.error("上传至 Garage 失败:", error);
-      throw error;
-    }
+  async upload(file: File, communityId?: string, purpose = "attachment"): Promise<string> {
+    const token = api.getToken();
+    if (!token) throw new Error("请先登录再上传附件");
+    const form = new FormData(); form.set("file", file);
+    if (communityId) form.set("communityId", communityId);
+    form.set("purpose", purpose);
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    if (!baseUrl) throw new Error("社区接口尚未配置");
+    const response = await fetch(baseUrl.replace(/\/$/, "") + "/storage", { method: "POST", headers: { Authorization: "Bearer " + token }, body: form });
+    const result = await response.json().catch(() => null);
+    if (!response.ok || result?.code !== 200) throw new Error(result?.message || "附件上传失败，请重试");
+    return result.data.url;
   }
 }
-
 export const s3 = new S3Service();

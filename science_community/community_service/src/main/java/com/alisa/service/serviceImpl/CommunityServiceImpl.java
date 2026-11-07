@@ -49,6 +49,24 @@ public class CommunityServiceImpl implements CommunityService {
     }
 
     @Override
+    public int updateCover(String communityId, String url) {
+        access.lock(communityId);
+        access.requireManager(communityId);
+        if (url == null || url.length() > 255) throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "无效的封面地址");
+        if (!url.isEmpty()) {
+            try {
+                var parsed = java.net.URI.create(url);
+                if (!java.util.Set.of("http", "https").contains(parsed.getScheme()) || parsed.getHost() == null || parsed.getUserInfo() != null)
+                    throw new IllegalArgumentException();
+            } catch (IllegalArgumentException invalid) { throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "无效的封面地址"); }
+        }
+        var patch = new Community();
+        patch.setCommunityId(communityId);
+        patch.setCommunityImageUrl(url);
+        return communityMapper.updateByPrimaryKeySelective(patch);
+    }
+
+    @Override
     public int delete(String id) {
         access.lock(id);
         var owner = access.requireMember(id);

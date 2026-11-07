@@ -65,18 +65,23 @@ public class DocumentServiceImpl implements DocumentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "摘要不能超过255个字符");
         if (model.getDocumentThumbnailUrl() != null && model.getDocumentThumbnailUrl().length() > 255)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "封面地址过长");
-        if (model.getDocumentCategoryId() == null || categories.selectByPrimaryKey(model.getDocumentCategoryId()) == null)
+        var category = model.getDocumentCategoryId() == null ? null : categories.selectByPrimaryKey(model.getDocumentCategoryId());
+        if (category == null || !java.util.Set.of("base", "case", "post").contains(java.util.Objects.toString(category.getCategoryName(), "")))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请选择有效的资料分类");
-        try {
-            var tree = json.readTree(model.getDocumentContent());
-            if (tree == null || !tree.isArray() || tree.isEmpty()) throw new IllegalArgumentException();
-            for (var node : tree) if (!node.has("children") || !validSlateNode(node, 0)) throw new IllegalArgumentException();
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "文档内容必须为非空的富文本数组");
-        }
+        model.setDocumentContent(com.alisa.service.DocumentContentCodec.normalize(model.getDocumentContent(), json));
         boolean creating = model.getDocumentId() == null || model.getDocumentId().isBlank();
         access.lock(model.getDocumentCommunityId());
         access.requireMember(model.getDocumentCommunityId());
+        try {
+            for (var node : json.readTree(model.getDocumentContent())) {
+                if ("document-reference".equals(node.path("type").asText())) {
+                    String targetId = node.get("documentId").asText();
+                    if (targetId.equals(model.getDocumentId())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "不能嵌入文档自身");
+                    var target = find(targetId);
+                    access.requireMember(target.getDocumentCommunityId());
+                }
+            }
+        } catch (com.fasterxml.jackson.core.JsonProcessingException invalid) { throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "文档引用格式无效"); }
         if (creating) {
             model.setDocumentId(UUIDTool.getUUID());
             model.setDocumentAuthorId(access.userId());
@@ -99,13 +104,6 @@ public class DocumentServiceImpl implements DocumentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有作者或社区管理员可以修改、删除文档");
     }
 
-    private boolean validSlateNode(com.fasterxml.jackson.databind.JsonNode node, int depth) {
-        if (depth > 100 || !node.isObject()) return false;
-        if (node.has("text")) return node.get("text").isTextual();
-        if (!node.has("type") || !node.get("type").isTextual() || !node.has("children") || !node.get("children").isArray() || node.get("children").isEmpty()) return false;
-        for (var child : node.get("children")) if (!validSlateNode(child, depth + 1)) return false;
-        return true;
-    }
     @Override public int delete(String id) {
         var document = find(id);
         access.lock(document.getDocumentCommunityId());

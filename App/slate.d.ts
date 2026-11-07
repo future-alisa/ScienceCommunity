@@ -1,5 +1,6 @@
 import { BaseEditor, Descendant } from "slate";
 import { ReactEditor } from "slate-react";
+import { HistoryEditor } from "slate-history";
 
 export type ParagraphElement = {
   type: "paragraph";
@@ -35,9 +36,14 @@ export type BlockQuoteElement = {
 export type CustomElement =
   | ParagraphElement
   | HeadingElement
-  | ListElement
+  | BulletedListElement
+  | NumberedListElement
   | ListItemElement
-  | BlockQuoteElement;
+  | BlockQuoteElement
+  | { type: "code-block"; language?: string; children: CustomText[] }
+  | { type: "image"; url: string; name: string; children: CustomText[] }
+  | { type: "attachment"; url: string; name: string; children: CustomText[] }
+  | { type: "document-reference"; documentId: string; name: string; children: CustomText[] };
 
 export type FormattedText = {
   text: string;
@@ -45,13 +51,14 @@ export type FormattedText = {
   italic?: boolean;
   underline?: boolean;
   code?: boolean;
+  url?: string;
 };
 export type CustomText = FormattedText;
 
 declare module "slate" {
   interface CustomTypes {
-    Editor: BaseEditor & ReactEditor;
-    Element: CustomElement;
+    Editor: BaseEditor & ReactEditor & HistoryEditor;
+    Element: CustomElement & { align?: "left" | "center" | "right" | "justify" };
     Text: CustomText;
   }
 }

@@ -1,4 +1,5 @@
 import { RenderLeafProps } from "slate-react";
+import { isDocumentUrl } from "@/util/DocumentUrl";
 
 const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
   if (leaf.bold) {
@@ -17,6 +18,7 @@ const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
     children = <u>{children}</u>;
   }
 
+  if (leaf.url && isDocumentUrl(leaf.url)) children = <a href={leaf.url} target="_blank" rel="noopener noreferrer">{children}</a>;
   return <span {...attributes}>{children}</span>;
 };
 

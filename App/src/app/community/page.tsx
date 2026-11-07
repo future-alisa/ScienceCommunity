@@ -45,7 +45,7 @@ export default function Page() {
   }, [rawData, query, sort]);
   return (
     <main className={styles.page} style={{ backgroundColor: theme.backgroundColor, color: theme.color }}>
-      <h1>发现学科社区</h1>
+      <h1>发现科学社区</h1>
       <p>找到感兴趣的学科，阅读理论与案例，分享文章，参与主题讨论。</p>
       <div className={styles.toolbar}>
         <div className={styles.filterGroup}>
@@ -62,7 +62,7 @@ export default function Page() {
       {loading ? <Spin tip="正在加载社区"><div style={{ minHeight: 160 }} /></Spin>
         : error ? <Alert type="error" showIcon message="社区加载失败，请重试"
           action={<Button onClick={() => setAttempt((value) => value + 1)}>重试</Button>} />
-        : cards.length ? <><p aria-live="polite">找到 {cards.length} 个社区</p><CardGrid data={cards} handleCardClick={(id) => router.push(`/community/${id}`)} /></>
+        : cards.length ? <><p aria-live="polite">找到 {cards.length} 个社区</p><CardGrid kind="community" data={cards} handleCardClick={(id) => router.push(`/community/${id}`)} /></>
         : <Empty description={query || tagName ? "没有匹配的社区，试试其他关键词或学科" : "暂无社区"} />}
     </main>
   );

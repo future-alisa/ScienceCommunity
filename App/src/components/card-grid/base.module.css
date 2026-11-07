@@ -3,7 +3,7 @@
 .card { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden; height: 100%; transition: border-color .2s, transform .2s, box-shadow .2s; }
 .card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(25, 43, 33, .05); }
 .card :global(.ant-card-cover) { overflow: hidden; margin: 0; border-bottom: 1px solid var(--line); }
-.card :global(.ant-card-cover img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--surface-soft); border-radius: 0; }
+.card :global(.ant-card-cover img), .card :global(.ant-card-cover svg) { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; background: var(--surface-soft); border-radius: 0; }
 .card :global(.ant-card-body) { padding: 22px; }
 .card :global(.ant-card-meta-title) { font-weight: 600; font-size: 16px; color: var(--text); margin-bottom: 10px; }
 .card :global(.ant-card-meta-description) { color: var(--muted); font-size: 13px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
