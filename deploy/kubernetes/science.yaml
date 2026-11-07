@@ -79,6 +79,8 @@ spec:
         - -XX:MaxRAMPercentage=70
         - -jar
         - /app/science.jar
+  strategy:
+    type: Recreate
 ---
 apiVersion: v1
 kind: Service
@@ -148,6 +150,8 @@ spec:
         - -XX:MaxRAMPercentage=70
         - -jar
         - /app/science.jar
+  strategy:
+    type: Recreate
 ---
 apiVersion: v1
 kind: Service
@@ -208,6 +212,8 @@ spec:
             path: /science
             port: http
           periodSeconds: 10
+  strategy:
+    type: Recreate
 ---
 apiVersion: v1
 kind: Service
