@@ -21,7 +21,8 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Prune=false,Delete=false
 type: kubernetes.io/dockerconfigjson
-data: {}
+data:
+  .dockerconfigjson: eyJhdXRocyI6e319
 ---
 apiVersion: apps/v1
 kind: Deployment
