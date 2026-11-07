@@ -1,0 +1,70 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: science-web-build-git-20261107
+  namespace: science-community
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 2400
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      initContainers:
+      - name: source
+        image: alpine/git:2.47.2
+        command:
+        - git
+        - clone
+        - --depth
+        - '1'
+        - --branch
+        - codex/k8s-deploy
+        - https://github.com/future-alisa/ScienceCommunity.git
+        - /workspace/source
+        env:
+        - name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+      containers:
+      - name: build
+        image: ghcr.io/osscontainertools/kaniko:v1.29.0
+        args:
+        - --context=dir:///workspace/source/App
+        - --dockerfile=/workspace/source/App/Dockerfile
+        - --destination=alisa-registry.cpolar.top/science-web:release-20261107
+        - --cache=false
+        - --compressed-caching=false
+        - --push-retry=3
+        - --build-arg=NEXT_PUBLIC_BASE_PATH=/science
+        - --build-arg=NEXT_PUBLIC_API_BASE_URL=/science/community-api
+        - --build-arg=NEXT_PUBLIC_USER_API_BASE_URL=https://alisa.vip.cpolar.cn/alisa-gateway
+        - --build-arg=NEXT_PUBLIC_CHAT_URL=https://alisa.vip.cpolar.cn/science-chat/ws
+        - --build-arg=COMMUNITY_API_PROXY_TARGET=http://community:9091/community
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        - name: registry
+          mountPath: /kaniko/.docker
+          readOnly: true
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 2Gi
+      volumes:
+      - name: workspace
+        emptyDir:
+          sizeLimit: 4Gi
+      - name: registry
+        secret:
+          secretName: science-registry
+          items:
+          - key: .dockerconfigjson
+            path: config.json
