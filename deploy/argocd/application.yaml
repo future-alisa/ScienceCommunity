@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/future-alisa/ScienceCommunity.git
-    targetRevision: codex/k8s-deploy
+    targetRevision: main
     path: deploy/kubernetes
   destination:
     server: https://kubernetes.default.svc

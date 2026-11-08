@@ -19,7 +19,7 @@ spec:
         - --depth
         - '1'
         - --branch
-        - codex/k8s-deploy
+        - main
         - https://github.com/future-alisa/ScienceCommunity.git
         - /workspace/source
         env:

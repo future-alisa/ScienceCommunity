@@ -15,3 +15,5 @@ NEXT_PUBLIC_USER_API_BASE_URL=https://your-user-gateway.example/alisa-gateway
 更换用户服务时更新 `NEXT_PUBLIC_USER_API_BASE_URL`，然后重启 `npm run dev`；生产环境需要重新构建。未配置用户服务地址时会明确提示配置缺失。
 
 运行 `npm run dev`，打开 http://127.0.0.1:3001 。本地开发的 `/community-api` 会代理到 `COMMUNITY_API_PROXY_TARGET`，目标地址包含后端的 `/community` 上下文路径。更换社区后端时修改此变量并重启前端；此变量仅供服务端代理使用，无需 `NEXT_PUBLIC_` 前缀。生产环境应将 `NEXT_PUBLIC_API_BASE_URL` 配置为实际业务网关地址。
+
+部署统一跟踪 `main`。运行清单位于 `deploy/kubernetes`；一次性镜像构建 Job 位于 `deploy/build`，发布新镜像时单独执行，避免普通配置同步触发重复构建。
