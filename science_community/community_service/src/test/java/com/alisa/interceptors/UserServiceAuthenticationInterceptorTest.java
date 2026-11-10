@@ -16,6 +16,8 @@ class UserServiceAuthenticationInterceptorTest {
     UserServiceAuthenticationInterceptor interceptor;
     int upstreamStatus = 200;
     String receivedAuthorization;
+    String memberships = "[]";
+    int membershipStatus = 200;
     String profile = "{\"code\":200,\"data\":{\"username\":\"alice\"}}";
 
     @BeforeEach void startAuthority() throws Exception {
@@ -24,6 +26,11 @@ class UserServiceAuthenticationInterceptorTest {
             receivedAuthorization = exchange.getRequestHeaders().getFirst("Authorization");
             byte[] bytes = profile.getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(upstreamStatus, bytes.length);
+            try (var body = exchange.getResponseBody()) { body.write(bytes); }
+        });
+        server.createContext("/gateway/api/v1/user/tenants", exchange -> {
+            byte[] bytes = memberships.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(membershipStatus, bytes.length);
             try (var body = exchange.getResponseBody()) { body.write(bytes); }
         });
         server.start();
@@ -64,6 +71,37 @@ class UserServiceAuthenticationInterceptorTest {
         assertFalse(interceptor.preHandle(request, response, new Object()));
         assertEquals(401, response.getStatus());
         assertNull(UserContext.get());
+    }
+
+    @Test void keepsPublicReadsOpenAndRequiresActiveTenantMembershipForWrites() throws Exception {
+        interceptor = new UserServiceAuthenticationInterceptor(
+            "http://127.0.0.1:" + server.getAddress().getPort() + "/gateway", "science");
+        assertTrue(interceptor.preHandle(new MockHttpServletRequest("GET", "/document/getAll"),
+            new MockHttpServletResponse(), new Object()));
+        assertTrue(interceptor.preHandle(new MockHttpServletRequest("POST", "/storage/read-urls"),
+            new MockHttpServletResponse(), new Object()));
+
+        var write = new MockHttpServletRequest("POST", "/document/save");
+        var anonymous = new MockHttpServletResponse();
+        assertFalse(interceptor.preHandle(write, anonymous, new Object()));
+        assertEquals(401, anonymous.getStatus());
+
+        write.addHeader("Authorization", token(Instant.now().getEpochSecond() + 300));
+        memberships = "[{\"id\":\"other\",\"enabled\":true},{\"id\":\"science\",\"enabled\":false}]";
+        var forbidden = new MockHttpServletResponse();
+        assertFalse(interceptor.preHandle(write, forbidden, new Object()));
+        assertEquals(403, forbidden.getStatus());
+        assertNull(UserContext.get());
+
+        membershipStatus = 503;
+        var unavailable = new MockHttpServletResponse();
+        assertFalse(interceptor.preHandle(write, unavailable, new Object()));
+        assertEquals(503, unavailable.getStatus());
+
+        membershipStatus = 200;
+        memberships = "[{\"id\":\"science\",\"enabled\":true}]";
+        assertTrue(interceptor.preHandle(write, new MockHttpServletResponse(), new Object()));
+        assertEquals("user-123", UserContext.get().getUserId());
     }
 
     @Test void upstreamFailureIsNotReportedAsExpiredLogin() throws Exception {
