@@ -25,6 +25,12 @@ spec:
     namespace: science-community
     jsonPointers:
     - /data
+  - group: ''
+    kind: Secret
+    name: science-oauth-web
+    namespace: science-community
+    jsonPointers:
+    - /data
   syncPolicy:
     syncOptions:
     - CreateNamespace=true

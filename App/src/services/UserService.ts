@@ -4,6 +4,8 @@ import { User } from "@/model/User";
 
 const UserService = {
   getUserProfile: async (username: string) => {
+    const token = api.getToken();
+    if (token && !token.includes(".")) return api.get("/auth/profile");
     const result = await userApi.get(constants.API_USER_PROFILE, {
       username: username,
     });

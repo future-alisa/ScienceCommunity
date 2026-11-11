@@ -18,6 +18,7 @@ public class UserServiceAuthenticationInterceptor implements HandlerInterceptor 
     private final URI profileUri;
     private final URI tenantsUri;
     private final String writeTenantId;
+    private final com.alisa.security.TokenVerifier oauth;
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(3))
         .followRedirects(HttpClient.Redirect.NEVER).build();
     private final ObjectMapper json = new ObjectMapper();
@@ -27,6 +28,11 @@ public class UserServiceAuthenticationInterceptor implements HandlerInterceptor 
     }
 
     public UserServiceAuthenticationInterceptor(String baseUrl, String writeTenantId) {
+        this(baseUrl, writeTenantId, null);
+    }
+
+    public UserServiceAuthenticationInterceptor(String baseUrl, String writeTenantId, com.alisa.security.TokenVerifier oauth) {
+        this.oauth = oauth;
         String userApi = baseUrl.replaceAll("/+$", "") + "/api/v1/user";
         profileUri = URI.create(userApi + "/profile");
         tenantsUri = URI.create(userApi + "/tenants");
@@ -47,6 +53,9 @@ public class UserServiceAuthenticationInterceptor implements HandlerInterceptor 
         }
         if (!authorization.startsWith("Bearer ") || authorization.length() > 16384)
             return failure(response, 401, "登录凭据无效，请重新登录");
+        if (authorization.substring(7).indexOf('.') < 0) {
+            return authenticateOAuth(request, response, authorization);
+        }
         var parts = authorization.substring(7).split("\\.", -1);
         if (parts.length != 3) return failure(response, 401, "登录凭据无效，请重新登录");
 
@@ -85,6 +94,35 @@ public class UserServiceAuthenticationInterceptor implements HandlerInterceptor 
             return true;
         } catch (Exception error) {
             return failure(response, 401, "登录凭据无效，请重新登录");
+        }
+    }
+
+    private boolean authenticateOAuth(HttpServletRequest request, HttpServletResponse response,
+                                      String authorization) throws Exception {
+        if (oauth == null) return failure(response, 401, "当前服务尚未配置 Alisa OAuth");
+        try {
+            var identity = oauth.verify(authorization, "science-community");
+            if (identity.application() || identity.userId() == null || identity.userId().isBlank()) {
+                return failure(response, 403, "社区操作需要用户身份");
+            }
+            if (identity.tenantId().isBlank() ||
+                !writeTenantId.isBlank() && !writeTenantId.equals(identity.tenantId())) {
+                return failure(response, 403, "访问令牌不属于当前社区租户");
+            }
+            String action = requiresWriteMembership(request) ? "write" : "read";
+            oauth.require(identity, authorization, "science-community", "community", "*", action);
+            var user = new UserContext();
+            user.setUserId(identity.userId());
+            user.setUsername(identity.username());
+            user.setTenantId(identity.tenantId());
+            UserContext.set(user);
+            return true;
+        } catch (com.alisa.security.AccessFailure error) {
+            return failure(response, error.status(), switch (error.status()) {
+                case 401 -> "登录已失效，请重新登录";
+                case 403 -> "当前授权范围或租户权限不足";
+                default -> "Alisa 授权服务暂时不可用";
+            });
         }
     }
 

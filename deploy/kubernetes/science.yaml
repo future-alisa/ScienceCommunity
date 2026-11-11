@@ -43,7 +43,7 @@ spec:
       - name: science-registry
       containers:
       - name: community
-        image: registry.kind.internal:5000/science-community:src-6fec17f@sha256:9ca907f7fe8f0155c7f39eb723ebfe59d1003b296f0fef0f8569d21d0ed8079d
+        image: registry.kind.internal:5000/science-community@sha256:1cabbeb94e1988ef90eae37d8162a2d8f584c17b05a8f8ca38dcc730205cd64f
         ports:
         - name: http
           containerPort: 9091
@@ -185,10 +185,14 @@ spec:
       - name: science-registry
       containers:
       - name: web
-        image: registry.kind.internal:5000/science-web:release-20261107@sha256:a1e2eb672fa0064022bc748c4c21c6da1567a2fe0b3f7a4b8c9ef4ddc3a636a1
+        image: registry.kind.internal:5000/science-web@sha256:c1b6ce94bf33329d69d29373833fa9168f78459b8680c92c817870a601cd4306
         ports:
         - name: http
           containerPort: 3000
+        envFrom:
+        - secretRef:
+            name: science-oauth-web
+            optional: true
         env:
         - name: HOSTNAME
           value: 0.0.0.0
@@ -273,3 +277,13 @@ spec:
         path:
           type: ReplacePrefixMatch
           replacePrefixMatch: /
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: science-oauth-web
+  namespace: science-community
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false,Delete=false
+type: Opaque
+data: {}
