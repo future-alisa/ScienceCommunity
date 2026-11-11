@@ -41,3 +41,14 @@ spring:
 #       password: nacos
 mybatis:
   mapper-locations: classpath:/com/alisa/mapper/xml/*.xml
+
+alisa:
+  security:
+    resources:
+      science-community:
+        issuer: ${ALISA_OAUTH_ISSUER:}
+        introspection-uri: ${ALISA_OAUTH_INTROSPECTION_URI:}
+        authorization-uri: ${ALISA_OAUTH_AUTHORIZATION_URI:}
+        client-id: ${ALISA_OAUTH_RESOURCE_CLIENT_ID:}
+        client-secret: ${ALISA_OAUTH_RESOURCE_CLIENT_SECRET:}
+        allow-insecure-loopback: ${ALISA_OAUTH_ALLOW_LOOPBACK:false}

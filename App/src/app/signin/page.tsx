@@ -5,6 +5,7 @@ import styles from "../auth.module.css";
 import { useContext, useState } from "react";
 import { UserDispatchContext } from "@/context/UserContext";
 import { Alert, Button, Input } from "antd";
+import { beginOAuth } from "@/services/OAuthService";
 import UserService from "@/services/UserService";
 export default function Page() {
   const router = useRouter();
@@ -34,6 +35,12 @@ export default function Page() {
     </div>
     <div className={styles.right_container}><form className={styles.form_container} onSubmit={login}>
       <h2 className={styles.formTitle}>欢迎回来</h2><p className={styles.formSubtitle}>登录科学社区，继续你的探索。</p>
+      <Button className={styles.submit} loading={loading} onClick={async () => {
+        if (loading) return;
+        setLoading(true); setError("");
+        try { await beginOAuth(); }
+        catch (error) { setError(error instanceof Error ? error.message : "登录失败"); setLoading(false); }
+      }}>使用 Alisa 账号继续</Button>
       {error && <Alert className={styles.error} type="error" showIcon message={error} />}
       <label className={styles.field}><span>用户名</span><Input className={styles.input_field} placeholder="输入用户名" autoComplete="username" required value={userName} onChange={(event) => setUserName(event.target.value)} /></label>
       <label className={styles.field}><span>密码</span><Input.Password className={styles.input_field} placeholder="输入密码" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} /></label>

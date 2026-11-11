@@ -18,6 +18,12 @@ class UserServiceAuthenticationInterceptorTest {
     String receivedAuthorization;
     String memberships = "[]";
     int membershipStatus = 200;
+    String oauthScopes = "science-community:community:read";
+    String oauthTenant = "science-tenant";
+    boolean oauthActive = true;
+    String policyEffect = "PERMIT";
+    String policyAuthorization;
+
     String profile = "{\"code\":200,\"data\":{\"username\":\"alice\"}}";
 
     @BeforeEach void startAuthority() throws Exception {
@@ -31,6 +37,22 @@ class UserServiceAuthenticationInterceptorTest {
         server.createContext("/gateway/api/v1/user/tenants", exchange -> {
             byte[] bytes = memberships.getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(membershipStatus, bytes.length);
+            try (var body = exchange.getResponseBody()) { body.write(bytes); }
+        });
+        server.createContext("/oauth2/introspect", exchange -> {
+            String claims = "{\"active\":" + oauthActive +
+                ",\"application_id\":\"science-community\",\"iss\":\"https://identity.example\"," +
+                "\"aud\":\"science-community\",\"exp\":" + (Instant.now().getEpochSecond() + 300) +
+                ",\"userId\":\"user-123\",\"username\":\"alice\",\"client_id\":\"web-client\"," +
+                "\"identity_type\":\"user\",\"tenant_id\":\"" + oauthTenant + "\",\"scope\":\"" + oauthScopes + "\"}";
+            byte[] bytes = claims.getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (var body = exchange.getResponseBody()) { body.write(bytes); }
+        });
+        server.createContext("/authorization/check", exchange -> {
+            policyAuthorization = exchange.getRequestHeaders().getFirst("Authorization");
+            byte[] bytes = ("{\"data\":{\"effect\":\"" + policyEffect + "\"}}").getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, bytes.length);
             try (var body = exchange.getResponseBody()) { body.write(bytes); }
         });
         server.start();
@@ -124,4 +146,65 @@ class UserServiceAuthenticationInterceptorTest {
             assertNull(UserContext.get());
         }
     }
+    UserServiceAuthenticationInterceptor oauthInterceptor() {
+        String origin = "http://127.0.0.1:" + server.getAddress().getPort();
+        var resource = new com.alisa.security.ResourceSecurityProperties.ResourceServer();
+        resource.setIssuer("https://identity.example");
+        resource.setIntrospectionUri(origin + "/oauth2/introspect");
+        resource.setAuthorizationUri(origin + "/authorization/check");
+        resource.setClientId("resource-client");
+        resource.setClientSecret("test-only-secret");
+        resource.setAllowInsecureLoopback(true);
+        var properties = new com.alisa.security.ResourceSecurityProperties();
+        properties.getResources().put("science-community", resource);
+        return new UserServiceAuthenticationInterceptor(origin + "/gateway", "science-tenant",
+            new com.alisa.security.TokenVerifier(properties));
+    }
+
+    @Test void oauthUsesVerifiedIdentityAndRequiresScopeAndTenantPolicy() throws Exception {
+        var request = new MockHttpServletRequest("GET", "/community/community/getAllByUser");
+        request.setContextPath("/community");
+        request.addHeader("Authorization", "Bearer opaque-token");
+        var response = new MockHttpServletResponse();
+        assertTrue(oauthInterceptor().preHandle(request, response, new Object()));
+        assertEquals("user-123", UserContext.get().getUserId());
+        assertEquals("alice", UserContext.get().getUsername());
+        assertEquals("science-tenant", UserContext.get().getTenantId());
+        assertEquals("Bearer opaque-token", policyAuthorization);
+        UserContext.remove();
+
+        policyEffect = "DENY";
+        response = new MockHttpServletResponse();
+        assertFalse(oauthInterceptor().preHandle(request, response, new Object()));
+        assertEquals(403, response.getStatus());
+        assertNull(UserContext.get());
+    }
+
+    @Test void oauthReadScopeCannotWriteAndWrongTenantCannotRead() throws Exception {
+        var request = new MockHttpServletRequest("POST", "/community/community/upsert");
+        request.setContextPath("/community");
+        request.addHeader("Authorization", "Bearer opaque-token");
+        var response = new MockHttpServletResponse();
+        assertFalse(oauthInterceptor().preHandle(request, response, new Object()));
+        assertEquals(403, response.getStatus());
+        assertNull(policyAuthorization);
+
+        oauthTenant = "other-tenant";
+        request.setMethod("GET");
+        response = new MockHttpServletResponse();
+        assertFalse(oauthInterceptor().preHandle(request, response, new Object()));
+        assertEquals(403, response.getStatus());
+    }
+
+    @Test void revokedOAuthTokenDoesNotAuthenticate() throws Exception {
+        oauthActive = false;
+        var request = new MockHttpServletRequest("GET", "/community/community/getAllByUser");
+        request.setContextPath("/community");
+        request.addHeader("Authorization", "Bearer opaque-token");
+        var response = new MockHttpServletResponse();
+        assertFalse(oauthInterceptor().preHandle(request, response, new Object()));
+        assertEquals(401, response.getStatus());
+        assertNull(UserContext.get());
+    }
+
 }
