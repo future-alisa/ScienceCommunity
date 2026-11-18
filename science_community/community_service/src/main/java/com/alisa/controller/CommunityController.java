@@ -1,7 +1,7 @@
 package com.alisa.controller;
 
 import com.alisa.model.Community;
-import com.alisa.model.UserContext;
+import com.alisa.service.CommunityAccessService;
 import com.alisa.service.CommunityService;
 import com.alisa.util.Result;
 import com.alisa.vo.CommunityVo;
@@ -18,6 +18,9 @@ public class CommunityController {
     @Autowired
     private CommunityService communityService;
 
+    @Autowired
+    private CommunityAccessService access;
+
     @GetMapping("/getAll")
     public Result<List<Community>> getAll() {
         var data = communityService.getAll();
@@ -26,7 +29,7 @@ public class CommunityController {
 
     @GetMapping("/getAllByUser")
     public Result<List<Community>> getAllByUser() {
-        var userId = UserContext.get().getUserId();
+        var userId = access.userId();
         var data = communityService.getAllByUser(userId);
         return new Result<>(data);
     }

@@ -1,4 +1,8 @@
 "use client";
+import { javascriptDemoLanguage } from "@/components/algorithm-demo/javascript-demo";
+import { flowLanguage } from "@/components/algorithm-demo/flow";
+import { gdevelopLanguage } from "@/components/algorithm-demo/gdevelop";
+import { resolveDemo } from "@/components/algorithm-demo";
 import { useState, useRef, useEffect } from "react";
 import { message } from "antd";
 import { s3 } from "@/services/S3Service";
@@ -28,7 +32,7 @@ export function MyEditor({ initialValue, onChange, tools, communityId, readOnly 
   const [editor] = useState(() => {
     const editor = withHistory(withReact(createEditor()));
     const isVoid = editor.isVoid;
-    editor.isVoid = (element) => ["image", "attachment", "document-reference"].includes(element.type) || isVoid(element);
+    editor.isVoid = (element) => ["image", "attachment", "document-reference"].includes(element.type) || (element.type === "code-block" && [gdevelopLanguage, flowLanguage, javascriptDemoLanguage].includes(element.language ?? "")) || Boolean(resolveDemo(element)) || isVoid(element);
     return editor;
   });
   return <div className={`${styles.editor} ${readOnly ? styles.readOnly : ""}`}>

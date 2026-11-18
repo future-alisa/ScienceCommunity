@@ -3,6 +3,8 @@ import { Alert, Button, Form, Input, Select, Space, Spin, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Descendant, Node } from "slate";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { ApiError } from "@/services/ApiService";
 import { categoryLabel } from "@/components/document-library";
 import DocumentService from "@/services/DocumentService";
 import CommunityService from "@/services/CommunityService";
@@ -26,6 +28,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [needsLogin, setNeedsLogin] = useState(false);
   const [revision, setRevision] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [preview, setPreview] = useState(false);
@@ -53,7 +56,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
   }, [form, loading, error]);
   useEffect(() => {
     let active = true;
-    setLoading(true); setError("");
+    setLoading(true); setError(""); setNeedsLogin(false);
     Promise.all([DocumentService.getCategories(), CommunityService.getCommunitiesByUser(), documentId ? DocumentService.getDocumentById(documentId) : Promise.resolve(undefined)])
       .then(async ([categories, communities, document]) => {
         if (!active) return;
@@ -73,7 +76,11 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
         setDirty(false);
         form.setFieldsValue({ title: document?.documentName || "", description: document?.documentDescription || "",
           categoryId: document?.documentCategoryId || categories[0].categoryId, communityId: target, cover: document?.documentThumbnailUrl || "" });
-      }).catch((error) => { if (active) setError(error instanceof Error ? error.message : "编辑器加载失败"); })
+      }).catch((error) => {
+        if (!active) return;
+        setNeedsLogin(error instanceof ApiError && error.status === 401);
+        setError(error instanceof Error ? error.message : "编辑器加载失败");
+      })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [communityId, documentId, form, revision]);
@@ -101,7 +108,9 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
     finally { setSaving(false); savingRef.current = false; }
   }
   if (loading) return <Spin />;
-  if (error) return <Alert type="error" showIcon message={error} action={<Button onClick={() => setRevision((value) => value + 1)}>重试</Button>} />;
+  if (error) return <Alert type="error" showIcon message={error} action={needsLogin
+    ? <Link href="/signin">登录</Link>
+    : <Button onClick={() => setRevision((value) => value + 1)}>重试</Button>} />;
   return (
     <section style={{ maxWidth: 1000, width: "100%", margin: "0 auto", padding: 24 }}>
       <h1>{original ? "编辑文档" : "发布文档"}</h1>
