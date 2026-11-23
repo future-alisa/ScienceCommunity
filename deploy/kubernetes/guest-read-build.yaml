@@ -1,0 +1,206 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: science-web-guest-850dfdfa
+  namespace: science-community
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 2400
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      initContainers:
+      - name: source
+        image: alpine/git:2.47.2
+        command:
+        - sh
+        - -ec
+        - git init /workspace/source && git -C /workspace/source fetch --depth=1 https://github.com/future-alisa/ScienceCommunity.git
+          "$1" && git -C /workspace/source checkout --detach FETCH_HEAD
+        - checkout
+        - 850dfdfa284c04ce79879e6f190f6fdeaf689eb8
+        env:
+        - name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+      containers:
+      - name: build
+        image: ghcr.io/osscontainertools/kaniko:v1.29.0
+        args:
+        - --context=dir:///workspace/source/App
+        - --dockerfile=/workspace/source/App/Dockerfile
+        - --destination=alisa-registry.cpolar.top/science-web:guest-850dfdfa
+        - --cache=false
+        - --compressed-caching=false
+        - --push-retry=3
+        - --build-arg=NEXT_PUBLIC_BASE_PATH=/science
+        - --build-arg=NEXT_PUBLIC_API_BASE_URL=/science/community-api
+        - --build-arg=NEXT_PUBLIC_USER_API_BASE_URL=https://alisa.vip.cpolar.cn/alisa-gateway
+        - --build-arg=NEXT_PUBLIC_CHAT_URL=https://alisa.vip.cpolar.cn/science-chat/ws
+        - --build-arg=COMMUNITY_API_PROXY_TARGET=http://community:9091/community
+        - --build-arg=HTTP_PROXY=http://192.168.1.112:4067
+        - --build-arg=HTTPS_PROXY=http://192.168.1.112:4067
+        - --build-arg=NO_PROXY=registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        - name: registry
+          mountPath: /kaniko/.docker
+          readOnly: true
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 2Gi
+        env:
+        - name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        - name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - name: NO_PROXY
+          value: registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
+      volumes:
+      - name: workspace
+        emptyDir:
+          sizeLimit: 4Gi
+      - name: registry
+        secret:
+          secretName: science-registry
+          items:
+          - key: .dockerconfigjson
+            path: config.json
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: science-community-guest-850dfdfa
+  namespace: science-community
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 2400
+  template:
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      initContainers:
+      - name: source
+        image: alpine/git:2.47.2
+        command:
+        - sh
+        - -ec
+        - 'git init /workspace/source && git -C /workspace/source fetch --depth=1
+          https://github.com/future-alisa/ScienceCommunity.git "$1" && git -C /workspace/source
+          checkout --detach FETCH_HEAD
+
+          git init /workspace/alisa-cloud
+
+          git -C /workspace/alisa-cloud fetch --depth=1 https://github.com/future-alisa/alisa-cloud.git
+          69f3d526a441fbdf533404fae4514e347af50ff8
+
+          git -C /workspace/alisa-cloud checkout --detach FETCH_HEAD
+
+          '
+        - checkout
+        - 850dfdfa284c04ce79879e6f190f6fdeaf689eb8
+        env:
+        - name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+      - name: package
+        image: maven:3.9.9-eclipse-temurin-17
+        command:
+        - sh
+        - -ec
+        - '
+
+          cat > /workspace/maven-settings.xml <<''EOF''
+
+          <settings><proxies><proxy><id>build-proxy</id><active>true</active><protocol>http</protocol><host>192.168.1.112</host><port>4067</port></proxy></proxies></settings>
+
+          EOF
+
+          mvn -s /workspace/maven-settings.xml -f /workspace/alisa-cloud/pom.xml -pl
+          alisa-common -am -DskipTests -B -ntp install
+
+          mvn -s /workspace/maven-settings.xml -f /workspace/source/science_community/pom.xml
+          -pl community_service -am -DskipTests -B -ntp package
+
+          mkdir -p /workspace/backend-image
+
+          cp /workspace/source/science_community/packages/community_service-1.0-SNAPSHOT.jar
+          /workspace/backend-image/science.jar
+
+          cat > /workspace/backend-image/Dockerfile <<''EOF''
+
+          FROM eclipse-temurin:17-jre
+
+          WORKDIR /app
+
+          COPY science.jar /app/science.jar
+
+          ENTRYPOINT ["java", "-jar", "/app/science.jar"]
+
+          EOF
+
+          '
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 2Gi
+      containers:
+      - name: build
+        image: ghcr.io/osscontainertools/kaniko:v1.29.0
+        args:
+        - --context=dir:///workspace/backend-image
+        - --dockerfile=/workspace/backend-image/Dockerfile
+        - --destination=alisa-registry.cpolar.top/science-community:guest-850dfdfa
+        - --cache=false
+        - --compressed-caching=false
+        - --push-retry=3
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        - name: registry
+          mountPath: /kaniko/.docker
+          readOnly: true
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 2Gi
+        env:
+        - name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        - name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - name: NO_PROXY
+          value: registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
+      volumes:
+      - name: workspace
+        emptyDir:
+          sizeLimit: 4Gi
+      - name: registry
+        secret:
+          secretName: science-registry
+          items:
+          - key: .dockerconfigjson
+            path: config.json
