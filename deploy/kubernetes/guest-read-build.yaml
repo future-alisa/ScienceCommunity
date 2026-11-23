@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: science-web-guest-850dfdfa-internal
+  name: science-web-guest-850dfdfa-node
   namespace: science-community
 spec:
   backoffLimit: 0
@@ -28,24 +28,79 @@ spec:
         volumeMounts:
         - name: workspace
           mountPath: /workspace
+      - name: compile-web
+        image: registry.kind.internal:5000/science-web@sha256:3368161ff8c3b6f07af1524a4cfe0c5d987c84e4c3f2103e0ca53e9424b81b0d
+        workingDir: /workspace/source/App
+        securityContext:
+          runAsUser: 0
+        command:
+        - sh
+        - -ec
+        - 'npm ci --legacy-peer-deps --no-audit --no-fund
+
+          npm run build
+
+          mkdir -p /workspace/web-image/.next
+
+          cp -R .next/standalone/. /workspace/web-image/
+
+          cp -R .next/static /workspace/web-image/.next/static
+
+          cp -R public /workspace/web-image/public
+
+          cat > /workspace/web-image/Dockerfile <<''EOF''
+
+          FROM registry.kind.internal:5000/science-web@sha256:3368161ff8c3b6f07af1524a4cfe0c5d987c84e4c3f2103e0ca53e9424b81b0d
+
+          COPY --chown=node:node . /app/
+
+          EOF
+
+          '
+        env:
+        - &id002
+          name: HTTP_PROXY
+          value: http://192.168.1.112:4067
+        - &id003
+          name: HTTPS_PROXY
+          value: http://192.168.1.112:4067
+        - &id004
+          name: NO_PROXY
+          value: registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
+        - name: NEXT_PUBLIC_BASE_PATH
+          value: /science
+        - name: NEXT_PUBLIC_API_BASE_URL
+          value: /science/community-api
+        - name: NEXT_PUBLIC_USER_API_BASE_URL
+          value: https://alisa.vip.cpolar.cn/alisa-gateway
+        - name: NEXT_PUBLIC_CHAT_URL
+          value: https://alisa.vip.cpolar.cn/science-chat/ws
+        - name: COMMUNITY_API_PROXY_TARGET
+          value: http://community:9091/community
+        - name: NEXT_TELEMETRY_DISABLED
+          value: '1'
+        - name: NODE_OPTIONS
+          value: --max-old-space-size=1400
+        volumeMounts:
+        - name: workspace
+          mountPath: /workspace
+        resources: &id001
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 2Gi
       containers:
       - name: build
         image: ghcr.io/osscontainertools/kaniko:v1.29.0
         args:
-        - --context=dir:///workspace/source/App
-        - --dockerfile=/workspace/source/App/Dockerfile
-        - --destination=registry.kind.internal:5000/science-web:guest-850dfdfa
+        - --context=dir:///workspace/web-image
+        - --dockerfile=/workspace/web-image/Dockerfile
+        - --destination=registry.kind.internal:5000/science-web:guest-850dfdfa-node
         - --cache=false
         - --compressed-caching=false
         - --push-retry=3
-        - --build-arg=NEXT_PUBLIC_BASE_PATH=/science
-        - --build-arg=NEXT_PUBLIC_API_BASE_URL=/science/community-api
-        - --build-arg=NEXT_PUBLIC_USER_API_BASE_URL=https://alisa.vip.cpolar.cn/alisa-gateway
-        - --build-arg=NEXT_PUBLIC_CHAT_URL=https://alisa.vip.cpolar.cn/science-chat/ws
-        - --build-arg=COMMUNITY_API_PROXY_TARGET=http://community:9091/community
-        - --build-arg=HTTP_PROXY=http://192.168.1.112:4067
-        - --build-arg=HTTPS_PROXY=http://192.168.1.112:4067
-        - --build-arg=NO_PROXY=registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
         - --skip-tls-verify-registry=registry.kind.internal:5000
         volumeMounts:
         - name: workspace
@@ -53,20 +108,11 @@ spec:
         - name: registry
           mountPath: /kaniko/.docker
           readOnly: true
-        resources:
-          requests:
-            cpu: 250m
-            memory: 512Mi
-          limits:
-            cpu: '2'
-            memory: 2Gi
+        resources: *id001
         env:
-        - name: HTTP_PROXY
-          value: http://192.168.1.112:4067
-        - name: HTTPS_PROXY
-          value: http://192.168.1.112:4067
-        - name: NO_PROXY
-          value: registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
+        - *id002
+        - *id003
+        - *id004
       volumes:
       - name: workspace
         emptyDir:
@@ -78,6 +124,8 @@ spec:
           - key: .dockerconfigjson
             path: config.json
       dnsPolicy: Default
+      imagePullSecrets:
+      - name: science-registry
 ---
 apiVersion: batch/v1
 kind: Job
