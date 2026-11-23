@@ -25,12 +25,12 @@ export default function Page() {
   useEffect(() => {
     let active = true;
     setLoading(true); setError(""); setCanEdit(false); setDocument(undefined);
-    Promise.all([DocumentService.getDocumentById(documentId), MemberService.access(communityId)]).then(([document, access]) => {
+    Promise.all([DocumentService.getDocumentById(documentId), MemberService.access(communityId).catch(() => undefined)]).then(([document, access]) => {
       if (!active) return;
       if (document.documentCommunityId !== communityId) throw new Error("文档不属于当前社区");
       const content = parseDocument(document.documentContent);
       setDocument(document); setValue(content);
-      setCanEdit(access.userId === document.documentAuthorId || access.role === "owner" || access.role === "admin");
+      setCanEdit(Boolean(access?.membershipId && (access.userId === document.documentAuthorId || access.role === "owner" || access.role === "admin")));
     }).catch((error) => { if (active) setError(error instanceof Error ? error.message : "文档加载失败"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };

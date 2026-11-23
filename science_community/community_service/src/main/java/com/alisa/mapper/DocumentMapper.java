@@ -20,6 +20,8 @@ public interface DocumentMapper {
 
     List<Document> selectByExampleWithBLOBs(DocumentFilter example);
 
+    List<Document> selectAssetCandidates(@Param("urls") java.util.Set<String> urls);
+
     List<Document> selectByExample(DocumentFilter example);
 
     Document selectByPrimaryKey(String documentId);

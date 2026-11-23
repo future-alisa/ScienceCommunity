@@ -80,6 +80,15 @@
   <sql id="Blob_Column_List">
     document_content
   </sql>
+  <select id="selectAssetCandidates" resultMap="ResultMapWithBLOBs">
+    select document_id, document_thumbnail_url, document_content from tb_document
+    where document_thumbnail_url in
+    <foreach collection="urls" item="url" open="(" separator="," close=")">#{url}</foreach>
+    or
+    <foreach collection="urls" item="url" open="(" separator=" or " close=")">
+      locate(#{url}, document_content) &gt; 0
+    </foreach>
+  </select>
   <select id="selectByExampleWithBLOBs" parameterType="com.alisa.dto.DocumentFilter" resultMap="ResultMapWithBLOBs">
     select
     <if test="distinct">

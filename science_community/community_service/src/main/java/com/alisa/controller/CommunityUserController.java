@@ -22,8 +22,9 @@ public class CommunityUserController {
 
     @GetMapping("/access")
     public Result<java.util.Map<String, String>> access(@RequestParam String communityId) {
-        var member = access.membership(communityId);
-        return new Result<>(java.util.Map.of("userId", access.userId(), "membershipId", member == null ? "" : member.getCommunityUserId(),
+        String userId = access.optionalUserId();
+        var member = userId.isBlank() ? null : access.membership(communityId);
+        return new Result<>(java.util.Map.of("userId", userId, "membershipId", member == null ? "" : member.getCommunityUserId(),
             "role", member == null ? "" : java.util.Objects.toString(access.role(member), "")));
     }
 

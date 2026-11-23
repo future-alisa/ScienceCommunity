@@ -93,10 +93,23 @@ class DocumentServiceImplTest {
         when(access.memberships()).thenReturn(List.of());
         assertTrue(service.getAll().isEmpty()); verify(documents, never()).selectByExample(any());
     }
-    @Test void nonMemberCannotReadDocument() {
+    @Test void guestCanListAndReadDocumentsWithoutMembership() {
+        var published = document("existing");
+        when(documents.selectByPrimaryKey("existing")).thenReturn(published);
+        when(documents.selectByExample(any())).thenReturn(List.of(published));
+        assertSame(published, service.getById("existing"));
+        assertEquals(List.of(published), service.getAllByComunityId("community", "category"));
+        verifyNoInteractions(access);
+    }
+    @Test void guestCannotEditOrDeletePublishedDocuments() {
         when(documents.selectByPrimaryKey("existing")).thenReturn(document("existing"));
-        doThrow(new ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN)).when(access).requireMember("community");
-        assertThrows(ResponseStatusException.class, () -> service.getById("existing"));
+        var unauthorized = new ResponseStatusException(org.springframework.http.HttpStatus.UNAUTHORIZED);
+        doThrow(unauthorized).when(access).lock("community");
+        doThrow(unauthorized).when(access).requireMember("community");
+        assertEquals(401, assertThrows(ResponseStatusException.class, () -> service.upsert(document("existing"))).getStatusCode().value());
+        assertEquals(401, assertThrows(ResponseStatusException.class, () -> service.delete("existing")).getStatusCode().value());
+        verify(documents, never()).updateByPrimaryKeyWithBLOBs(any());
+        verify(documents, never()).deleteByPrimaryKey(any());
     }
     @Test void embeddingRequiresPermissionToReadTheReferencedCommunity() {
         String targetId="0123456789abcdef0123456789abcdef";

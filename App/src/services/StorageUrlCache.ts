@@ -1,10 +1,11 @@
 import { api } from "./ApiService";
 
 type Entry = { url: string; expiresAt: number };
-type Waiter = { source: string; token: string; resolve: (url: string) => void; reject: (error: unknown) => void };
+type Waiter = { source: string; token: string | null; resolve: (url: string) => void; reject: (error: unknown) => void };
 const entries = new Map<string, Entry>();
 const pending = new Map<string, Promise<string>>();
-let account = "", scope = "", restored = "";
+let account: string | null = null;
+let scope = "", restored = "";
 let queue: Waiter[] = [];
 let timer: ReturnType<typeof setTimeout> | undefined;
 const storageKey = "science-storage-links-v1";
@@ -38,9 +39,8 @@ async function flush() {
 
 export async function resolveStorageUrl(source: string): Promise<string> {
   const token = api.getToken();
-  if (!token) throw new Error("请先登录");
   if (account !== token) { account = token; entries.clear(); pending.clear(); scope = ""; restored = ""; }
-  const fingerprint = await accountScope(token);
+  const fingerprint = token ? await accountScope(token) : "guest";
   if (token !== api.getToken()) throw new Error("登录状态已改变");
   if (restored !== fingerprint) {
     scope = fingerprint; restored = fingerprint;

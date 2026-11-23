@@ -1,5 +1,8 @@
 package com.alisa.service;
 
+import com.alisa.mapper.DocumentMapper;
+import com.alisa.model.Document;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
@@ -8,18 +11,56 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import org.springframework.test.util.ReflectionTestUtils;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ObjectStorageServiceTest {
+    private ObjectStorageService storage(CommunityAccessService access, MockEnvironment env) {
+        when(access.optionalUserId()).thenReturn("member");
+        var service = new ObjectStorageService(access, env);
+        ReflectionTestUtils.setField(service, "documents", mock(DocumentMapper.class));
+        return service;
+    }
+
+    @Test void guestCanSignPublishedAssetsButNotUnpublishedUploads() {
+        var access = mock(CommunityAccessService.class);
+        var env = new MockEnvironment().withProperty("S3_ENDPOINT", "https://s3.example.org")
+            .withProperty("S3_BUCKET", "test-bucket").withProperty("S3_REGION", "us-east-1")
+            .withProperty("S3_ACCESS_KEY_ID", "server-key").withProperty("S3_SECRET_ACCESS_KEY", "server-secret")
+            .withProperty("S3_PUBLIC_URL", "https://s3.example.org/test-bucket/");
+        var service = storage(access, env);
+        when(access.optionalUserId()).thenReturn("");
+        var documents = mock(DocumentMapper.class);
+        ReflectionTestUtils.setField(service, "documents", documents);
+        ReflectionTestUtils.setField(service, "json", new ObjectMapper());
+        String prefix = "https://s3.example.org/test-bucket/attachments/" + "a".repeat(32) + "/";
+        String cover = prefix + "b".repeat(32) + ".png";
+        String attachment = prefix + "c".repeat(32) + ".pdf";
+        String unpublished = prefix + "d".repeat(32) + ".pdf";
+        var published = new Document();
+        published.setDocumentThumbnailUrl(cover);
+        published.setDocumentContent("""
+            [{"type":"attachment","url":"%s"},{"type":"paragraph","children":[{"text":"%s"}]}]
+            """.formatted(attachment, unpublished));
+        when(documents.selectAssetCandidates(anySet())).thenReturn(List.of(published));
+
+        var signed = service.readUrls(List.of(cover, attachment, unpublished));
+        assertEquals(java.util.Set.of(cover, attachment), signed.keySet());
+        assertTrue(signed.get(attachment).contains("X-Amz-Signature="));
+        assertEquals(403, assertThrows(ResponseStatusException.class, () -> service.readUrl(unpublished)).getStatusCode().value());
+        verify(access, never()).requireMember(anyString());
+    }
+
     @Test void batchSigningChecksEachCommunityOnceAndRejectsOversizedBatches() {
         var access = mock(CommunityAccessService.class);
         var env = new MockEnvironment().withProperty("S3_ENDPOINT", "https://s3.example.org")
             .withProperty("S3_BUCKET", "test-bucket").withProperty("S3_REGION", "us-east-1")
             .withProperty("S3_ACCESS_KEY_ID", "server-key").withProperty("S3_SECRET_ACCESS_KEY", "server-secret")
             .withProperty("S3_PUBLIC_URL", "https://s3.example.org/test-bucket/");
-        var service = new ObjectStorageService(access, env);
+        var service = storage(access, env);
         String prefix="https://s3.example.org/test-bucket/attachments/"+"a".repeat(32)+"/";
         var urls=java.util.List.of(prefix+"b".repeat(32)+".png",prefix+"c".repeat(32)+".png");
         assertEquals(2,service.readUrls(urls).size());
@@ -88,7 +129,7 @@ class ObjectStorageServiceTest {
             .withProperty("S3_BUCKET", "test-bucket").withProperty("S3_REGION", "us-east-1")
             .withProperty("S3_ACCESS_KEY_ID", "server-key").withProperty("S3_SECRET_ACCESS_KEY", "server-secret")
             .withProperty("S3_PUBLIC_URL", "https://s3.example.org/test-bucket/");
-        var service = new ObjectStorageService(access, env);
+        var service = storage(access, env);
         String url = "https://s3.example.org/test-bucket/attachments/" + "a".repeat(32) + "/" + "b".repeat(32) + ".png";
         String signed = service.readUrl(url).get("url");
         assertTrue(signed.contains("X-Amz-Signature="));
@@ -108,7 +149,7 @@ class ObjectStorageServiceTest {
             .withProperty("S3_DOWNLOAD_PROXY_URL", "https://files.example/s3/");
         String key = "attachments/" + "a".repeat(32) + "/" + "b".repeat(32) + ".webp";
         String savedUrl = "https://old.example/test-bucket/" + key;
-        var service = new ObjectStorageService(access, env);
+        var service = storage(access, env);
         var signed = java.net.URI.create(service.readUrl(savedUrl).get("url"));
         assertEquals("files.example", signed.getHost());
         assertEquals("/s3/test-bucket/" + key, signed.getRawPath());

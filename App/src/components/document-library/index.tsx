@@ -24,10 +24,9 @@ export function DocumentLibrary({ communityId, category, management = false }: {
   useEffect(() => {
     let active = true;
     setLoading(true); setError(""); setDocuments([]); setAccess(undefined);
-    Promise.all([DocumentService.getCategories(), MemberService.access(communityId)]).then(async ([categories, access]) => {
+    Promise.all([DocumentService.getCategories(), MemberService.access(communityId).catch(() => undefined)]).then(async ([categories, access]) => {
       if (!active) return;
       setCategories(categories); setAccess(access);
-      if (!access.membershipId) throw new Error("请先加入该社区后查看资料");
       const selected = category ? categories.find((item) => item.categoryName === category)?.categoryId : typeId;
       if (category && !selected) throw new Error("该资料分类尚未配置，请联系管理员");
       const documents = await DocumentService.getDocumentByTypeAndCommunity(communityId, selected);
@@ -40,7 +39,7 @@ export function DocumentLibrary({ communityId, category, management = false }: {
     const keyword = query.trim().toLocaleLowerCase();
     return documents.filter((item) => [item.documentName, item.documentDescription].some((value) => value?.toLocaleLowerCase().includes(keyword)));
   }, [documents, query]);
-  const canEdit = (document: Document) => access?.role === "owner" || access?.role === "admin" || access?.userId === document.documentAuthorId;
+  const canEdit = (document: Document) => Boolean(access?.membershipId && (access.role === "owner" || access.role === "admin" || access.userId === document.documentAuthorId));
   async function remove(document: Document) {
     setBusy(true);
     try { await DocumentService.deleteDocument(document.documentId); message.success("文档已删除"); setRevision((value) => value + 1); }

@@ -16,11 +16,16 @@ public class CommunityAccessService {
     @Autowired private CommunityUserMapper members;
     @Autowired private ManagementMapper management;
 
-    public String userId() {
+    public String optionalUserId() {
         var context = UserContext.get();
-        if (context == null || context.getUserId() == null || context.getUserId().isBlank())
+        return context == null || context.getUserId() == null ? "" : context.getUserId();
+    }
+
+    public String userId() {
+        String id = optionalUserId();
+        if (id.isBlank())
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "请先登录");
-        return context.getUserId();
+        return id;
     }
 
     public List<CommunityUser> memberships() {

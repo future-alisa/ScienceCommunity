@@ -1,9 +1,15 @@
 package com.alisa.service;
 
+import com.alisa.dto.CommunityFilter;
+import com.alisa.mapper.CommunityMapper;
+import com.alisa.mapper.DocumentMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.http.Method;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +22,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +32,9 @@ public class ObjectStorageService {
     private static final HttpClient TUNNEL_HTTP = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
     private final CommunityAccessService access;
     private final Environment env;
+    @Autowired private CommunityMapper communities;
+    @Autowired private DocumentMapper documents;
+    @Autowired private ObjectMapper json;
     private final Set<String> allowed = Set.of("image/png", "image/jpeg", "image/gif", "image/webp", "image/avif",
         "application/pdf", "text/plain", "text/markdown", "application/zip", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
     public ObjectStorageService(CommunityAccessService access, Environment env) { this.access = access; this.env = env; }
@@ -88,22 +98,40 @@ public class ObjectStorageService {
     }
     public Map<String, String> readUrl(String url) {
         if (url == null) throw failure(HttpStatus.BAD_REQUEST, "无效的附件地址");
-        return Map.of("url", readUrls(java.util.List.of(url)).get(url));
+        return Map.of("url", readUrls(List.of(url)).get(url));
     }
-    public Map<String, String> readUrls(java.util.List<String> urls) {
-        access.userId();
+    public Map<String, String> readUrls(List<String> urls) {
         if (urls == null || urls.isEmpty() || urls.size() > 50) throw failure(HttpStatus.BAD_REQUEST, "一次最多获取50个附件地址");
         String prefix = setting("S3_PUBLIC_URL").replaceAll("/+$", "") + "/";
         var keys = new java.util.LinkedHashMap<String, String>();
-        var checked = new java.util.HashSet<String>();
+        var byScope = new java.util.LinkedHashMap<String, Set<String>>();
         for (String url : urls) {
             if (url == null || !url.startsWith(prefix)) throw failure(HttpStatus.BAD_REQUEST, "无效的附件地址");
             String key = url.substring(prefix.length());
             if (!key.matches("attachments/(covers|[a-fA-F0-9]{32})/[a-f0-9]{32}\\.[a-z0-9]{1,8}")) throw failure(HttpStatus.BAD_REQUEST, "无效的附件地址");
             String scope = key.split("/")[1];
-            if (!scope.equals("covers") && checked.add(scope)) access.requireMember(scope);
+            byScope.computeIfAbsent(scope, ignored -> new java.util.HashSet<>()).add(url);
             keys.put(url, key);
         }
+        boolean signedIn = !access.optionalUserId().isBlank();
+        var unpublished = new java.util.HashSet<String>();
+        for (var entry : byScope.entrySet()) {
+            String scope = entry.getKey();
+            if (signedIn) {
+                try {
+                    if (!scope.equals("covers")) access.requireMember(scope);
+                    continue;
+                } catch (ResponseStatusException error) {
+                    if (error.getStatusCode() != HttpStatus.FORBIDDEN) throw error;
+                }
+            }
+            unpublished.addAll(entry.getValue());
+        }
+        if (!unpublished.isEmpty()) {
+            removePublishedUrls(byScope.get("covers"), unpublished);
+            unpublished.forEach(keys::remove);
+        }
+        if (keys.isEmpty()) throw failure(HttpStatus.FORBIDDEN, "附件尚未公开");
         try (var client = MinioClient.builder().endpoint(setting("S3_ENDPOINT"))
                 .region(env.getProperty("S3_REGION", "us-east-1")).credentials(setting("S3_ACCESS_KEY_ID"), setting("S3_SECRET_ACCESS_KEY")).build()) {
             var result = new java.util.LinkedHashMap<String, String>();
@@ -118,6 +146,28 @@ public class ObjectStorageService {
             return result;
         } catch (ResponseStatusException ex) { throw ex; }
         catch (Exception ex) { throw failure(HttpStatus.SERVICE_UNAVAILABLE, "无法获取附件访问地址"); }
+    }
+    private void removePublishedUrls(Set<String> covers, Set<String> remaining) {
+        if (covers != null) {
+            var communityFilter = new CommunityFilter();
+            communityFilter.createCriteria().andCommunityImageUrlIn(List.copyOf(covers));
+            communities.selectByExample(communityFilter).forEach(community -> remaining.remove(community.getCommunityImageUrl()));
+        }
+        if (remaining.isEmpty()) return;
+        for (var document : documents.selectAssetCandidates(remaining)) {
+            remaining.remove(document.getDocumentThumbnailUrl());
+            if (!remaining.isEmpty() && document.getDocumentContent() != null) {
+                try {
+                    for (var node : json.readTree(document.getDocumentContent())) {
+                        String type = node.path("type").asText();
+                        if ("image".equals(type) || "attachment".equals(type)) remaining.remove(node.path("url").asText());
+                    }
+                } catch (JsonProcessingException invalidLegacyContent) {
+                    // Malformed content cannot establish a published attachment reference.
+                }
+            }
+            if (remaining.isEmpty()) return;
+        }
     }
     private static String throughProxy(String proxy, String signed) {
         URI upstream = URI.create(signed);

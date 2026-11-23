@@ -36,7 +36,6 @@ public class DocumentServiceImpl implements DocumentService {
         return documents.selectByExample(filter);
     }
     @Override public List<Document> getAllByComunityId(String communityId, String typeId) {
-        access.requireMember(communityId);
         var filter = new DocumentFilter();
         var criteria = filter.createCriteria().andDocumentCommunityIdEqualTo(communityId);
         if (typeId != null && !typeId.isBlank()) criteria.andDocumentCategoryIdEqualTo(typeId);
@@ -49,9 +48,7 @@ public class DocumentServiceImpl implements DocumentService {
         return document;
     }
     @Override public Document getById(String id) {
-        var document = find(id);
-        access.requireMember(document.getDocumentCommunityId());
-        return document;
+        return find(id);
     }
     @Override public int create(Document model) { return upsert(model); }
     @Override public int update(Document model) { return upsert(model); }

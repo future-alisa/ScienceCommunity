@@ -44,9 +44,9 @@ export default function Page() {
     <CoverImage src={community?.communityImageUrl} title={community?.communityName || "科学社区"} description={community?.communityDescription} kind="community" style={{ maxHeight: 320, borderRadius: 16, marginBottom: 24 }} />
     <h1>{community?.communityName}</h1><p>{community?.communityDescription}</p>
     <Space wrap>
+      <Link href={`/community/${communityId}/documents`}>浏览资料</Link>
       {access?.membershipId ? <>
         <Tag>已加入社区</Tag>
-        <Link href={`/community/${communityId}/documents`}>浏览资料</Link>
         <Link href={`/community/${communityId}/documents/new`}>发布文档</Link>
         {access.role !== "owner" && <Popconfirm title="退出社区？" description="同时退出该社区的所有频道。" onConfirm={() => changeMembership(false)} disabled={busy}><Button danger loading={busy}>退出社区</Button></Popconfirm>}
       </> : <Button type="primary" loading={busy} onClick={() => changeMembership(true)}>加入社区</Button>}
