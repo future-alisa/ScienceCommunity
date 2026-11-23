@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: science-web-guest-850dfdfa
+  name: science-web-guest-850dfdfa-internal
   namespace: science-community
 spec:
   backoffLimit: 0
@@ -34,7 +34,7 @@ spec:
         args:
         - --context=dir:///workspace/source/App
         - --dockerfile=/workspace/source/App/Dockerfile
-        - --destination=alisa-registry.cpolar.top/science-web:guest-850dfdfa
+        - --destination=registry.kind.internal:5000/science-web:guest-850dfdfa
         - --cache=false
         - --compressed-caching=false
         - --push-retry=3
@@ -46,6 +46,7 @@ spec:
         - --build-arg=HTTP_PROXY=http://192.168.1.112:4067
         - --build-arg=HTTPS_PROXY=http://192.168.1.112:4067
         - --build-arg=NO_PROXY=registry.kind.internal,localhost,127.0.0.1,.svc,.cluster.local,alisa-registry.cpolar.top
+        - --skip-tls-verify-registry=registry.kind.internal:5000
         volumeMounts:
         - name: workspace
           mountPath: /workspace
@@ -76,11 +77,12 @@ spec:
           items:
           - key: .dockerconfigjson
             path: config.json
+      dnsPolicy: Default
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: science-community-guest-850dfdfa
+  name: science-community-guest-850dfdfa-internal
   namespace: science-community
 spec:
   backoffLimit: 0
@@ -170,10 +172,11 @@ spec:
         args:
         - --context=dir:///workspace/backend-image
         - --dockerfile=/workspace/backend-image/Dockerfile
-        - --destination=alisa-registry.cpolar.top/science-community:guest-850dfdfa
+        - --destination=registry.kind.internal:5000/science-community:guest-850dfdfa
         - --cache=false
         - --compressed-caching=false
         - --push-retry=3
+        - --skip-tls-verify-registry=registry.kind.internal:5000
         volumeMounts:
         - name: workspace
           mountPath: /workspace
@@ -204,3 +207,4 @@ spec:
           items:
           - key: .dockerconfigjson
             path: config.json
+      dnsPolicy: Default
