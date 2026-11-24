@@ -66,3 +66,13 @@ p { margin: 0 0 20px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+.document-math-display { display: block; max-width: 100%; overflow-x: auto; }
+.document-math-display .katex-display { margin: .9em 0; padding: 0 2px; }
+.document-table-scroll { max-width: 100%; overflow-x: auto; margin: 18px 0; }
+.document-table-scroll table { width: 100%; border-collapse: collapse; }
+.document-table-scroll th, .document-table-scroll td { padding: 8px 12px; border: 1px solid var(--line); }
+.document-table-scroll th { background: var(--surface-soft); text-align: left; }
+.document-rule { margin: 20px 0; border: 0; border-top: 1px solid var(--line); }
+.document-pdf-extract { margin: 12px 0; padding: 8px 12px; border-left: 2px solid var(--line); color: var(--muted); }
+.document-pdf-extract summary { cursor: pointer; }

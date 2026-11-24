@@ -1,6 +1,9 @@
 import { RenderElementProps } from "slate-react";
 import { useReadOnly, useSlateStatic, ReactEditor } from "slate-react";
 import { Editor, Node, Transforms } from "slate";
+import { Formula, MarkdownTable } from "./markdown-format";
+import { parseMarkdownTable } from "@/util/DocumentMarkdown";
+import { readMath } from "@/util/MarkdownMath";
 import { DocumentEmbed } from "./document-embed";
 import { isDocumentUrl } from "@/util/DocumentUrl";
 import { createElement, useState } from "react";
@@ -31,6 +34,25 @@ export const RenderElement = (props: RenderElementProps) => {
         </div> : <p>附件地址无效</p>}
     </div>{props.children}
   </div>;
+  if (readOnly && (element.type === "code-block" || element.type === "paragraph")) {
+    const source = Node.string(element);
+    const language = element.type === "code-block" ? element.language : undefined;
+    const legacyTable = element.type === "paragraph" && element.children.length === 1
+      && Object.keys(element.children[0]).length === 1 && source.includes("|") && source.includes("\n")
+      && parseMarkdownTable(source);
+    const math = language === "markdown-math" ? readMath(source, true) : undefined;
+    const extracted = language === "pdf-extract" ? <details className="document-pdf-extract">
+      <summary>原稿文字片段（准确排版见本页原图）</summary>
+      <pre className="document-code">{source}</pre>
+    </details> : null;
+    const formatted = extracted ?? (math?.raw === source ? <Formula source={math.formula} display />
+      : language === "markdown-table" || legacyTable ? <MarkdownTable source={source} />
+      : language === "markdown-rule" ? <hr className="document-rule" /> : null);
+    if (formatted) return <div {...props.attributes}>
+      <div contentEditable={false}>{formatted}</div>
+      <span hidden aria-hidden="true">{props.children}</span>
+    </div>;
+  }
   if (element.type === "code-block" && element.language === gdevelopLanguage) {
     const url = gdevelopUrl(Node.string(element));
     return <div {...props.attributes}>

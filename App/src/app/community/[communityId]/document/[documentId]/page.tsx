@@ -1,7 +1,9 @@
 "use client";
+import { normalizePdfExtract } from "@/util/PdfExtractedDocument";
 import { Alert, Button, Form, Popconfirm, Space, Spin, Tag, message } from "antd";
 import Link from "next/link";
 import TagPicker from "@/components/tag-picker";
+import ProposalActions from "@/components/document-proposal/actions";
 import DocumentReader from "@/components/document-reader";
 import { useEffect, useState } from "react";
 import { Descendant } from "slate";
@@ -31,7 +33,7 @@ export default function Page() {
     Promise.all([DocumentService.getDocumentById(documentId), MemberService.access(communityId).catch(() => undefined)]).then(([document, access]) => {
       if (!active) return;
       if (document.documentCommunityId !== communityId) throw new Error("文档不属于当前社区");
-      const content = parseDocument(document.documentContent);
+      const content = normalizePdfExtract(parseDocument(document.documentContent));
       setDocument(document); setValue(content);
       setCanEdit(Boolean(access?.membershipId && (access.userId === document.documentAuthorId || access.role === "owner" || access.role === "admin")));
     }).catch((error) => { if (active) setError(error instanceof Error ? error.message : "文档加载失败"); })
@@ -84,6 +86,7 @@ export default function Page() {
         <Link href={`/community/${communityId}/document/${documentId}/edit`}>编辑文档</Link>
         <Popconfirm title="确定删除这篇文档？" description="删除后无法恢复。" onConfirm={remove} disabled={busy}><Button danger loading={busy}>删除</Button></Popconfirm>
       </Space>}
+      <ProposalActions key={documentId} documentId={documentId} documentUrl={`/community/${communityId}/document/${documentId}`} />
       <DocumentReader key={`${documentId}-${revision}`} value={value} wide />
     </article>
   );

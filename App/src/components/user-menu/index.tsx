@@ -18,6 +18,7 @@ const PopupNav = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
     { id: "publish", label: "发布文章", icon: <EditOutlined />, path: "/publish" },
     { id: "create", label: "创建社区", icon: <PlusOutlined />, path: "/community/create" },
     { id: "communities", label: "我的社区", icon: <TeamOutlined />, path: "/community/settings" },
+    { id: "proposals", label: "我的文档提案", icon: <EditOutlined />, path: "/proposals" },
     { id: "settings", label: "设置", icon: <SettingOutlined />, path: "/settings" },
     { id: "logout", label: "退出登录", icon: <LogoutOutlined />, path: "/" },
   ];

@@ -152,3 +152,33 @@ test('code-block Enter inserts a newline and Ctrl Enter exits to a new paragraph
   assert.equal(handleDocumentEnter(editor,true),true);assert.equal(editor.children[1].type,'paragraph');
   assert.doesNotThrow(()=>parseDocument(JSON.stringify(editor.children)));
 });
+
+test('Markdown preserves inline and block LaTeX without parsing currency, escapes or code spans', () => {
+  const source = String.raw`比较 $x_i^2$ 和 \(\frac{a}{b}\)，价格 $5、$10，转义 \$x\$，代码 ` + '`$x$`' + String.raw`
+
+$$
+\begin{aligned} a &= b \\ c &= d \end{aligned}
+$$
+
+\[ E = mc^2 \]
+
+` + '```text\n$$literal$$\n![[保留为代码]]\n```';
+  const value = fromMarkdown(source);
+  assert.deepEqual(Array.from(value[0].children.filter(leaf => leaf.math), leaf => leaf.text), ['$x_i^2$', String.raw`\(\frac{a}{b}\)`]);
+  assert.equal(value[0].children.find(leaf => leaf.code).text, '$x$');
+  assert.equal(value[1].language, 'markdown-math');
+  assert.equal(value[2].language, 'markdown-math');
+  assert.equal(value[3].language, 'text');
+  assert.match(value[3].children[0].text, /!\[\[保留为代码\]\]/);
+  const restored = fromMarkdown(toMarkdown(value));
+  assert.equal(restored[1].children[0].text, value[1].children[0].text);
+  assert.deepEqual(Array.from(restored[0].children.filter(leaf => leaf.math), leaf => leaf.text), ['$x_i^2$', String.raw`\(\frac{a}{b}\)`]);
+});
+
+test('Markdown tables, horizontal rules and strikethrough survive conversion', () => {
+  const value = fromMarkdown('| 变量 | 值 |\n| :--- | ---: |\n| **x** | $x^2$ |\n\n---\n\n~~旧值~~');
+  assert.equal(value[0].language, 'markdown-table');
+  assert.equal(value[1].language, 'markdown-rule');
+  assert.equal(value[2].children[0].strike, true);
+  assert.deepEqual(fromMarkdown(toMarkdown(value)), value);
+});

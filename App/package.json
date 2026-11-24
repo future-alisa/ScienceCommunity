@@ -16,6 +16,7 @@
     "@emotion/react": "^11.13.3",
     "@stomp/stompjs": "^7.1.1",
     "antd": "^5.20.1",
+    "katex": "0.16.25",
     "marked": "^15.0.12",
     "next": "^14.2.35",
     "react": "^18",
