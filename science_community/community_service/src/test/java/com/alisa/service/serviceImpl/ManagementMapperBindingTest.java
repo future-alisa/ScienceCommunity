@@ -38,6 +38,18 @@ class ManagementMapperBindingTest {
         assertTrue(updateChannel.contains("channel_description ="));
     }
 
+    @Test void contentTagsBindAllRequestedIdsAndMapBothColumns() {
+        var config = new Configuration();
+        config.addMapper(com.alisa.mapper.ContentTagMapper.class);
+        for (String method : new String[]{"communityTags", "documentTags"}) {
+            var statement = config.getMappedStatement("com.alisa.mapper.ContentTagMapper." + method);
+            var sql = statement.getBoundSql(Map.of("ids", java.util.List.of("first", "second")));
+            assertEquals(2, sql.getParameterMappings().size());
+            var mapping = statement.getResultMaps().get(0).getConstructorResultMappings();
+            assertEquals(java.util.List.of("contentId", "tagName"), mapping.stream().map(item -> item.getColumn()).toList());
+        }
+    }
+
     @Test void messageHistorySqlBindsDirectionalCursorsAndLimits() {
         var config = new Configuration();
         config.addMapper(com.alisa.mapper.ChannelMessageMapper.class);

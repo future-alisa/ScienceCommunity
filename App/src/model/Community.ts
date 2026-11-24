@@ -20,5 +20,6 @@ export interface Community {
    */
   communityImageUrl: string;
 
-  communityTag: string;
+  communityTag?: string;
+  tags?: string[];
 }

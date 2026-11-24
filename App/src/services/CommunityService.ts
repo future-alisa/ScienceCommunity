@@ -4,6 +4,9 @@ import { Community } from "@/model/Community";
 import { CommunityUserVo } from "@/model/CommunityUser";
 import { api } from "@/services/ApiService";
 const CommunityService = {
+  updateTags(id: string, tags: string[]) {
+    return api.put<number>(`/community/${encodeURIComponent(id)}/tags`, tags);
+  },
   updateCover(id: string, url: string) {
     return api.post<number>(`/community/${encodeURIComponent(id)}/cover`, { url });
   },

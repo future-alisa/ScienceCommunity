@@ -1,9 +1,12 @@
 package com.alisa.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Document {
     private String documentId;
+
+    private List<String> tags;
 
     private String documentCategoryId;
 
@@ -101,5 +104,13 @@ public class Document {
 
     public void setDocumentContent(String documentContent) {
         this.documentContent = documentContent;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }

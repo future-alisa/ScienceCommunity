@@ -4,13 +4,13 @@ import { Descendant, Node } from "slate";
 import { MyEditor } from "@/components/richtext-editor";
 import styles from "./reader.module.css";
 
-export default function DocumentReader({ value }: { value: Descendant[] }) {
+export default function DocumentReader({ value, wide = false }: { value: Descendant[]; wide?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const headings = value.filter(node => "type" in node && node.type === "heading");
   const level = Math.min(...headings.map(node => node.type === "heading" ? node.level : 6));
   const chapters = headings.map((node,index) => ({ node, index })).filter(item => item.node.type === "heading" && item.node.level === level);
-  return <div className={styles.layout}>
+  return <div className={wide ? `${styles.layout} ${styles.wide}` : styles.layout}>
     {chapters.length > 1 && <nav aria-label="章节目录" className={styles.toc}>
       <h2>章节目录</h2>
       {chapters.map(({ node, index }) => <button key={index} type="button" aria-current={active === index ? "location" : undefined} onClick={() => {

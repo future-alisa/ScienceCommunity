@@ -3,6 +3,7 @@ package com.alisa.service.serviceImpl;
 import com.alisa.mapper.*;
 import com.alisa.model.*;
 import com.alisa.service.CommunityAccessService;
+import com.alisa.service.ContentTags;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,12 @@ class DocumentServiceImplTest {
     DocumentMapper documents = mock(DocumentMapper.class);
     CategoryMapper categories = mock(CategoryMapper.class);
     ManagementMapper management = mock(ManagementMapper.class);
+    ContentTagMapper tagMapper = mock(ContentTagMapper.class);
     CommunityAccessService access = mock(CommunityAccessService.class);
     DocumentServiceImpl service = new DocumentServiceImpl();
     @BeforeEach void setup() {
         ReflectionTestUtils.setField(service, "documents", documents);
+        ReflectionTestUtils.setField(service, "tags", new ContentTags(tagMapper, management));
         ReflectionTestUtils.setField(service, "categories", categories);
         ReflectionTestUtils.setField(service, "management", management);
         ReflectionTestUtils.setField(service, "access", access);
@@ -55,6 +58,51 @@ class DocumentServiceImplTest {
         assertFalse(model.getDocumentId().isBlank()); assertEquals("author", model.getDocumentAuthorId());
         verify(documents).insert(model);
     }
+    @Test void savesNormalizedTagsAndDistinguishesOmissionFromRemoval() {
+        var existing = document("existing");
+        when(documents.selectByPrimaryKey("existing")).thenReturn(existing);
+        when(tagMapper.findTagId("PPO")).thenReturn("ppo-tag");
+        when(tagMapper.documentTags(List.of("existing")))
+            .thenReturn(List.of(new ContentTagMapper.Assignment("existing", "PPO")));
+        var edited = document("existing");
+        edited.setTags(List.of(" PPO ", "ppo"));
+        service.upsert(edited);
+        verify(management).deleteDocumentTags("existing");
+        verify(tagMapper).linkDocument(anyString(), eq("existing"), eq("ppo-tag"));
+        assertEquals(List.of("PPO"), edited.getTags());
+
+        clearInvocations(management, tagMapper);
+        var legacyEdit = document("existing");
+        service.upsert(legacyEdit);
+        verify(management, never()).deleteDocumentTags(anyString());
+        assertEquals(List.of("PPO"), legacyEdit.getTags());
+
+        when(tagMapper.documentTags(List.of("existing"))).thenReturn(List.of());
+        var cleared = document("existing");
+        cleared.setTags(List.of());
+        service.upsert(cleared);
+        verify(management).deleteDocumentTags("existing");
+        verify(tagMapper, never()).linkDocument(anyString(), anyString(), anyString());
+        assertEquals(List.of(), cleared.getTags());
+    }
+
+    @Test void changingOnlyTagsChecksEditPermissionAndLeavesDocumentRowUntouched() {
+        var existing = document("existing");
+        when(documents.selectByPrimaryKey("existing")).thenReturn(existing);
+        when(tagMapper.findTagId("PPO")).thenReturn("ppo-tag");
+        when(tagMapper.documentTags(List.of("existing")))
+            .thenReturn(List.of(new ContentTagMapper.Assignment("existing", "PPO")));
+        assertEquals(List.of("PPO"), service.updateTags("existing", List.of("PPO")));
+        verify(tagMapper).linkDocument(anyString(), eq("existing"), eq("ppo-tag"));
+        verify(documents, never()).updateByPrimaryKeyWithBLOBs(any());
+
+        clearInvocations(tagMapper, management);
+        existing.setDocumentAuthorId("someone-else");
+        assertEquals(403, assertThrows(ResponseStatusException.class,
+            () -> service.updateTags("existing", List.of())).getStatusCode().value());
+        verifyNoInteractions(tagMapper, management);
+    }
+
     @Test void ordinaryMemberCannotEditAnotherAuthorsDocument() {
         var old = document("existing"); old.setDocumentAuthorId("someone-else");
         when(documents.selectByPrimaryKey("existing")).thenReturn(old);

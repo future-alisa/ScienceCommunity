@@ -18,6 +18,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   const communityId = params?.communityId;
   const pathname = usePathname();
   const communityHome = `/community/${communityId}`;
+  const isReading = pathname.startsWith(`${communityHome}/document/`) && !pathname.endsWith("/edit");
   const [identity, setIdentity] = useState<{ id: string; name: string; failed?: boolean }>();
   const [identityRevision, setIdentityRevision] = useState(0);
   useEffect(() => {
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
     return () => window.removeEventListener("channels-changed", changed);
   }, [communityId]);
   useEffect(() => {
+    if (isReading) return;
     let active = true;
     setChannels([]);
     setChannelError(false);
@@ -47,7 +49,18 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
       .then((data) => { if (active) setChannels(data); })
       .catch(() => { if (active) setChannelError(true); });
     return () => { active = false; };
-  }, [communityId, channelRevision]);
+  }, [communityId, channelRevision, isReading]);
+
+  if (isReading) return (
+    <main className={styles.readingPage}>
+      <nav className={styles.readingNav} aria-label="文档位置">
+        <Link href={communityHome}>{currentIdentity?.name || "社区主页"}</Link>
+        <span aria-hidden="true">/</span>
+        <Link href={`${communityHome}/documents`}>全部文档</Link>
+      </nav>
+      {children}
+    </main>
+  );
 
   return (
     <main className={styles.page}>

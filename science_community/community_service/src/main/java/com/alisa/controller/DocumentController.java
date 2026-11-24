@@ -46,6 +46,11 @@ public class DocumentController {
         return new Result<>(document);
     }
 
+    @PutMapping("/{id}/tags")
+    public Result<List<String>> updateTags(@PathVariable String id, @RequestBody List<String> tags) {
+        return new Result<>(documentService.updateTags(id, tags));
+    }
+
     @DeleteMapping("/{id}")
     public Result<Integer> delete(@PathVariable String id) {
         return new Result<>(documentService.delete(id));

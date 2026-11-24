@@ -10,6 +10,8 @@ public interface DocumentService {
 
     Document getById(String id);
 
+    List<String> updateTags(String id, List<String> names);
+
     int create(Document model);
 
     int update(Document model);

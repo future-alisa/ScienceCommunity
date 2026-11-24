@@ -26,3 +26,11 @@
   .sidebar > ul > li > ul { display: none; }
   .contentContainer { padding: 22px 18px; }
 }
+
+.readingPage { min-width: 0; }
+.readingNav { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 13px; color: var(--muted); }
+.readingNav a:hover { color: var(--accent); }
+.readingPage > article:only-of-type { max-width: none; padding: clamp(20px, 4vw, 48px); }
+@media (max-width: 720px) {
+  .readingPage > article:only-of-type { padding: 20px 16px; }
+}

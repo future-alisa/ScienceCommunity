@@ -6,6 +6,7 @@ import com.alisa.mapper.CategoryMapper;
 import com.alisa.mapper.ManagementMapper;
 import com.alisa.model.Document;
 import com.alisa.service.DocumentService;
+import com.alisa.service.ContentTags;
 import com.alisa.service.CommunityAccessService;
 import com.alisa.util.UUIDTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ import java.util.Objects;
 @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
 public class DocumentServiceImpl implements DocumentService {
     @Autowired private DocumentMapper documents;
+    @Autowired private ContentTags tags;
     @Autowired private CategoryMapper categories;
     @Autowired private ManagementMapper management;
     @Autowired private CommunityAccessService access;
@@ -33,14 +35,14 @@ public class DocumentServiceImpl implements DocumentService {
         var filter = new DocumentFilter();
         memberships.forEach(member -> filter.or().andDocumentCommunityIdEqualTo(member.getCommunityId()));
         filter.setOrderByClause("document_update_date desc, document_id asc");
-        return documents.selectByExample(filter);
+        return tags.loadDocuments(documents.selectByExample(filter));
     }
     @Override public List<Document> getAllByComunityId(String communityId, String typeId) {
         var filter = new DocumentFilter();
         var criteria = filter.createCriteria().andDocumentCommunityIdEqualTo(communityId);
         if (typeId != null && !typeId.isBlank()) criteria.andDocumentCategoryIdEqualTo(typeId);
         filter.setOrderByClause("document_update_date desc, document_id asc");
-        return documents.selectByExample(filter);
+        return tags.loadDocuments(documents.selectByExample(filter));
     }
     private Document find(String id) {
         var document = documents.selectByPrimaryKey(id);
@@ -48,7 +50,9 @@ public class DocumentServiceImpl implements DocumentService {
         return document;
     }
     @Override public Document getById(String id) {
-        return find(id);
+        var document = find(id);
+        tags.loadDocuments(List.of(document));
+        return document;
     }
     @Override public int create(Document model) { return upsert(model); }
     @Override public int update(Document model) { return upsert(model); }
@@ -93,12 +97,26 @@ public class DocumentServiceImpl implements DocumentService {
         }
         model.setDocumentUpdateDate(new Date());
         // updateByPrimaryKey omits the content BLOB. Use the full-content statement.
-        return creating ? documents.insert(model) : documents.updateByPrimaryKeyWithBLOBs(model);
+        int count = creating ? documents.insert(model) : documents.updateByPrimaryKeyWithBLOBs(model);
+        tags.saveDocument(model, access.userId());
+        tags.loadDocuments(List.of(model));
+        return count;
     }
     private void requireEditor(Document document) {
         access.requireMember(document.getDocumentCommunityId());
         if (!Objects.equals(access.userId(), document.getDocumentAuthorId()) && !access.isManager(document.getDocumentCommunityId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有作者或社区管理员可以修改、删除文档");
+    }
+
+    @Override public List<String> updateTags(String id, List<String> names) {
+        var document = find(id);
+        access.lock(document.getDocumentCommunityId());
+        document = find(id);
+        requireEditor(document);
+        document.setTags(names);
+        tags.saveDocument(document, access.userId());
+        tags.loadDocuments(List.of(document));
+        return document.getTags();
     }
 
     @Override public int delete(String id) {

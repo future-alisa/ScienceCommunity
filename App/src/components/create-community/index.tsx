@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Button,
   Form,
@@ -7,15 +7,13 @@ import {
   message,
   Avatar,
   Tag,
-  InputRef,
-  Flex,
 } from "antd";
 import {
-  PlusOutlined,
   UserAddOutlined,
 } from "@ant-design/icons";
 import styles from "./create-community.module.css";
 import CommunityService from "@/services/CommunityService";
+import TagPicker from "@/components/tag-picker";
 import CoverPicker from "@/components/cover-picker";
 import { Community } from "@/model/Community";
 import { IdUtils } from "@/util/IdUtil";
@@ -30,11 +28,6 @@ interface Member {
   email: string;
 }
 
-interface Tag {
-  id: string;
-  name: string;
-}
-
 const CreateCommunityForm = () => {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
@@ -45,12 +38,6 @@ const CreateCommunityForm = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [inviteInputVisible, setInviteInputVisible] = useState(false);
   const [inviteInputValue, setInviteInputValue] = useState("");
-
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [inputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef<InputRef>(null);
-
 
   const handleInvite = () => {
     const email = inviteInputValue.trim();
@@ -90,7 +77,7 @@ const CreateCommunityForm = () => {
         communityDescription: values.description,
         communityUrl: "",
         communityImageUrl: values.image || "",
-        communityTag: values.tag,
+        tags: values.tags ?? [],
       };
 
       await CommunityService.upsertCommunity(community);
@@ -115,42 +102,6 @@ const CreateCommunityForm = () => {
       setSubmitting(false);
     }
   };
-
-  const handleClose = (removedTag: string) => {
-    const newTags = tags.filter((tag) => tag.name !== removedTag);
-    console.log(newTags);
-    setTags(newTags);
-  };
-
-  const showInput = () => {
-    setInputVisible(true);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleInputConfirm = () => {
-    const trimmedValue = inputValue.trim();
-    // 检查是否存在同名标签
-    const isDuplicate = tags.some((tag) => tag.name === trimmedValue);
-
-    if (trimmedValue && !isDuplicate) {
-      const newTag: Tag = {
-        id: IdUtils.uuid32(),
-        name: trimmedValue,
-      };
-      setTags([...tags, newTag]);
-    }
-    setInputVisible(false);
-    setInputValue("");
-  };
-
-  useEffect(() => {
-    if (inputVisible) {
-      inputRef.current?.focus();
-    }
-  }, [inputVisible]);
 
   return (
     <div className={styles.pageWrapper}>
@@ -188,34 +139,8 @@ const CreateCommunityForm = () => {
           </Form.Item>
 
           {/* 社区标签 */}
-          <Form.Item name="tag" label="社区标签">
-            <Flex gap="4px 0" wrap="wrap" align="center">
-              {tags.map((tag) => (
-                <Tag key={tag.id} closable onClose={() => handleClose(tag.id)}>
-                  {tag.name}
-                </Tag>
-              ))}
-
-              {inputVisible ? (
-                <Input
-                  ref={inputRef}
-                  type="text"
-                  size="small"
-                  style={{ width: 100 }}
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onBlur={handleInputConfirm}
-                  onPressEnter={handleInputConfirm}
-                />
-              ) : (
-                <Tag
-                  onClick={showInput}
-                  style={{ borderStyle: "dashed", background: "#fff" }}
-                >
-                  <PlusOutlined /> New Tag
-                </Tag>
-              )}
-            </Flex>
+          <Form.Item name="tags" label="社区标签">
+            <TagPicker kind="community" disabled={submitting} />
           </Form.Item>
 
           {/* 社区图片 */}

@@ -1,7 +1,11 @@
 package com.alisa.model;
 
+import java.util.List;
+
 public class Community {
     private String communityId;
+
+    private List<String> tags;
 
     private String communityName;
 
@@ -49,5 +53,13 @@ public class Community {
 
     public void setCommunityImageUrl(String communityImageUrl) {
         this.communityImageUrl = communityImageUrl;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }
