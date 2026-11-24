@@ -43,7 +43,7 @@ spec:
       - name: science-registry
       containers:
       - name: community
-        image: registry.kind.internal:5000/science-community@sha256:59695b8740aa4db038764821dcabde46c3c83d5748451553c8f520243c0a7ddf
+        image: registry.kind.internal:5000/science-community@sha256:30191863be8286df50ff2924a8453ba3a6645b0b49af31f6384109b12f6c5117
         ports:
         - name: http
           containerPort: 9091
@@ -185,7 +185,7 @@ spec:
       - name: science-registry
       containers:
       - name: web
-        image: registry.kind.internal:5000/science-web@sha256:e474a633bccd1b72d1b34e06b438d48162fe7a2ba322ab338c424bf5335a356a
+        image: registry.kind.internal:5000/science-web@sha256:7a3f8512e624c1728cf45d1145bd691ffcc662e4eaf81010fc954608bd603bd6
         ports:
         - name: http
           containerPort: 3000
