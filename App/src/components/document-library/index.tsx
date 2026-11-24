@@ -1,7 +1,8 @@
 "use client";
-import { Alert, Button, Empty, Input, Popconfirm, Select, Space, Spin, Table, message } from "antd";
+import { Alert, Button, Empty, Input, Popconfirm, Select, Space, Spin, Table, Tag, message } from "antd";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import TagFilter from "@/components/tag-filter";
 import { CardGrid } from "@/components/card-grid";
 import { Document } from "@/model/Document";
 import { Category } from "@/model/Category";
@@ -16,6 +17,7 @@ export function DocumentLibrary({ communityId, category, management = false }: {
   const [categories, setCategories] = useState<Category[]>([]);
   const [access, setAccess] = useState<CommunityAccess>();
   const [query, setQuery] = useState("");
+  const [tagName, setTagName] = useState("");
   const [typeId, setTypeId] = useState("");
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -27,18 +29,25 @@ export function DocumentLibrary({ communityId, category, management = false }: {
     Promise.all([DocumentService.getCategories(), MemberService.access(communityId).catch(() => undefined)]).then(async ([categories, access]) => {
       if (!active) return;
       setCategories(categories); setAccess(access);
-      const selected = category ? categories.find((item) => item.categoryName === category)?.categoryId : typeId;
+      const selected = category ? categories.find((item) => item.categoryName === category)?.categoryId : undefined;
       if (category && !selected) throw new Error("该资料分类尚未配置，请联系管理员");
       const documents = await DocumentService.getDocumentByTypeAndCommunity(communityId, selected);
       if (active) setDocuments(documents);
     }).catch((error) => { if (active) setError(error instanceof Error ? error.message : "资料加载失败"); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [communityId, category, typeId, revision]);
+  }, [communityId, category, revision]);
+  const tags = useMemo(() => Array.from(new Set(documents.flatMap((item) => item.tags ?? [])))
+    , [documents]);
   const filtered = useMemo(() => {
     const keyword = query.trim().toLocaleLowerCase();
-    return documents.filter((item) => [item.documentName, item.documentDescription].some((value) => value?.toLocaleLowerCase().includes(keyword)));
-  }, [documents, query]);
+    return documents.filter((item) =>
+      (!typeId || item.documentCategoryId === typeId) &&
+      (!tagName || item.tags?.includes(tagName)) &&
+      [item.documentName, item.documentDescription]
+        .some((value) => value?.toLocaleLowerCase().includes(keyword))
+    );
+  }, [documents, query, tagName, typeId]);
   const canEdit = (document: Document) => Boolean(access?.membershipId && (access.role === "owner" || access.role === "admin" || access.userId === document.documentAuthorId));
   async function remove(document: Document) {
     setBusy(true);
@@ -53,6 +62,7 @@ export function DocumentLibrary({ communityId, category, management = false }: {
         <Input aria-label="搜索资料" allowClear placeholder="搜索标题或摘要" value={query} onChange={(event) => setQuery(event.target.value)} style={{ width: 240 }} />
         {!category && <Select aria-label="资料分类" value={typeId} disabled={busy} onChange={setTypeId} style={{ width: 160 }}
           options={[{ value: "", label: "全部分类" }, ...categories.map((item) => ({ value: item.categoryId, label: categoryLabel(item.categoryName) }))]} />}
+        <TagFilter label="按文档标签筛选" tags={tags} value={tagName} onChange={setTagName} disabled={busy} />
         <Button disabled={busy} onClick={() => setRevision((value) => value + 1)}>刷新</Button>
         {access?.membershipId && <Link href={`/community/${communityId}/documents/new`}>发布文档</Link>}
       </Space>
@@ -60,6 +70,9 @@ export function DocumentLibrary({ communityId, category, management = false }: {
         <Table<Document> rowKey="documentId" dataSource={filtered} scroll={{ x: 650 }} columns={[
           { title: "标题", render: (_, document) => <Link href={`/community/${communityId}/document/${document.documentId}`}>{document.documentName}</Link> },
           { title: "分类", render: (_, document) => categoryLabel(categories.find((item) => item.categoryId === document.documentCategoryId)?.categoryName || "未分类") },
+          { title: "标签", render: (_, document) => document.tags?.map((tag) => (
+            <Button key={tag} type="text" size="small" onClick={() => setTagName(tag)}><Tag>{tag}</Tag></Button>
+          )) },
           { title: "摘要", dataIndex: "documentDescription", ellipsis: true },
           { title: "操作", render: (_, document) => canEdit(document) && <Space>
             <Link href={`/community/${communityId}/document/${document.documentId}/edit`}>编辑</Link>
@@ -67,8 +80,8 @@ export function DocumentLibrary({ communityId, category, management = false }: {
           </Space> },
         ]} />
       ) : filtered.length ? <CardGrid data={filtered.map((item) => ({ id: item.documentId, title: item.documentName,
-        description: item.documentDescription, imageUrl: item.documentThumbnailUrl }))}
-        handleCardClick={(id) => router.push(`/community/${communityId}/document/${id}`)} /> : <Empty description={query ? "没有匹配的资料" : "暂无资料，欢迎发布第一篇"} />}
+        description: item.documentDescription, imageUrl: item.documentThumbnailUrl, tags: item.tags }))}
+        onTagClick={setTagName} handleCardClick={(id) => router.push(`/community/${communityId}/document/${id}`)} /> : <Empty description={query || tagName || typeId ? "没有匹配的资料" : "暂无资料，欢迎发布第一篇"} />}
     </section>
   );
 }

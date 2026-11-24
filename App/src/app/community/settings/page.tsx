@@ -10,6 +10,7 @@ import { CommunityUserVo } from "@/model/CommunityUser";
 import { ChannelUserVo } from "@/model/ChannelUser";
 import { Channel } from "@/model/Channel";
 import { DocumentLibrary } from "@/components/document-library";
+import CommunityTags from "@/components/community-tags";
 import CommunityCover from "@/components/community-cover";
 
 const roleLabels: Record<string, string> = { owner: "拥有者", admin: "管理员", member: "成员" };
@@ -134,6 +135,10 @@ function CommunityManagement() {
               onConfirm={() => mutate(() => MemberService.removeFromChannel(member.id))}><Button danger disabled={busy}>移除</Button></Popconfirm> },
           ]} />
         </> },
+        ...(manager && communities.find(item => item.communityId === communityId) ? [{
+          key: "tags", label: "社区标签",
+          children: <CommunityTags key={`${communityId}-${revision}`} community={communities.find(item => item.communityId === communityId)!} onSaved={() => setRevision(value => value + 1)} />,
+        }] : []),
         { key: "documents", label: "文档管理", children: <DocumentLibrary key={communityId} communityId={communityId} management /> },
       ]} />}
       <Modal title="添加社区成员" open={memberModal} confirmLoading={busy} closable={!busy} maskClosable={!busy}

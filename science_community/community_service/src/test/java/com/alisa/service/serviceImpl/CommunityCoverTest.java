@@ -1,6 +1,8 @@
 package com.alisa.service.serviceImpl;
 import com.alisa.mapper.CommunityMapper;
 import com.alisa.service.CommunityAccessService;
+import com.alisa.service.ContentTags;
+import java.util.List;
 import com.alisa.model.Community;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -25,6 +27,27 @@ class CommunityCoverTest {
         service.updateCover("community", "");
         verify(mapper).updateByPrimaryKeySelective(patch.capture());
         assertEquals("",patch.getValue().getCommunityImageUrl());
+    }
+    @Test void replacingCommunityTagsRequiresManagerAndDoesNotOverwriteCommunityDetails() {
+        var tags = mock(ContentTags.class);
+        ReflectionTestUtils.setField(service, "tags", tags);
+        when(access.userId()).thenReturn("owner");
+        var labels = List.of("计算机", "强化学习");
+        service.updateTags("community", labels);
+        var patch = ArgumentCaptor.forClass(Community.class);
+        var order = inOrder(access, tags);
+        order.verify(access).lock("community");
+        order.verify(access).requireManager("community");
+        order.verify(tags).saveCommunity(patch.capture(), eq("owner"));
+        assertEquals("community", patch.getValue().getCommunityId());
+        assertEquals(labels, patch.getValue().getTags());
+        verifyNoInteractions(mapper);
+
+        clearInvocations(tags);
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN)).when(access).requireManager("community");
+        assertEquals(403, assertThrows(ResponseStatusException.class,
+            () -> service.updateTags("community", List.of())).getStatusCode().value());
+        verifyNoInteractions(tags);
     }
     @Test void rejectsMemberWritesAndInvalidUrls() {
         doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN)).when(access).requireManager("community");

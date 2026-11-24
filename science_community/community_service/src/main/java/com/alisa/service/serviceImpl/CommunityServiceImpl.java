@@ -3,6 +3,7 @@ package com.alisa.service.serviceImpl;
 import com.alisa.mapper.CommunityMapper;
 import com.alisa.model.Community;
 import com.alisa.service.CommunityService;
+import com.alisa.service.ContentTags;
 import com.alisa.vo.CommunityVo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import java.util.List;
 public class CommunityServiceImpl implements CommunityService {
 
     @Autowired private com.alisa.service.CommunityAccessService access;
+    @Autowired private ContentTags tags;
     @Autowired private com.alisa.mapper.CommunityUserMapper members;
     @Autowired private com.alisa.mapper.ChannelMapper channels;
     @Autowired private com.alisa.mapper.DocumentMapper documents;
@@ -25,17 +27,19 @@ public class CommunityServiceImpl implements CommunityService {
 
     @Override
     public List<Community> getAll() {
-        return communityMapper.selectByExample(null);
+        return tags.loadCommunities(communityMapper.selectByExample(null));
     }
 
     @Override
     public List<Community> getAllByUser(String userId) {
-        return communityMapper.selectByUser(userId);
+        return tags.loadCommunities(communityMapper.selectByUser(userId));
     }
 
     @Override
     public Community getById(String id) {
-        return communityMapper.selectByPrimaryKey(id);
+        var community = communityMapper.selectByPrimaryKey(id);
+        if (community != null) tags.loadCommunities(List.of(community));
+        return community;
     }
 
     @Override
@@ -92,7 +96,9 @@ public class CommunityServiceImpl implements CommunityService {
         if (communityMapper.selectByPrimaryKey(model.getCommunityId()) != null) {
             access.lock(model.getCommunityId());
             access.requireManager(model.getCommunityId());
-            return communityMapper.updateByPrimaryKey(model);
+            int count = communityMapper.updateByPrimaryKey(model);
+            tags.saveCommunity(model, userId);
+            return count;
         }
         int count = communityMapper.insert(model);
         var owner = new com.alisa.model.CommunityUser();
@@ -101,7 +107,19 @@ public class CommunityServiceImpl implements CommunityService {
         owner.setUserId(userId);
         owner.setCommunityRoleId(access.roleId("owner"));
         members.insert(owner);
+        tags.saveCommunity(model, userId);
         return count;
+    }
+
+    @Override
+    public int updateTags(String id, List<String> names) {
+        access.lock(id);
+        access.requireManager(id);
+        var community = new Community();
+        community.setCommunityId(id);
+        community.setTags(names);
+        tags.saveCommunity(community, access.userId());
+        return 1;
     }
 
     @Override

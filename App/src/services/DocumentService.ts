@@ -10,6 +10,7 @@ const DocumentService = {
   getCategories: () => api.get<Category[]>("/category/getAll"),
   createDocument: (data: Document) => api.post<Document>("/document/save", { ...data, documentId: "" }),
   upsertDocument: (data: Document) => api.post<Document>("/document/save", data),
+  updateTags: (id: string, tags: string[]) => api.put<string[]>(`/document/${encodeURIComponent(id)}/tags`, tags),
   deleteDocument: (id: string) => api.delete<number>(`/document/${encodeURIComponent(id)}`),
 };
 export default DocumentService;

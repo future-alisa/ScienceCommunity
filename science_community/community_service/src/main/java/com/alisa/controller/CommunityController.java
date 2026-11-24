@@ -57,6 +57,11 @@ public class CommunityController {
         return new Result<>(communityService.updateCover(id, body.get("url")));
     }
 
+    @PutMapping("/{id}/tags")
+    public Result<Integer> updateTags(@PathVariable String id, @RequestBody List<String> tags) {
+        return new Result<>(communityService.updateTags(id, tags));
+    }
+
     @PostMapping("/batch-upsert")
     public Result<Integer> batchUpsert(@RequestBody List<Community> list) {
         var count = communityService.batchUpsert(list);

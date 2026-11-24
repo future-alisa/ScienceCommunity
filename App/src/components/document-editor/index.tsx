@@ -14,11 +14,12 @@ import { Category } from "@/model/Category";
 import { Community } from "@/model/Community";
 import { emptyDocument, parseDocument } from "@/util/DocumentContent";
 import { DocumentWorkspace } from "./workspace";
+import TagPicker from "@/components/tag-picker";
 import CoverPicker from "@/components/cover-picker";
 
 export function DocumentEditor({ communityId, documentId }: { communityId?: string; documentId?: string }) {
   const router = useRouter();
-  const [form] = Form.useForm<{ title: string; description: string; categoryId: string; communityId: string; cover: string }>();
+  const [form] = Form.useForm<{ title: string; description: string; categoryId: string; communityId: string; cover: string; tags: string[] }>();
   const [coverUploading, setCoverUploading] = useState(false);
   const coverBusy = useRef(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -75,7 +76,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
         setCategories(categories); setCommunities(communities); setOriginal(document); setValue(content);
         setDirty(false);
         form.setFieldsValue({ title: document?.documentName || "", description: document?.documentDescription || "",
-          categoryId: document?.documentCategoryId || categories[0].categoryId, communityId: target, cover: document?.documentThumbnailUrl || "" });
+          categoryId: document?.documentCategoryId || categories[0].categoryId, communityId: target, tags: document?.tags ?? [], cover: document?.documentThumbnailUrl || "" });
       }).catch((error) => {
         if (!active) return;
         setNeedsLogin(error instanceof ApiError && error.status === 401);
@@ -84,7 +85,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [communityId, documentId, form, revision]);
-  async function save(fields: { title: string; description: string; categoryId: string; communityId: string; cover: string }) {
+  async function save(fields: { title: string; description: string; categoryId: string; communityId: string; cover: string; tags: string[] }) {
     if (savingRef.current) return;
     if (coverBusy.current) { message.warning("请等待封面上传完成"); return; }
     if (contentError) { message.warning(contentError); return; }
@@ -96,6 +97,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
         documentId: original?.documentId || "", documentName: fields.title.trim(), documentDescription: fields.description?.trim() || "",
         documentCategoryId: fields.categoryId, documentCommunityId: original?.documentCommunityId || fields.communityId,
         documentContent: JSON.stringify(parseDocument(JSON.stringify(value))), documentAuthorId: original?.documentAuthorId || "",
+        tags: fields.tags ?? [],
         documentThumbnailUrl: fields.cover || "",
         documentCreateDate: original?.documentCreateDate || new Date(), documentUpdateDate: new Date(),
       });
@@ -125,6 +127,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
             <Select aria-label="资料分类" style={{ width: 200 }} options={categories.map((item) => ({ value: item.categoryId, label: categoryLabel(item.categoryName) }))} />
           </Form.Item>
         </Space>
+        <Form.Item name="tags" label="文档标签"><TagPicker kind="document" disabled={saving} /></Form.Item>
         <Form.Item name="description" label="摘要" rules={[{ max: 255 }]}><Input.TextArea rows={3} maxLength={255} showCount /></Form.Item>
         <Form.Item name="cover" label="资料封面" extra="可选，上传后点击发布或保存修改。移除封面会恢复默认展示。">
           <CoverPicker key={selectedCommunityId} communityId={original?.documentCommunityId || selectedCommunityId} disabled={saving} onBusyChange={busy => { coverBusy.current = busy; setCoverUploading(busy); }} />
