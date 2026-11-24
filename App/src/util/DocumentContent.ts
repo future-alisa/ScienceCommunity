@@ -9,7 +9,7 @@ export function parseDocument(content: string): Descendant[] {
     if (depth > 50 || !node || typeof node !== "object" || Array.isArray(node)) return false;
     const item = node as Record<string, unknown>;
     if (text) return typeof item.text === "string" && !("children" in item) && !("type" in item)
-      && ["bold", "italic", "underline", "code"].every((mark) => !(mark in item) || typeof item[mark] === "boolean")
+      && ["bold", "italic", "underline", "code", "math", "strike"].every((mark) => !(mark in item) || typeof item[mark] === "boolean")
       && (!("url" in item) || isDocumentUrl(item.url));
     if ("text" in item) return false;
     if (item.type === "list") item.type = "bulleted-list";

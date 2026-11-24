@@ -1,4 +1,5 @@
 "use client";
+import { normalizePdfExtract } from "@/util/PdfExtractedDocument";
 import { Alert, Button, Form, Input, Select, Space, Spin, message } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { Descendant, Node } from "slate";
@@ -71,7 +72,7 @@ export function DocumentEditor({ communityId, documentId }: { communityId?: stri
           const access = await MemberService.access(target);
           if (access.userId !== document.documentAuthorId && access.role !== "owner" && access.role !== "admin") throw new Error("只有作者或社区管理员可以编辑文档");
         }
-        const content = document ? parseDocument(document.documentContent) : emptyDocument;
+        const content = document ? normalizePdfExtract(parseDocument(document.documentContent)) : emptyDocument;
         if (!active) return;
         setCategories(categories); setCommunities(communities); setOriginal(document); setValue(content);
         setDirty(false);

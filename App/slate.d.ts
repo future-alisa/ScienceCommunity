@@ -51,6 +51,8 @@ export type FormattedText = {
   italic?: boolean;
   underline?: boolean;
   code?: boolean;
+  math?: boolean;
+  strike?: boolean;
   url?: string;
 };
 export type CustomText = FormattedText;

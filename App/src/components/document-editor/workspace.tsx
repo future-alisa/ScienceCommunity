@@ -53,7 +53,7 @@ export function DocumentWorkspace({ value, onChange, onError, communityId, docum
           {mode === "rich" ? <MyEditor key={revision} initialValue={value} communityId={communityId} readOnly={disabled || preview} onChange={onChange} tools={tools} />
             : <div className={mode === "split" ? styles.split : ""}>
               <div className={styles.sourcePane}>
-                <div className={styles.paneLabel}>MARKDOWN · 支持标题、列表、引用、代码、图片与 ![[文档名称]]</div>
+                <div className={styles.paneLabel}>Markdown · 行内公式 $…$，独立公式 $$…$$</div>
                 <textarea aria-label="Markdown 源码" value={source} onChange={(event) => editSource(event.target.value)} spellCheck={false} disabled={disabled || preview} readOnly={pasting}
                   onPaste={(event) => {
                     if (disabled || preview) return;

@@ -36,7 +36,7 @@ public final class DocumentContentCodec {
         if (depth > 50 || !node.isObject()) throw new IllegalArgumentException();
         if (text) {
             if (!node.path("text").isTextual() || node.has("children") || node.has("type")) throw new IllegalArgumentException();
-            for (String mark : Set.of("bold", "italic", "underline", "code"))
+            for (String mark : Set.of("bold", "italic", "underline", "code", "math", "strike"))
                 if (node.has(mark) && !node.get(mark).isBoolean()) throw new IllegalArgumentException();
             if (node.has("url") && !safeUrl(node.get("url").asText())) throw new IllegalArgumentException();
             return;

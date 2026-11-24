@@ -1,4 +1,5 @@
 "use client";
+import { normalizePdfExtract } from "@/util/PdfExtractedDocument";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Spin } from "antd";
 import Link from "next/link";
@@ -24,7 +25,7 @@ export function DocumentEmbed({ documentId, name }: { documentId: string; name: 
     <div className="document-embed-heading">↗ {document?.documentName || name}</div>
     {blocked ? <p>已停止循环或过深的文档引用。</p> : error ? <p>{error}</p> : !document ? <Spin size="small" /> : <>
       <Link href={`/community/${document.documentCommunityId}/document/${document.documentId}`}>打开原文档</Link>
-      <EmbedPathContext.Provider value={[...path, documentId]}><MyEditor initialValue={parseDocument(document.documentContent)} readOnly /></EmbedPathContext.Provider>
+      <EmbedPathContext.Provider value={[...path, documentId]}><MyEditor initialValue={normalizePdfExtract(parseDocument(document.documentContent))} readOnly /></EmbedPathContext.Provider>
     </>}
   </div>;
 }
